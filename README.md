@@ -1,1 +1,2 @@
-# zofa
+# Zofa Grocery Application
+Zofa Grocery Application is a Flutter-based mobile app for managing a grocery store focused on healthy products, such as gluten-free, keto, and sugar-free items. It provides a user-friendly interface for customers to browse and order products and offers admin functionalities for inventory and order management. Additionally, it includes a dedicated bread-ordering feature to ensure efficient and timely bread purchases.
