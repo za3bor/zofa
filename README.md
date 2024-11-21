@@ -23,3 +23,14 @@ Add, edit, and delete products with details like ברקוד, product name, price
 Manage and view all customer orders in real-time.
 - Bread Availability Management:
 Set time constraints and inventory levels for bread orders, ensuring availability during specific times.
+
+## Technical Details
+## Frontend
+- Framework: Flutter
+- Programming Language: Dart
+- UI/UX: Responsive design for both customer and admin functionalities, supporting intuitive navigation and data entry.
+## Backend
+- Framework: Node.js with Express.js
+- Database: MySQL
+- Storage
+Image Storage: B2 Cloud Storage for uploading and accessing product images.
