@@ -13,3 +13,13 @@ Select items to add to your shopping cart and proceed to checkout by entering yo
 Track and manage your orders directly from the app.
 - Bread Ordering Functionality:
 A specialized section for ordering bread, ensuring customers can select available types and quantities with ease.
+
+## For Admins
+- Role-Based Access:
+Admins are identified by predefined phone numbers, eliminating the need for traditional login systems.
+- Inventory Management:
+Add, edit, and delete products with details like ברקוד, product name, price, stock, and nutritional values.
+- Order Tracking:
+Manage and view all customer orders in real-time.
+- Bread Availability Management:
+Set time constraints and inventory levels for bread orders, ensuring availability during specific times.
