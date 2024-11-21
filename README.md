@@ -9,16 +9,14 @@ View a variety of healthy grocery products, each with detailed descriptions, nut
 Quickly find products by searching or filtering based on categories and health benefits.
 - Add to Cart and Checkout:
 Select items to add to your shopping cart and proceed to checkout by entering your name and phone number.
-- Order Management:
-Track and manage your orders directly from the app.
 - Bread Ordering Functionality:
 A specialized section for ordering bread, ensuring customers can select available types and quantities with ease.
 
 ## For Admins
 - Role-Based Access:
-Admins are identified by predefined phone numbers, eliminating the need for traditional login systems.
+Admins are identified by predefined phone ID, eliminating the need for traditional login systems.
 - Inventory Management:
-Add, edit, and delete products with details like ברקוד, product name, price, stock, and nutritional values.
+Add, edit, and delete products with details like product name, price, stock, and nutritional values....
 - Order Tracking:
 Manage and view all customer orders in real-time.
 - Bread Availability Management:
