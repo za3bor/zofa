@@ -56,7 +56,7 @@ class _AdminBreadOrdersScreenState extends State<AdminBreadOrdersScreen> {
           for (var order in _breadOrders) {
             var orderDetails = order.orderDetails;
 
-            if (orderDetails != null && orderDetails.isNotEmpty) {
+            if (orderDetails.isNotEmpty) {
               List<String> items = orderDetails.split('\n');
               for (var item in items) {
                 List<String> parts = item.split(':');
