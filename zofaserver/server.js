@@ -8,7 +8,11 @@ const app = express();
 const multer = require("multer"); // For handling file uploads
 const fs = require("fs"); // Import fs to handle file system operations
 const path = require("path");
+const http = require("http"); // Required to create the HTTP server
+const { Server } = require("socket.io"); // Import Socket.IO
 const port = process.env.PORT;
+const server = http.createServer(app); // Create HTTP server
+const io = new Server(server); // Initialize Socket.IO with the HTTP server
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -122,7 +126,7 @@ app.post("/api/addNewBreadOrder", async (req, res) => {
 
 app.post("/api/addNewProductOrder", async (req, res) => {
   try {
-    const success = await productDataHandler.addNewProductOrder(req.body); 
+    const success = await productDataHandler.addNewProductOrder(req.body);
     if (success) {
       res
         .status(201)
@@ -177,7 +181,6 @@ app.delete("/api/deleteProduct/:id", async (req, res) => {
   }
 });
 
-
 app.get("/api/showAllBreadTypes", async (req, res) => {
   try {
     const bread = await breadDataHandler.showAllBreadTypes(); // Call the getAllBread function
@@ -199,7 +202,6 @@ app.get("/api/getAllBreadOrders", async (req, res) => {
   }
 });
 
-
 app.get("/api/getAllCategories", async (req, res) => {
   try {
     const categories = await dataHandler.getAllCategories(); // Call the getAllCategories function
@@ -213,7 +215,9 @@ app.get("/api/getAllCategories", async (req, res) => {
 app.post("/api/getProductsByCategory", async (req, res) => {
   const { categoryIds } = req.body;
   try {
-    const products = await productDataHandler.getProductsByCategory(categoryIds);
+    const products = await productDataHandler.getProductsByCategory(
+      categoryIds
+    );
     res.status(200).json(products);
   } catch (err) {
     console.error("Error fetching products by category:", err.message);
@@ -257,7 +261,6 @@ app.delete("/api/deleteNote/:id", async (req, res) => {
     res.status(500).json({ error: "Error deleting note" });
   }
 });
-
 
 // POST route to add a new coupon
 app.post("/api/addNewCoupon", async (req, res) => {
@@ -336,8 +339,6 @@ app.post("/api/validateCoupon", async (req, res) => {
   }
 });
 
-
-
 app.post("/api/setBreadOrderStatus", async (req, res) => {
   try {
     const success = await breadDataHandler.updateBreadOrderStatus(req.body);
@@ -369,10 +370,9 @@ app.get("/api/getAllProductOrders", async (req, res) => {
   }
 });
 
-
 // Express route to update a specific product field by id
 app.post("/api/updateProductField", async (req, res) => {
-  const { id, field, newValue } = req.body;  // Expect product ID, field name, and new value in the request body
+  const { id, field, newValue } = req.body; // Expect product ID, field name, and new value in the request body
 
   // Validate the input parameters
   if (!id || !field || !newValue) {
@@ -382,13 +382,26 @@ app.post("/api/updateProductField", async (req, res) => {
   }
   try {
     // Sanitize the field name and check if it's valid
-    const allowedFields = ['name', 'data', 'components', 'additional_features', 'contain', 'may_contain', 'allergies', 'price'];  // Allowed fields for update
+    const allowedFields = [
+      "name",
+      "data",
+      "components",
+      "additional_features",
+      "contain",
+      "may_contain",
+      "allergies",
+      "price",
+    ]; // Allowed fields for update
     if (!allowedFields.includes(field)) {
       return res.status(400).json({ error: "Invalid field name" });
     }
 
-    const updatedProduct = await productDataHandler.updateProductField(id, field, newValue);
-    res.status(200).json(updatedProduct);  // Return the updated product information
+    const updatedProduct = await productDataHandler.updateProductField(
+      id,
+      field,
+      newValue
+    );
+    res.status(200).json(updatedProduct); // Return the updated product information
   } catch (err) {
     console.error("Error updating product field:", err.message);
     res.status(500).json({ error: "Error updating product field" });
@@ -399,10 +412,14 @@ app.get("/api/getProductCategories/:id", async (req, res) => {
   const productId = req.params.id; // Retrieve productId from request parameters
   try {
     // Fetch categories for the product
-    const productCategories = await productDataHandler.getProductCategories(productId);
+    const productCategories = await productDataHandler.getProductCategories(
+      productId
+    );
 
     if (!productCategories || productCategories.length === 0) {
-      return res.status(404).json({ error: "No categories found for this product" }); // Handle case where no categories are found
+      return res
+        .status(404)
+        .json({ error: "No categories found for this product" }); // Handle case where no categories are found
     }
 
     res.status(200).json(productCategories); // Return product categories as JSON
@@ -412,18 +429,21 @@ app.get("/api/getProductCategories/:id", async (req, res) => {
   }
 });
 
-
 app.get("/api/getProductDetails/:id", async (req, res) => {
   const productId = req.params.id; // Retrieve productId from request parameters
   try {
     // Fetch product details using the ID
-    const productDetails = await productDataHandler.getProductDetails(productId);
+    const productDetails = await productDataHandler.getProductDetails(
+      productId
+    );
     if (productDetails === null) {
       return res.status(404).json({ error: "Product not found" }); // Handle case where product is not found
     }
 
     // Fetch categories for the product
-    const productCategories = await productDataHandler.getProductCategories(productId);
+    const productCategories = await productDataHandler.getProductCategories(
+      productId
+    );
     productDetails.categories = productCategories; // Attach categories to the product details
 
     // Fetch nutritional values for the product
@@ -431,9 +451,8 @@ app.get("/api/getProductDetails/:id", async (req, res) => {
       await productDataHandler.getProductNutritionalValues(productId);
     productDetails.nutritionalValues = productNutritionalValues; // Attach nutritional values to the product details
 
-    const productHealthMarking = await productDataHandler.getProductHealthMarking(
-      productId
-    );
+    const productHealthMarking =
+      await productDataHandler.getProductHealthMarking(productId);
     productDetails.healthMarking = productHealthMarking; // Attach Health Marking values to the product details
 
     res.status(200).json(productDetails); // Return product details with categories and nutritional values as JSON
@@ -459,28 +478,29 @@ app.get("/api/getAllProducts", async (req, res) => {
 });
 
 // PATCH route to update stock
-app.patch('/api/updateStock/:id', async (req, res) => {
+app.patch("/api/updateStock/:id", async (req, res) => {
   const { id } = req.params;
   const { stock } = req.body;
 
-  if (typeof stock !== 'number' || (stock !== 0 && stock !== 1)) {
-    return res.status(400).json({ error: 'Invalid stock value' });
+  if (typeof stock !== "number" || (stock !== 0 && stock !== 1)) {
+    return res.status(400).json({ error: "Invalid stock value" });
   }
 
   try {
     const result = await productDataHandler.updateProductStockById(id, stock);
 
     if (result.affectedRows > 0) {
-      return res.status(200).json({ message: 'Stock updated successfully.' });
+      // Emit stock update to all connected clients via Socket.IO
+      io.emit("orderUpdate", { productId: id, stock: stock }); // Emit to all clients
+      return res.status(200).json({ message: "Stock updated successfully." });
     } else {
-      return res.status(404).json({ error: 'Product not found.' });
+      return res.status(404).json({ error: "Product not found." });
     }
   } catch (err) {
-    console.error('Error updating product stock:', err.message);
-    return res.status(500).json({ error: 'Error updating product stock' });
+    console.error("Error updating product stock:", err.message);
+    return res.status(500).json({ error: "Error updating product stock" });
   }
 });
-
 
 // Search products by name endpoint
 app.get("/api/searchProducts", async (req, res) => {
@@ -503,32 +523,52 @@ app.post("/api/saveProductCategories", async (req, res) => {
   const { barcode, categories } = req.body;
 
   if (!barcode || !categories || categories.length === 0) {
-    return res.status(400).json({ message: 'Product barcode and categories are required' });
+    return res
+      .status(400)
+      .json({ message: "Product barcode and categories are required" });
   }
 
   try {
     const product = await productDataHandler.getProductByBarcode(barcode);
 
     if (!product) {
-      return res.status(404).json({ message: 'Product not found' });
+      return res.status(404).json({ message: "Product not found" });
     }
 
     await productDataHandler.removeExistingCategories(product.id);
     await productDataHandler.saveCategories(product.id, categories);
 
-    res.status(200).json({ message: 'Categories saved successfully' });
+    res.status(200).json({ message: "Categories saved successfully" });
   } catch (err) {
-    console.error('Error saving categories:', err.message);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("Error saving categories:", err.message);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
-// Error handling middleware
+// Example Socket.IO Event
+io.on("connection", (socket) => {
+  console.log("A user connected:", socket.id);
+
+  // Listen for custom events from the client
+  socket.on("newOrder", (orderData) => {
+    console.log("Received new order:", orderData);
+
+    // Broadcast the event to all connected clients
+    socket.broadcast.emit("orderUpdate", orderData);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("A user disconnected:", socket.id);
+  });
+});
+
+// Error-handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).send("Something went wrong!");
 });
 
-app.listen(port, () => {
+// Start HTTP server (which also runs the Socket.IO server)
+server.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });

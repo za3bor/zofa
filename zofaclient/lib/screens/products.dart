@@ -5,6 +5,8 @@ import 'package:http/http.dart' as http;
 import 'package:zofa_client/constant.dart';
 import 'package:zofa_client/screens/product_details.dart';
 import 'package:hive/hive.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'dart:convert';
 
 class ProductsScreen extends StatefulWidget {
   const ProductsScreen({super.key});
@@ -29,13 +31,65 @@ class _ProductsScreenState extends State<ProductsScreen> {
   final Map<int, int> _productQuantities =
       {}; // Map to store product quantities
 
+  late IO.Socket _socket; // Declare the socket instance
+
   @override
   void initState() {
     super.initState();
+    _initializeSocket();
     _fetchCategories();
     _searchController.addListener(() {
       _filterProducts();
     });
+  }
+
+  void _initializeSocket() {
+    // Initialize the socket connection
+    _socket = IO.io(
+      'http://$ipAddress:3000', // Replace with your backend URL
+      IO.OptionBuilder()
+          .setTransports(['websocket']) // Use WebSocket for the connection
+          .build(),
+    );
+
+    // Listen for connection
+    _socket.onConnect((_) {
+      print('Connected to socket server');
+    });
+
+    _socket.on('orderUpdate', (data) {
+      int productId = int.tryParse(data['productId'].toString()) ?? 0;
+      int newStock = data['stock'];
+
+      setState(() {
+        final product = _products.firstWhere((p) => p.id == productId,
+            orElse: () => Product(id: -1, name: '', price: 0, stock: false));
+        if (product.id != -1) {
+          product.stock = newStock > 0;
+        }
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Stock updated for product ID $productId!',
+          ),
+        ),
+      );
+    });
+
+    // Handle socket disconnection
+    _socket.onDisconnect((_) {
+      print('Disconnected from socket server');
+    });
+  }
+
+  @override
+  void dispose() {
+    _socket
+        .dispose(); // Dispose of the socket connection when the screen is disposed
+    _searchController.dispose();
+    super.dispose();
   }
 
   Future<void> _fetchCategories() async {
@@ -96,7 +150,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
               price: (item['price'] is String)
                   ? double.parse(item['price'])
                   : item['price'],
-              stock: item['in_stock'] == 1, // Convert TINYINT to bool
+              stock: item['in_stock'] > 0, // Update stock handling
             );
           }).toList();
           _filteredProducts = List.from(_products);
@@ -137,44 +191,44 @@ class _ProductsScreenState extends State<ProductsScreen> {
     });
   }
 
-Future<void> _addToCart(int productId) async {
-  var box = await Hive.openBox('cart');
-  int quantity = _productQuantities[productId] ?? 0;
+  Future<void> _addToCart(int productId) async {
+    var box = await Hive.openBox('cart');
+    int quantity = _productQuantities[productId] ?? 0;
 
-  if (quantity > 0) {
-    // Get the existing cart data (it should be a Map<int, Map<String, dynamic>>)
-    Map<dynamic, dynamic> cartData = box.get('cart', defaultValue: <int, Map<String, dynamic>>{});
+    if (quantity > 0) {
+      // Get the existing cart data (it should be a Map<int, Map<String, dynamic>>)
+      Map<dynamic, dynamic> cartData =
+          box.get('cart', defaultValue: <int, Map<String, dynamic>>{});
 
-    // Find the product using its ID
-    Product product = _filteredProducts.firstWhere((p) => p.id == productId);
+      // Find the product using its ID
+      Product product = _filteredProducts.firstWhere((p) => p.id == productId);
 
-    // Ensure productId is treated as an int and quantity is also an int
-    if (cartData.containsKey(productId)) {
-      // Update the existing entry for the product
-      cartData[productId]['quantity'] += quantity;
-    } else {
-      // Add new product with name, price, and quantity
-      cartData[productId] = {
-        'name': product.name,
-        'price': product.price,
-        'quantity': quantity,
-      };
-    }
+      // Ensure productId is treated as an int and quantity is also an int
+      if (cartData.containsKey(productId)) {
+        // Update the existing entry for the product
+        cartData[productId]['quantity'] += quantity;
+      } else {
+        // Add new product with name, price, and quantity
+        cartData[productId] = {
+          'name': product.name,
+          'price': product.price,
+          'quantity': quantity,
+        };
+      }
 
-    // Save the updated cart data directly to the box
-    await box.put('cart', cartData);
+      // Save the updated cart data directly to the box
+      await box.put('cart', cartData);
 
-    // Show a snackbar with the product name
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          '${product.name} added to cart!',
+      // Show a snackbar with the product name
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            '${product.name} added to cart!',
+          ),
         ),
-      ),
-    );
+      );
+    }
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
@@ -295,7 +349,7 @@ Future<void> _addToCart(int productId) async {
                       crossAxisCount: 2,
                       crossAxisSpacing: 10,
                       mainAxisSpacing: 10,
-                      childAspectRatio: 0.54,
+                      childAspectRatio: 0.50,
                     ),
                     itemCount: _filteredProducts.length,
                     itemBuilder: (ctx, index) {
