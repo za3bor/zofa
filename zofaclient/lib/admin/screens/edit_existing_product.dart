@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'package:zofa_client/constant.dart';
+import 'package:zofa_client/models/category.dart';
 
 class EditExistingProductScreen extends StatefulWidget {
   const EditExistingProductScreen({super.key});
@@ -22,7 +24,7 @@ class _TextFieldDropdownPageState extends State<EditExistingProductScreen> {
     'מידע': 'data',
     'מרכיבים': 'components',
     'מאפיינים נוספים': 'additional_features',
-    'מכיל': 'contain', // Example field name
+    'מכיל': 'contain',
     'עלול להכיל': 'may_contain',
     'אלרגיות': 'allergies',
     'מחיר': 'price',
@@ -37,7 +39,81 @@ class _TextFieldDropdownPageState extends State<EditExistingProductScreen> {
     'עלול להכיל',
     'אלרגיות',
     'מחיר'
-  ]; // Dropdown options
+  ];
+
+  List<Category> _categories = []; // List to store fetched categories
+  Map<int, bool> _categorySelections = {}; // Store selections for each category
+
+  Future<void> _fetchCategories() async {
+    try {
+      final response = await http
+          .get(Uri.parse('http://$ipAddress:3000/api/getAllCategories'));
+
+      if (response.statusCode == 200) {
+        final jsonData = jsonDecode(response.body) as List;
+
+        setState(() {
+          _categories = jsonData.map((item) {
+            return Category(
+              id: item['id'], // Assuming 'id' is a key in the response
+              name: item['name'], // Assuming 'name' is a key in the response
+            );
+          }).toList();
+
+          // Initialize the category selections
+          for (var category in _categories) {
+            _categorySelections[category.id] = false; // Default to unselected
+          }
+        });
+      } else {
+        throw Exception('Failed to load categories');
+      }
+    } catch (e) {
+      print('Error fetching categories: $e');
+    }
+  }
+
+  Future<void> _fetchProductCategories() async {
+    try {
+      final barcode = _barcodeController.text; // Get the barcode from input
+      final response = await http.get(Uri.parse(
+          'http://$ipAddress:3000/api/getProductCategories/$barcode'));
+
+      if (response.statusCode == 200) {
+        final List<dynamic> productCategories = jsonDecode(response.body);
+        print(
+            'Product Categories: $productCategories'); // Debug print for response
+
+        setState(() {
+          // Loop through each category and check if it matches with _categorySelections
+          for (var categoryName in productCategories) {
+            // Find the category by matching the 'name' (not the 'id') with category names
+            var matchingCategory = _categories.firstWhere(
+              (cat) => cat.name == categoryName,
+              orElse: () => Category(
+                  id: -1, name: categoryName), // Default value if not found
+            );
+
+            // If a matching category is found (id != -1), mark it as selected
+            if (matchingCategory.id != -1) {
+              _categorySelections[matchingCategory.id] = true;
+            }
+          }
+        });
+      } else {
+        // If no categories are found for the barcode, show a message
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text('Barcode not found or no categories assigned')),
+        );
+      }
+    } catch (e) {
+      print('Error fetching product categories: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Error fetching product categories')),
+      );
+    }
+  }
 
   Future<void> _updateProduct() async {
     final String barcode = _barcodeController.text;
@@ -47,8 +123,7 @@ class _TextFieldDropdownPageState extends State<EditExistingProductScreen> {
     if (fieldInEnglish != null && newWord.isNotEmpty && barcode.isNotEmpty) {
       try {
         final response = await http.post(
-          Uri.parse(
-              'http://$ipAddress:3000/api/updateProductField'), // Updated route
+          Uri.parse('http://$ipAddress:3000/api/updateProductField'),
           headers: <String, String>{
             'Content-Type': 'application/json',
           },
@@ -85,6 +160,57 @@ class _TextFieldDropdownPageState extends State<EditExistingProductScreen> {
     }
   }
 
+// Method to save the selected categories
+  Future<void> _saveCategoryChanges() async {
+    try {
+      // Gather selected category IDs
+      List<int> selectedCategoryIds = _categorySelections.entries
+          .where((entry) => entry.value) // Only selected categories
+          .map((entry) => entry.key) // Get the category IDs
+          .toList();
+
+      // If there are selected categories, send them to the backend or handle accordingly
+      if (selectedCategoryIds.isNotEmpty) {
+        final barcode = _barcodeController.text;
+        final response = await http.post(
+          Uri.parse('http://$ipAddress:3000/api/saveProductCategories'),
+          headers: <String, String>{
+            'Content-Type': 'application/json',
+          },
+          body: jsonEncode({
+            'barcode': barcode,
+            'categories': selectedCategoryIds,
+          }),
+        );
+
+        if (response.statusCode == 200) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Categories saved successfully')),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Failed to save categories')),
+          );
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please select at least one category')),
+        );
+      }
+    } catch (e) {
+      print('Error saving categories: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Error saving categories')),
+      );
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchCategories(); // Fetch categories when the page is initialized
+  }
+
   @override
   void dispose() {
     _barcodeController.dispose();
@@ -98,69 +224,106 @@ class _TextFieldDropdownPageState extends State<EditExistingProductScreen> {
       appBar: AppBar(
         title: const Text('Edit Product'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Barcode TextField (Numbers only)
-            const Text(
-              'Enter Barcode:',
-              style: TextStyle(fontSize: 18),
-            ),
-            TextField(
-              controller: _barcodeController,
-              keyboardType: TextInputType.number, // Restrict to numbers
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Barcode',
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Barcode TextField (Numbers only)
+              const Text(
+                'Enter Barcode:',
+                style: TextStyle(fontSize: 18),
               ),
-            ),
-            const SizedBox(height: 20),
-
-            // New Word TextField
-            const Text(
-              'Enter the new word:',
-              style: TextStyle(fontSize: 18),
-            ),
-            TextField(
-              controller: _newWordController,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'New Word',
+              TextField(
+                controller: _barcodeController,
+                keyboardType: TextInputType.number, // Restrict to numbers
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Barcode',
+                ),
               ),
-            ),
-            const SizedBox(height: 20),
+              const SizedBox(height: 20),
 
-            // DropdownButton
-            const Text(
-              'Select an option:',
-              style: TextStyle(fontSize: 18),
-            ),
-            DropdownButton<String>(
-              value: _selectedItem,
-              hint: const Text('Choose an option'),
-              isExpanded: true,
-              items: _dropdownItems.map((String item) {
-                return DropdownMenuItem<String>(
-                  value: item,
-                  child: Text(item),
-                );
-              }).toList(),
-              onChanged: (String? newValue) {
-                setState(() {
-                  _selectedItem = newValue;
-                });
-              },
-            ),
-            const SizedBox(height: 20),
+              // Button to check and set categories
+              ElevatedButton(
+                onPressed: _fetchProductCategories,
+                child: const Text('Check Categories'),
+              ),
+              const SizedBox(height: 20),
 
-            // Submit Button
-            ElevatedButton(
-              onPressed: _updateProduct,
-              child: const Text('Submit'),
-            ),
-          ],
+              // New Word TextField
+              const Text(
+                'Enter the new word:',
+                style: TextStyle(fontSize: 18),
+              ),
+              TextField(
+                controller: _newWordController,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'New Word',
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              // DropdownButton for field selection
+              const Text(
+                'Select an option:',
+                style: TextStyle(fontSize: 18),
+              ),
+              DropdownButton<String>(
+                value: _selectedItem,
+                hint: const Text('Choose an option'),
+                isExpanded: true,
+                items: _dropdownItems.map((String item) {
+                  return DropdownMenuItem<String>(
+                    value: item,
+                    child: Text(item),
+                  );
+                }).toList(),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    _selectedItem = newValue;
+                  });
+                },
+              ),
+              const SizedBox(height: 20),
+
+              // Change Field Button (Moved above categories)
+              ElevatedButton(
+                onPressed: _updateProduct,
+                child: const Text('Change Field'),
+              ),
+              const SizedBox(height: 20),
+
+              // Display Categories as Checkboxes
+              const Text(
+                'Select Categories:',
+                style: TextStyle(fontSize: 18),
+              ),
+              const SizedBox(height: 10),
+              Wrap(
+                children: _categories.map((category) {
+                  return CheckboxListTile(
+                    title: Text(category.name),
+                    value: _categorySelections[category.id],
+                    onChanged: (bool? value) {
+                      setState(() {
+                        _categorySelections[category.id] = value ?? false;
+                      });
+                    },
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 20),
+
+              // Save Categories Button
+              ElevatedButton(
+                onPressed: _saveCategoryChanges,
+                child: const Text('Save Categories'),
+              ),
+            ],
+          ),
         ),
       ),
     );

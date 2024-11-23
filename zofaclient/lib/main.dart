@@ -2,12 +2,20 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:hive/hive.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:zofa_client/admin/screens/admin_main_page.dart';
-import 'package:zofa_client/screens/tabs.dart';
+import 'package:zofa_client/screens/tabs.dart';  // Ensure this import is correct
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // Initialize Hive
+  final appDocumentDirectory = await getApplicationDocumentsDirectory();
+  Hive.init(appDocumentDirectory.path); // Set the path where Hive stores data
+
+  // Open a box to store cart items
+  await Hive.openBox('cart');
+
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]).then((_) {
@@ -57,8 +65,12 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
 
     if (deviceId == null) {
-      return const CircularProgressIndicator();
+      // Show a loading indicator while device ID is being fetched
+      return const Center(child: CircularProgressIndicator());
     }
+
+    // Check if the current device ID matches the admin devices list
+    bool isAdmin = adminDeviceIds.contains(deviceId);
 
     return MaterialApp(
       home: Scaffold(
@@ -71,9 +83,9 @@ class _MyAppState extends State<MyApp> {
               opacity: 0.8,
             ),
           ),
-          child: adminDeviceIds.contains(deviceId)
-              ? const AdminMainPageScreen()
-              : const AdminMainPageScreen(), // Change `AdminMainPageScreen` to `TabsScreen` for non-admin devices
+          child: isAdmin
+              ? const AdminMainPageScreen() // Show admin screen for admin devices
+              : const AdminMainPageScreen(), // Show non-admin screen for non-admin devices
         ),
       ),
     );

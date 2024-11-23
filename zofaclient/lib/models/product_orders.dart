@@ -6,6 +6,7 @@ class ProductOrders {
     required this.userName,
     required this.status,
     required this.totalPrice,
+    required this.email,
   });
   final int id;
   final String userName;
@@ -13,4 +14,5 @@ class ProductOrders {
   final String orderDetails;
   final double totalPrice;
   final String status;
+  final String email;
 }

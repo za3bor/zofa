@@ -455,7 +455,6 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
                 child: TextFormField(
                   controller: _caloriesController,
                   decoration: const InputDecoration(labelText: 'קלוריות'),
-                  keyboardType: TextInputType.number,
                 ),
               ),
               Directionality(
@@ -463,7 +462,6 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
                 child: TextFormField(
                   controller: _totalFatController,
                   decoration: const InputDecoration(labelText: 'סה"כ שומן'),
-                  keyboardType: TextInputType.number,
                 ),
               ),
               SwitchListTile(
@@ -480,7 +478,6 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
                 child: TextFormField(
                   controller: _saturatedFatController,
                   decoration: const InputDecoration(labelText: 'שומן רווי'),
-                  keyboardType: TextInputType.number,
                 ),
               ),
               Directionality(
@@ -488,7 +485,6 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
                 child: TextFormField(
                   controller: _transFatController,
                   decoration: const InputDecoration(labelText: 'שומן טרנס'),
-                  keyboardType: TextInputType.number,
                 ),
               ),
               Directionality(
@@ -496,7 +492,6 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
                 child: TextFormField(
                   controller: _cholesterolController,
                   decoration: const InputDecoration(labelText: 'כולסטרול'),
-                  keyboardType: TextInputType.number,
                 ),
               ),
               Directionality(
@@ -504,7 +499,6 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
                 child: TextFormField(
                   controller: _sodiumController,
                   decoration: const InputDecoration(labelText: 'נתרן'),
-                  keyboardType: TextInputType.number,
                 ),
               ),
               Directionality(
@@ -512,7 +506,6 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
                 child: TextFormField(
                   controller: _carbohydratesController,
                   decoration: const InputDecoration(labelText: 'פחמימות'),
-                  keyboardType: TextInputType.number,
                 ),
               ),
               SwitchListTile(
@@ -529,7 +522,6 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
                 child: TextFormField(
                   controller: _sugarsController,
                   decoration: const InputDecoration(labelText: 'סוכרים'),
-                  keyboardType: TextInputType.number,
                 ),
               ),
               Directionality(
@@ -537,7 +529,6 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
                 child: TextFormField(
                   controller: _sugarTeaspoonsController,
                   decoration: const InputDecoration(labelText: 'כפיות סוכר'),
-                  keyboardType: TextInputType.number,
                 ),
               ),
               Directionality(
@@ -545,7 +536,6 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
                 child: TextFormField(
                   controller: _sugarAlcoholsController,
                   decoration: const InputDecoration(labelText: 'אלכוהול סוכר'),
-                  keyboardType: TextInputType.number,
                 ),
               ),
               Directionality(
@@ -554,7 +544,6 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
                   controller: _dietaryFiberController,
                   decoration:
                       const InputDecoration(labelText: 'סיבים תזונתיים'),
-                  keyboardType: TextInputType.number,
                 ),
               ),
               Directionality(
@@ -562,7 +551,6 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
                 child: TextFormField(
                   controller: _proteinsController,
                   decoration: const InputDecoration(labelText: 'חלבונים'),
-                  keyboardType: TextInputType.number,
                 ),
               ),
               Directionality(
@@ -570,7 +558,6 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
                 child: TextFormField(
                   controller: _calciumController,
                   decoration: const InputDecoration(labelText: 'סידן'),
-                  keyboardType: TextInputType.number,
                 ),
               ),
               Directionality(
@@ -578,7 +565,6 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
                 child: TextFormField(
                   controller: _ironController,
                   decoration: const InputDecoration(labelText: 'ברזל'),
-                  keyboardType: TextInputType.number,
                 ),
               ),
 
