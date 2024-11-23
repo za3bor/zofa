@@ -120,6 +120,22 @@ app.post("/api/addNewBreadOrder", async (req, res) => {
   }
 });
 
+app.post("/api/addNewProductOrder", async (req, res) => {
+  try {
+    const success = await productDataHandler.addNewProductOrder(req.body); 
+    if (success) {
+      res
+        .status(201)
+        .json({ message: "Product order added successfully!", data: req.body });
+    } else {
+      res.status(500).json({ error: "Error adding Product order" }); // Generic error for unexpected issues
+    }
+  } catch (err) {
+    console.error("Error adding Product order:", err.message);
+    res.status(400).json({ error: err.message }); // Send specific error message from dataHandler
+  }
+});
+
 app.post("/api/addNewBreadType", async (req, res) => {
   try {
     const result = await breadDataHandler.addNewBreadType(req.body);
@@ -299,6 +315,28 @@ app.get("/api/getAllCoupons", async (req, res) => {
   }
 });
 
+app.post("/api/validateCoupon", async (req, res) => {
+  try {
+    const { code } = req.body;
+
+    if (!code) {
+      return res.status(400).json({ message: "Coupon code is required" });
+    }
+
+    const percentage = await dataHandler.validateCoupon(code);
+
+    if (percentage === null) {
+      return res.status(404).json({ message: "Coupon not found" });
+    }
+
+    res.status(200).json({ percentage }); // Correct response format
+  } catch (error) {
+    console.error("Error validating coupon:", error.message);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+
 
 app.post("/api/setBreadOrderStatus", async (req, res) => {
   try {
@@ -356,6 +394,24 @@ app.post("/api/updateProductField", async (req, res) => {
     res.status(500).json({ error: "Error updating product field" });
   }
 });
+
+app.get("/api/getProductCategories/:id", async (req, res) => {
+  const productId = req.params.id; // Retrieve productId from request parameters
+  try {
+    // Fetch categories for the product
+    const productCategories = await productDataHandler.getProductCategories(productId);
+
+    if (!productCategories || productCategories.length === 0) {
+      return res.status(404).json({ error: "No categories found for this product" }); // Handle case where no categories are found
+    }
+
+    res.status(200).json(productCategories); // Return product categories as JSON
+  } catch (err) {
+    console.error("Error fetching product categories:", err.message);
+    res.status(500).json({ error: "Error fetching product categories" }); // Send generic error message
+  }
+});
+
 
 app.get("/api/getProductDetails/:id", async (req, res) => {
   const productId = req.params.id; // Retrieve productId from request parameters
@@ -439,6 +495,31 @@ app.get("/api/searchProducts", async (req, res) => {
   } catch (err) {
     console.error("Error fetching products:", err.message);
     res.status(500).json({ error: "Error fetching products" });
+  }
+});
+
+// Route to save product categories
+app.post("/api/saveProductCategories", async (req, res) => {
+  const { barcode, categories } = req.body;
+
+  if (!barcode || !categories || categories.length === 0) {
+    return res.status(400).json({ message: 'Product barcode and categories are required' });
+  }
+
+  try {
+    const product = await productDataHandler.getProductByBarcode(barcode);
+
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
+    await productDataHandler.removeExistingCategories(product.id);
+    await productDataHandler.saveCategories(product.id, categories);
+
+    res.status(200).json({ message: 'Categories saved successfully' });
+  } catch (err) {
+    console.error('Error saving categories:', err.message);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 

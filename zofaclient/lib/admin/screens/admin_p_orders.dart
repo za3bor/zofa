@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:zofa_client/admin/screens/admin_p_order_detail.dart';
+import 'dart:convert'; // For jsonDecode
+import 'package:zofa_client/admin/screens/admin_p_order_detail.dart'; // Import your details screen
 import 'package:zofa_client/constant.dart';
 import 'package:zofa_client/models/product_orders.dart';
 
@@ -8,49 +9,41 @@ class ProductOrdersScreen extends StatefulWidget {
   const ProductOrdersScreen({super.key});
 
   @override
-  State<ProductOrdersScreen> createState() {
-    return _ProductOrdersScreenState();
-  }
+  State<ProductOrdersScreen> createState() => _ProductOrdersScreenState();
 }
 
 class _ProductOrdersScreenState extends State<ProductOrdersScreen> {
   List<ProductOrders> _productOrders = []; // List to store orders
-  Map<String, int> orderQuantityMap =
-      {}; // Map to store order types and their total quantities
-  bool buttonEnabled =
-      true; // Manage the button state (you can use it to enable/disable buttons)
 
   Future<void> getOrders() async {
     try {
       final response = await http
           .get(Uri.parse('http://$ipAddress:3000/api/getAllProductOrders'));
 
+      // Check status code and print the response body for debugging
       if (response.statusCode == 200) {
         final jsonData = jsonDecode(response.body) as List;
 
         setState(() {
-          if (jsonData.isEmpty) {
-            _productOrders = []; // No orders found
-          } else {
-            _productOrders = jsonData.map((item) {
-              return ProductOrders(
-                id: item['id'] ?? 0,
-                userName: item['userName'] ?? '',
-                phoneNumber: item['phoneNumber'] ?? '',
-                orderDetails: item['orderDetails'] ?? '',
-                totalPrice: item['totalPrice'] != null
-                    ? double.parse(item['totalPrice'].toString())
-                    : 0.0,
-                status: item['status'] ?? '',
-              );
-            }).toList();
-          }
+          _productOrders = jsonData.map((item) {
+            return ProductOrders(
+              id: item['id'],
+              userName: item['username'],
+              phoneNumber: item['phone_number'],
+              orderDetails: item['order_details'],
+              totalPrice: double.parse(item['total_price'].toString()),
+              status: item['status'],
+              email: item['email'],
+            );
+          }).toList();
         });
       } else {
-        throw Exception('Failed to load orders'); // Trigger catch block
+        print('Failed to load orders. Status code: ${response.statusCode}');
+        print('Response body: ${response.body}');
+        throw Exception('Failed to load orders');
       }
     } catch (error) {
-      // Display an error message via Snackbar
+      print('Error: $error');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('שגיאה בטעינת ההזמנות. אנא נסה שוב מאוחר יותר.'),
@@ -63,7 +56,7 @@ class _ProductOrdersScreenState extends State<ProductOrdersScreen> {
   @override
   void initState() {
     super.initState();
-    getOrders(); // Fetch orders when the screen is initialized
+    getOrders();
   }
 
   @override
@@ -74,11 +67,8 @@ class _ProductOrdersScreenState extends State<ProductOrdersScreen> {
         padding: const EdgeInsets.all(16.0),
         child: _productOrders.isEmpty
             ? Center(
-                child: Text(
-                  'אין הזמנות זמינות.',
-                  style: TextStyle(fontSize: 18, color: Colors.grey[600]),
-                ),
-              )
+                child: Text('אין הזמנות זמינות.',
+                    style: TextStyle(fontSize: 18, color: Colors.grey[600])))
             : ListView.builder(
                 itemCount: _productOrders.length,
                 itemBuilder: (context, index) {
@@ -92,12 +82,12 @@ class _ProductOrdersScreenState extends State<ProductOrdersScreen> {
                         backgroundColor: Colors.blue,
                       ),
                       onPressed: () {
-                        // Navigate to order details screen
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) =>
-                                OrderDetailsScreen(order: order),
+                            builder: (context) => OrderDetailsScreen(
+                                order:
+                                    order), // Pass selected order to details screen
                           ),
                         );
                       },

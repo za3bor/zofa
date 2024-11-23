@@ -57,7 +57,7 @@ class _TabsScreenState extends State<TabsScreen> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => CheckoutPageScreen()),
+                  MaterialPageRoute(builder: (context) => const CheckoutPageScreen()),
                 );
               },
             ),

@@ -126,6 +126,26 @@ async function deleteCouponById(id) {
   }
 }
 
+async function validateCoupon(couponCode) {
+  try {
+    const [rows] = await pool.query(
+      "SELECT percentage FROM coupons WHERE code = ?",
+      [couponCode]
+    );
+
+    // If no rows are found, return null to indicate no match
+    if (rows.length === 0) {
+      return null;
+    }
+    // Return the percentage if the coupon is found
+    return rows[0].percentage;
+  } catch (err) {
+    console.error("Error validating coupon:", err.message);
+    throw err; // Rethrow the error to let the caller handle it
+  }
+}
+
+
 async function getAllCategories() {
   try {
     const [rows] = await pool.query("SELECT * FROM category");
@@ -230,5 +250,6 @@ module.exports = {
   addNewCoupon,
   getAllCoupons,
   deleteCouponById,
+  validateCoupon,
   //deleteImageFromB2,
 };

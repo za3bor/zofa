@@ -38,7 +38,6 @@ class _ProductsScreenState extends State<ProductsScreen> {
     });
   }
 
-  @override
   Future<void> _fetchCategories() async {
     try {
       final response = await http.get(
@@ -138,36 +137,44 @@ class _ProductsScreenState extends State<ProductsScreen> {
     });
   }
 
-  Future<void> _addToCart(int productId) async {
-    var box = await Hive.openBox('cart');
-    int quantity = _productQuantities[productId] ?? 0;
+Future<void> _addToCart(int productId) async {
+  var box = await Hive.openBox('cart');
+  int quantity = _productQuantities[productId] ?? 0;
 
-    if (quantity > 0) {
-      // Get the existing cart data (it should be a Map<int, int>)
-      Map<dynamic, dynamic> cartData =
-          box.get('cart', defaultValue: <int, int>{});
+  if (quantity > 0) {
+    // Get the existing cart data (it should be a Map<int, Map<String, dynamic>>)
+    Map<dynamic, dynamic> cartData = box.get('cart', defaultValue: <int, Map<String, dynamic>>{});
 
-      // Ensure productId is treated as an int and quantity is also an int
-      if (cartData.containsKey(productId)) {
-        int existingQuantity = cartData[productId] ?? 0;
-        cartData[productId] = existingQuantity + quantity; // Update quantity
-      } else {
-        cartData[productId] = quantity; // Add new product
-      }
+    // Find the product using its ID
+    Product product = _filteredProducts.firstWhere((p) => p.id == productId);
 
-      // Save the updated cart data directly to the box
-      await box.put('cart', cartData);
-
-      // Show a snackbar with the product name
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            '${_filteredProducts.firstWhere((p) => p.id == productId).name} added to cart!',
-          ),
-        ),
-      );
+    // Ensure productId is treated as an int and quantity is also an int
+    if (cartData.containsKey(productId)) {
+      // Update the existing entry for the product
+      cartData[productId]['quantity'] += quantity;
+    } else {
+      // Add new product with name, price, and quantity
+      cartData[productId] = {
+        'name': product.name,
+        'price': product.price,
+        'quantity': quantity,
+      };
     }
+
+    // Save the updated cart data directly to the box
+    await box.put('cart', cartData);
+
+    // Show a snackbar with the product name
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          '${product.name} added to cart!',
+        ),
+      ),
+    );
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
