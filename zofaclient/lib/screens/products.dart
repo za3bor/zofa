@@ -250,16 +250,22 @@ class _ProductsScreenState extends State<ProductsScreen> {
       children: [
         // Search bar
         Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(16.0),
           child: TextField(
             controller: _searchController,
-            textAlign: TextAlign.right,
+            textAlign: TextAlign.right, // Right to left text alignment
             decoration: InputDecoration(
               prefixIcon: const Icon(Icons.search),
               hintText: '...חיפוש מוצר',
+              hintStyle: const TextStyle(color: Colors.grey),
+              filled: true,
+              fillColor: Colors.grey[200],
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(30),
+                borderSide: BorderSide.none,
               ),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
             ),
           ),
         ),
@@ -270,12 +276,13 @@ class _ProductsScreenState extends State<ProductsScreen> {
           reverse: true,
           controller: _scrollController,
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            textDirection: TextDirection.rtl,
+            mainAxisAlignment:
+                MainAxisAlignment.end, // Align chips to the right
+            textDirection: TextDirection.rtl, // Right to left for Hebrew
             children: [
               // 'All' Filter Chip
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: FilterChip(
                   label: const Text('הכל'),
                   selected: _selectAll,
@@ -291,12 +298,17 @@ class _ProductsScreenState extends State<ProductsScreen> {
                       _scrollController.jumpTo(0);
                     }
                   },
+                  selectedColor: Colors.redAccent.withOpacity(0.3),
+                  backgroundColor: Colors.grey[200],
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
                 ),
               ),
               // Other category Filter Chips
               ..._categories.map((category) {
                 return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: FilterChip(
                     label: Text(category.name),
                     selected: _categorySelections[category.id] ?? false,
@@ -317,9 +329,14 @@ class _ProductsScreenState extends State<ProductsScreen> {
                         _scrollController.jumpTo(0);
                       }
                     },
+                    selectedColor: Colors.redAccent.withOpacity(0.3),
+                    backgroundColor: Colors.grey[200],
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
                   ),
                 );
-              })
+              }).toList(),
             ],
           ),
         ),
@@ -344,12 +361,14 @@ class _ProductsScreenState extends State<ProductsScreen> {
               : Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: GridView.builder(
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: MediaQuery.of(context).size.width > 600
+                          ? 3
+                          : 2, // Responsive grid
                       crossAxisSpacing: 10,
                       mainAxisSpacing: 10,
-                      childAspectRatio: 0.50,
+                      childAspectRatio:
+                          0.50, // Adjust item height/width ratio for better look
                     ),
                     itemCount: _filteredProducts.length,
                     itemBuilder: (ctx, index) {
@@ -374,12 +393,13 @@ class _ProductsScreenState extends State<ProductsScreen> {
                           ),
                           elevation: 5,
                           color: Colors.white,
+                          shadowColor: Colors.grey.withOpacity(0.2),
                           child: Padding(
-                            padding: const EdgeInsets.all(8.0),
+                            padding: const EdgeInsets.all(12.0),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const SizedBox(height: 10),
+                                // Product Image
                                 ClipRRect(
                                   borderRadius: BorderRadius.circular(10),
                                   child: imageUrl.isNotEmpty
@@ -422,6 +442,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
                                           size: 50, color: Colors.grey),
                                 ),
                                 const SizedBox(height: 10),
+
+                                // Product Name (Right to Left alignment)
                                 Align(
                                   alignment: Alignment.centerRight,
                                   child: Text(
@@ -433,9 +455,13 @@ class _ProductsScreenState extends State<ProductsScreen> {
                                     ),
                                     overflow: TextOverflow.ellipsis,
                                     maxLines: 2,
+                                    textAlign: TextAlign
+                                        .right, // Ensuring RTL alignment for product name
                                   ),
                                 ),
                                 const SizedBox(height: 5),
+
+                                // Product Price
                                 Center(
                                   child: Text(
                                     '₪ ${product.price.toStringAsFixed(1)}',
@@ -472,7 +498,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                                         ),
                                       ),
                                       child: const Text(
-                                        'Sold Out',
+                                        'אזל מהמלאי',
                                         style: TextStyle(
                                           fontSize: 14,
                                           fontWeight: FontWeight.bold,
@@ -482,6 +508,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                                     ),
                                   ),
                                 ] else ...[
+                                  // Quantity Controls
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
@@ -504,6 +531,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
                                     ],
                                   ),
                                   const SizedBox(height: 5),
+
+                                  // Add to Cart Button (Hebrew)
                                   Center(
                                     child: ElevatedButton(
                                       onPressed: () => _addToCart(product.id),
@@ -517,7 +546,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                                         ),
                                       ),
                                       child: const Text(
-                                        'Add to Cart',
+                                        'הוסף לסל', // Hebrew for "Add to Cart"
                                         style: TextStyle(
                                           fontSize: 14,
                                           fontWeight: FontWeight.bold,

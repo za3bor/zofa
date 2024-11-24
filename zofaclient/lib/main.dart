@@ -5,7 +5,7 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:zofa_client/admin/screens/admin_main_page.dart';
-import 'package:zofa_client/screens/tabs.dart';  // Ensure this import is correct
+import 'package:zofa_client/screens/tabs.dart'; // Ensure this import is correct
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -63,7 +63,6 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-
     if (deviceId == null) {
       // Show a loading indicator while device ID is being fetched
       return const Center(child: CircularProgressIndicator());
@@ -74,19 +73,9 @@ class _MyAppState extends State<MyApp> {
 
     return MaterialApp(
       home: Scaffold(
-        body: Container(
-          decoration: const BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage(
-                  'assets/background.jpg'), // Ensure the image is in your assets folder
-              fit: BoxFit.cover,
-              opacity: 0.8,
-            ),
-          ),
-          child: isAdmin
-              ? const AdminMainPageScreen() // Show admin screen for admin devices
-              : const AdminMainPageScreen(), // Show non-admin screen for non-admin devices
-        ),
+        body: isAdmin
+            ? const AdminMainPageScreen() // Show admin screen for admin devices
+            : const AdminMainPageScreen(), // Show non-admin screen for non-admin devices
       ),
     );
   }

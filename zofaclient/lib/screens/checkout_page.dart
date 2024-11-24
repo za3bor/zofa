@@ -6,7 +6,7 @@ import 'package:zofa_client/constant.dart';
 import 'package:zofa_client/screens/f_checkout_products.dart';
 
 class CheckoutPageScreen extends StatefulWidget {
-  const CheckoutPageScreen({super.key});
+  const CheckoutPageScreen({Key? key}) : super(key: key);
 
   @override
   State<CheckoutPageScreen> createState() => _CheckoutPageScreenState();
@@ -25,20 +25,13 @@ class _CheckoutPageScreenState extends State<CheckoutPageScreen> {
   Future<void> _loadCartItems() async {
     var box = await Hive.openBox('cart');
     List<Map<String, dynamic>> loadedCartItems = [];
-
     Map cartData = box.get('cart', defaultValue: {});
-    print('Loading Cart Data: $cartData');
 
     for (var entry in cartData.entries) {
       try {
         int id = int.tryParse(entry.key.toString()) ?? 0;
-        dynamic qty =
-            entry.value['quantity']; // Access quantity directly from the map
-
-        // Ensure that quantity is a valid integer
+        dynamic qty = entry.value['quantity'];
         int parsedQty = (qty is int) ? qty : 0;
-
-        print('Parsed quantity for product ID $id: $parsedQty');
 
         var product = await _getProductDetails(id);
         if (product != null) {
@@ -64,66 +57,39 @@ class _CheckoutPageScreenState extends State<CheckoutPageScreen> {
     try {
       final response = await http.get(
           Uri.parse('http://$ipAddress:3000/api/getProductDetails/$productId'));
-      print(response.body); // Print the full response to check the data
-
       if (response.statusCode == 200) {
         Map<String, dynamic> productData = json.decode(response.body);
-        print('Product Data: $productData'); // Check the price here
-
-        // Ensure 'price' is parsed correctly as a double
         double price = double.tryParse(productData['price'].toString()) ?? 0.0;
 
         return {
           'name': productData['name'],
-          'price': price, // Store the price as a double
+          'price': price,
         };
-      } else {
-        print('Failed to load product details for ID $productId');
-        return null;
       }
     } catch (e) {
       print('Error fetching product details: $e');
-      return null;
     }
+    return null;
   }
 
   double getTotalPrice() {
-    double total = cartItems.fold(0.0, (sum, item) {
-      double price = item['price'] ?? 0.0; // Fallback to 0.0 if price is null
-      int quantity = item['quantity'] ?? 0; // Fallback to 0 if quantity is null
-
-      print(
-          'Calculating price for ${item['name']}: $price, Quantity: $quantity'); // Debug log
-      return sum + (quantity * price); // Multiply price by quantity
+    return cartItems.fold(0.0, (sum, item) {
+      double price = item['price'] ?? 0.0;
+      int quantity = item['quantity'] ?? 0;
+      return sum + (quantity * price);
     });
-
-    print('Total Price: $total'); // Final total debug log
-    return total;
   }
 
   Future<void> _deleteCartItem(int productId) async {
     try {
       var box = await Hive.openBox('cart');
       Map cartData = box.get('cart', defaultValue: {});
-
-      // Debug: Print cart data before deletion
-      print('Cart Data Before Deletion: $cartData');
-      print('Attempting to delete product with key: $productId');
-
       if (cartData.containsKey(productId)) {
-        // Use `int` key directly
-        cartData.remove(productId); // Remove the item
-        await box.put('cart', cartData); // Save updated cart
-
+        cartData.remove(productId);
+        await box.put('cart', cartData);
         setState(() {
           cartItems.removeWhere((item) => item['id'] == productId);
         });
-
-        // Debug: Print updated cart data
-        print('Deleted product $productId. Updated cart: ${box.get('cart')}');
-      } else {
-        print(
-            'Product $productId not found in cart. Available keys: ${cartData.keys}');
       }
     } catch (e) {
       print('Error deleting item from cart: $e');
@@ -132,85 +98,108 @@ class _CheckoutPageScreenState extends State<CheckoutPageScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Cart'),
-      ),
-      body: cartItems.isEmpty
-          ? const Center(child: Text('Your cart is empty.'))
-          : Column(
-              children: [
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: cartItems.map((item) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('העגלה שלי'),
+          backgroundColor: Colors.green,
+        ),
+        body: SingleChildScrollView(  // Wrap the entire body in SingleChildScrollView
+          child: cartItems.isEmpty
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Image(
+                        image: AssetImage('assets/emptycart.png'),
+                        height: 150,
+                      ),
+                      const SizedBox(height: 20),
+                      const Text(
+                        'העגלה שלך ריקה!',
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 10),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: const Text('חזור לחנות'),
+                      ),
+                    ],
+                  ),
+                )
+              : Column(
+                  children: [
+                    ListView.builder(
+                      padding: const EdgeInsets.all(10.0),
+                      itemCount: cartItems.length,
+                      shrinkWrap: true,  // To ensure the ListView doesn't take up the entire space
+                      itemBuilder: (context, index) {
+                        var item = cartItems[index];
+                        double totalPrice = item['price'] * item['quantity'];
+
                         return Card(
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(15),
                           ),
                           elevation: 5,
+                          margin: const EdgeInsets.symmetric(vertical: 8.0),
                           child: Padding(
-                            padding: const EdgeInsets.all(8.0),
+                            padding: const EdgeInsets.all(12.0),
                             child: Row(
                               children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: Image.network(
+                                    item['imageUrl'],
+                                    width: screenWidth * 0.25,
+                                    height: screenWidth * 0.25,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return const Icon(
+                                        Icons.broken_image,
+                                        size: 50,
+                                        color: Colors.grey,
+                                      );
+                                    },
+                                  ),
+                                ),
+                                const SizedBox(width: 15),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         item['name'],
-                                        textAlign: TextAlign.right,
                                         style: const TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold,
-                                          color: Colors.black87,
                                         ),
-                                        overflow: TextOverflow.ellipsis,
                                         maxLines: 2,
+                                        overflow: TextOverflow.visible,
                                       ),
-                                      const SizedBox(height: 10),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.end,
-                                        children: [
-                                          Text(
-                                            'Quantity: ${item['quantity']}',
-                                            style:
-                                                const TextStyle(fontSize: 16),
-                                          ),
-                                          const SizedBox(width: 10),
-                                          Text(
-                                            '\$${double.tryParse(item['price'].toString())?.toStringAsFixed(2) ?? '0.00'}',
-                                            style: const TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                        ],
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        'כמות: ${item['quantity']}',
+                                        style: const TextStyle(fontSize: 14),
+                                      ),
+                                      Text(
+                                        '₪${item['quantity']}*${item['price'].toStringAsFixed(2)}=${totalPrice.toStringAsFixed(2)}',
+                                        style: const TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.green),
                                       ),
                                     ],
                                   ),
                                 ),
-                                const SizedBox(width: 10),
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(10),
-                                  child: SizedBox(
-                                    width: 120,
-                                    height: 120,
-                                    child: Image.network(
-                                      item['imageUrl'],
-                                      fit: BoxFit.cover,
-                                      errorBuilder:
-                                          (context, error, stackTrace) {
-                                        return const Icon(Icons.broken_image,
-                                            size: 50, color: Colors.grey);
-                                      },
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: 10),
+                                const SizedBox(width: 15),
                                 IconButton(
-                                  icon: const Icon(Icons.delete,
-                                      color: Colors.red),
+                                  icon: const Icon(Icons.delete, color: Colors.red),
                                   onPressed: () {
                                     _deleteCartItem(item['id']);
                                   },
@@ -219,52 +208,65 @@ class _CheckoutPageScreenState extends State<CheckoutPageScreen> {
                             ),
                           ),
                         );
-                      }).toList(),
+                      },
                     ),
-                  ),
-                ),
-                const Divider(),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 16.0, horizontal: 16.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'Total:',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        '\$${getTotalPrice().toStringAsFixed(2)}',
-                        style: const TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ProductCheckoutPage(
-                              totalPrice: getTotalPrice(),
-                              cartItems: cartItems,
+                    const Divider(),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            'סה״כ:',
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            '₪${getTotalPrice().toStringAsFixed(2)}',
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.green,
                             ),
                           ),
-                        );
-                      },
-                      child: const Text('Proceed to Checkout'),
+                        ],
+                      ),
                     ),
-                  ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 16.0, horizontal: 16.0),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.all(15),
+                            backgroundColor: Colors.green,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ProductCheckoutPage(
+                                  totalPrice: getTotalPrice(),
+                                  cartItems: cartItems,
+                                ),
+                              ),
+                            );
+                          },
+                          child: const Text(
+                            'המשך לתשלום',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+        ),
+      ),
     );
   }
 }
