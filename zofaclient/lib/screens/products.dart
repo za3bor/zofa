@@ -7,6 +7,7 @@ import 'package:zofa_client/screens/product_details.dart';
 import 'package:hive/hive.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'dart:convert';
+import 'package:zofa_client/global.dart'; // Adjust the path accordingly
 
 class ProductsScreen extends StatefulWidget {
   const ProductsScreen({super.key});
@@ -191,7 +192,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
     });
   }
 
-  Future<void> _addToCart(int productId) async {
+  void _addToCart(int productId) async {
     var box = await Hive.openBox('cart');
     int quantity = _productQuantities[productId] ?? 0;
 
@@ -218,6 +219,13 @@ class _ProductsScreenState extends State<ProductsScreen> {
 
       // Save the updated cart data directly to the box
       await box.put('cart', cartData);
+
+      // Update the global cart count
+      int newCount = cartData.values.fold<int>(
+        0,
+        (sum, item) => sum + (item['quantity'] as int), // Explicit cast to int
+      );
+      cartItemCountNotifier.value = newCount; // Update the global cart count
 
       // Show a snackbar with the product name
       ScaffoldMessenger.of(context).showSnackBar(

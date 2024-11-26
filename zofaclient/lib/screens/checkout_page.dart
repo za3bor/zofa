@@ -4,6 +4,7 @@ import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:zofa_client/constant.dart';
 import 'package:zofa_client/screens/f_checkout_products.dart';
+import 'package:zofa_client/global.dart'; // Adjust the path accordingly
 
 class CheckoutPageScreen extends StatefulWidget {
   const CheckoutPageScreen({super.key});
@@ -84,16 +85,35 @@ class _CheckoutPageScreenState extends State<CheckoutPageScreen> {
     try {
       var box = await Hive.openBox('cart');
       Map cartData = box.get('cart', defaultValue: {});
+
       if (cartData.containsKey(productId)) {
         cartData.remove(productId);
         await box.put('cart', cartData);
+
+        // Update the local cartItems list in the UI
         setState(() {
           cartItems.removeWhere((item) => item['id'] == productId);
         });
+
+        // Recalculate cart item count and notify listeners
+        _updateCartItemCount();
       }
     } catch (e) {
       print('Error deleting item from cart: $e');
     }
+  }
+
+  void _updateCartItemCount() async {
+    var box = await Hive.openBox('cart');
+    Map cartData = box.get('cart', defaultValue: {});
+
+    int totalQuantity = cartData.values.fold(0, (int sum, item) {
+      return sum + (item['quantity'] ?? 0)
+          as int; // Ensure the result is treated as an int
+    });
+
+    // Update the cart item count notifier to reflect the new quantity
+    cartItemCountNotifier.value = totalQuantity;
   }
 
   @override

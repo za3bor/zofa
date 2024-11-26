@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zofa_client/screens/about_app.dart';
 import 'package:zofa_client/screens/bread_order.dart';
 import 'package:zofa_client/screens/checkout_page.dart';
@@ -7,21 +8,43 @@ import 'package:zofa_client/screens/products.dart';
 import 'package:zofa_client/screens/rate_app.dart';
 import 'package:zofa_client/screens/share_app.dart';
 import 'package:zofa_client/screens/term_of_use.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:badges/badges.dart' as badges;
+import 'package:hive/hive.dart';
+import 'package:zofa_client/global.dart'; // Adjust the path accordingly
 
 class TabsScreen extends StatefulWidget {
   const TabsScreen({super.key});
 
   @override
-  State<TabsScreen> createState() {
-    return _TabsScreenState();
-  }
+  State<TabsScreen> createState() => _TabsScreenState();
 }
 
 class _TabsScreenState extends State<TabsScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
   int _selectedPageIndex = 0;
+  int cartItemCount = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCartItemCount();
+  }
+
+  /// Load the cart item count from Hive storage.
+  Future<void> _loadCartItemCount() async {
+    var box = await Hive.openBox('cart');
+    Map cartData = box.get('cart', defaultValue: {});
+
+    // Ensure the sum is cast to an int
+    int count = cartData.values.fold<int>(
+      0,
+      (sum, item) => sum + ((item['quantity'] ?? 0) as int),
+    );
+
+    setState(() {
+      cartItemCount = count;
+    });
+  }
 
   void _selectPage(int index) {
     setState(() {
@@ -29,7 +52,6 @@ class _TabsScreenState extends State<TabsScreen> {
     });
   }
 
-  // Function to navigate to each drawer page and close the drawer
   void _navigateToDrawerPage(Widget page) {
     Navigator.pop(context); // Close the drawer
     Navigator.of(context).push(
@@ -37,7 +59,7 @@ class _TabsScreenState extends State<TabsScreen> {
     );
   }
 
-  @override
+   @override
   Widget build(BuildContext context) {
     // Access theme properties
     final theme = Theme.of(context);
@@ -65,15 +87,40 @@ class _TabsScreenState extends State<TabsScreen> {
 
         leading:
             _selectedPageIndex == 0 // Only show the cart icon on the first tab
-                ? IconButton(
-                    icon: const Icon(Icons.shopping_cart),
-                    color: Colors.white, // Make icon white
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const CheckoutPageScreen(),
+                ? ValueListenableBuilder<int>(
+                    valueListenable: cartItemCountNotifier,
+                    builder: (context, cartCount, child) {
+                      return IconButton(
+                        icon: Stack(
+                          children: [
+                            const Icon(Icons.shopping_cart),
+                            if (cartCount > 0)
+                              Positioned(
+                                top: 0,
+                                right: 0,
+                                child: CircleAvatar(
+                                  radius: 8,
+                                  backgroundColor: Colors.red,
+                                  child: Text(
+                                    '$cartCount',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                          ],
                         ),
+                        color: Colors.white, // Make icon white
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const CheckoutPageScreen(),
+                            ),
+                          );
+                        },
                       );
                     },
                   )
