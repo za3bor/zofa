@@ -181,6 +181,25 @@ app.delete("/api/deleteProduct/:id", async (req, res) => {
   }
 });
 
+// Define the delete route for categories
+app.delete("/api/deleteCategory/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    // Call deleteCategoryById to handle the deletion logic
+    const result = await dataHandler.deleteCategoryById(id);
+
+    if (result.success) {
+      res.status(200).json({ message: result.message });
+    } else {
+      res.status(404).json({ error: result.message });
+    }
+  } catch (err) {
+    console.error("Error deleting category:", err.message);
+    res.status(500).json({ error: "Error deleting category" });
+  }
+});
+
 app.get("/api/showAllBreadTypes", async (req, res) => {
   try {
     const bread = await breadDataHandler.showAllBreadTypes(); // Call the getAllBread function

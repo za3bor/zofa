@@ -76,7 +76,6 @@ flutter:
     - assets/background.jpg
     - assets/background1.jpg
     - assets/background2.jpg
-    - assets/emptycart.png
     - assets/noimage.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see

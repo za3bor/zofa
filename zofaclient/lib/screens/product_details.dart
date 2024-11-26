@@ -108,21 +108,34 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                               ),
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(10),
-                                child: Image.network(
-                                  'https://f003.backblazeb2.com/file/zofapic/${widget.productId}.jpeg',
-                                  height: 300,
-                                  width: 300,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (BuildContext context,
-                                      Object error, StackTrace? stackTrace) {
-                                    return Image.asset(
-                                      'assets/noimage.jpg', // Path to your fallback image
-                                      fit: BoxFit.cover,
-                                      height: 150,
-                                      width: double.infinity,
-                                    );
-                                  },
-                                ),
+                                child: widget.productId >
+                                        0 // Check if the product ID is a valid integer
+                                    ? Hero(
+                                        tag:
+                                            'imageHero-${widget.productId}', // Unique tag for Hero animation
+                                        child: Image.network(
+                                          'https://f003.backblazeb2.com/file/zofapic/${widget.productId}.jpeg',
+                                          height: 300,
+                                          width: 300,
+                                          fit: BoxFit.cover,
+                                          errorBuilder: (BuildContext context,
+                                              Object error,
+                                              StackTrace? stackTrace) {
+                                            return Image.asset(
+                                              'assets/noimage.jpg', // Fallback image if error loading
+                                              fit: BoxFit.cover,
+                                              height: 300,
+                                              width: 300,
+                                            );
+                                          },
+                                        ),
+                                      )
+                                    : Image.asset(
+                                        'assets/noimage.jpg', // Fallback image if productId is invalid
+                                        fit: BoxFit.cover,
+                                        height: 300,
+                                        width: 300,
+                                      ),
                               ),
                             ),
                           ),

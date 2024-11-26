@@ -8,6 +8,7 @@ import 'package:hive/hive.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'dart:convert';
 import 'package:zofa_client/global.dart'; // Adjust the path accordingly
+import 'package:zofa_client/screens/tabs.dart'; // Import TabsScreen
 
 class ProductsScreen extends StatefulWidget {
   const ProductsScreen({super.key});
@@ -226,7 +227,13 @@ class _ProductsScreenState extends State<ProductsScreen> {
         (sum, item) => sum + (item['quantity'] as int), // Explicit cast to int
       );
       cartItemCountNotifier.value = newCount; // Update the global cart count
-
+      setState(() {
+        _productQuantities[productId] = 0;
+      });
+      // Trigger the cart spin animation in TabsScreen
+      final tabsScreenState =
+          context.findAncestorStateOfType<TabsScreenState>();
+      tabsScreenState?.triggerCartSpin();
       // Show a snackbar with the product name
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -257,7 +264,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
     return Container(
       decoration: const BoxDecoration(
         image: DecorationImage(
-          image: AssetImage('assets/background1.jpg'), // Set background image
+          image: AssetImage('assets/background.jpg'), // Set background image
           fit: BoxFit.cover, // Make sure it covers the entire screen
         ),
       ),
@@ -414,7 +421,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                         crossAxisSpacing: 10,
                         mainAxisSpacing: 10,
                         childAspectRatio:
-                            0.50, // Adjust item height/width ratio for better look
+                            0.52, // Adjust item height/width ratio for better look
                       ),
                       itemCount: _filteredProducts.length,
                       itemBuilder: (ctx, index) {
@@ -449,63 +456,68 @@ class _ProductsScreenState extends State<ProductsScreen> {
                                   // Product Image
                                   ClipRRect(
                                     borderRadius: BorderRadius.circular(10),
-                                    child: imageUrl.isNotEmpty
-                                        ? ColorFiltered(
-                                            colorFilter: ColorFilter.mode(
-                                              const Color.fromARGB(
-                                                      255, 121, 85, 72)
-                                                  .withOpacity(
-                                                      0.25), // Set the desired color with opacity
-                                              BlendMode.darken,
-                                            ),
-                                            child: Image.network(
-                                              imageUrl,
-                                              fit: BoxFit.cover,
-                                              height: 150,
-                                              width: double.infinity,
-                                              loadingBuilder:
-                                                  (BuildContext context,
-                                                      Widget child,
-                                                      ImageChunkEvent?
-                                                          loadingProgress) {
-                                                if (loadingProgress == null) {
-                                                  return child;
-                                                }
-                                                return Center(
-                                                  child:
-                                                      CircularProgressIndicator(
-                                                    value: loadingProgress
-                                                                .expectedTotalBytes !=
-                                                            null
-                                                        ? loadingProgress
-                                                                .cumulativeBytesLoaded /
-                                                            (loadingProgress
-                                                                    .expectedTotalBytes ??
-                                                                1)
-                                                        : null,
-                                                  ),
-                                                );
-                                              },
-                                              errorBuilder:
-                                                  (BuildContext context,
-                                                      Object error,
-                                                      StackTrace? stackTrace) {
-                                                return Image.asset(
-                                                  'assets/noimage.jpg', // Path to your fallback image
-                                                  fit: BoxFit.cover,
-                                                  height: 150,
-                                                  width: double.infinity,
-                                                );
-                                              },
+                                    child: imageUrl
+                                            .isNotEmpty // This is for checking a String (imageUrl)
+                                        ? Hero(
+                                            tag:
+                                                'imageHero-${product.id}', // Unique tag for Hero animation
+                                            child: ColorFiltered(
+                                              colorFilter: ColorFilter.mode(
+                                                const Color.fromARGB(
+                                                        255, 121, 85, 72)
+                                                    .withOpacity(0.25),
+                                                BlendMode.darken,
+                                              ),
+                                              child: Image.network(
+                                                imageUrl,
+                                                fit: BoxFit.cover,
+                                                height: 150,
+                                                width: double.infinity,
+                                                loadingBuilder:
+                                                    (BuildContext context,
+                                                        Widget child,
+                                                        ImageChunkEvent?
+                                                            loadingProgress) {
+                                                  if (loadingProgress == null) {
+                                                    return child;
+                                                  }
+                                                  return Center(
+                                                    child:
+                                                        CircularProgressIndicator(
+                                                      value: loadingProgress
+                                                                  .expectedTotalBytes !=
+                                                              null
+                                                          ? loadingProgress
+                                                                  .cumulativeBytesLoaded /
+                                                              (loadingProgress
+                                                                      .expectedTotalBytes ??
+                                                                  1)
+                                                          : null,
+                                                    ),
+                                                  );
+                                                },
+                                                errorBuilder: (BuildContext
+                                                        context,
+                                                    Object error,
+                                                    StackTrace? stackTrace) {
+                                                  return Image.asset(
+                                                    'assets/noimage.jpg', // Fallback image
+                                                    fit: BoxFit.cover,
+                                                    height: 150,
+                                                    width: double.infinity,
+                                                  );
+                                                },
+                                              ),
                                             ),
                                           )
                                         : Image.asset(
-                                            'assets/noimage.jpg', // Path to your fallback image
+                                            'assets/noimage.jpg', // Fallback image if no imageUrl is present
                                             fit: BoxFit.cover,
                                             height: 150,
                                             width: double.infinity,
                                           ),
                                   ),
+
                                   const SizedBox(height: 10),
 
                                   // Product Name (Right to Left alignment)

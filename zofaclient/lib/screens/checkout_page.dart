@@ -139,9 +139,11 @@ class _CheckoutPageScreenState extends State<CheckoutPageScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Image(
-                        image: AssetImage('assets/emptycart.png'),
-                        height: 150,
+                      const Icon(
+                        Icons.shopping_cart_outlined, // Icon for an empty cart
+                        size: 150, // Adjust the size to your preference
+                        color: Colors
+                            .black, // Color of the icon (you can change this)
                       ),
                       const SizedBox(height: 20),
                       const Text(

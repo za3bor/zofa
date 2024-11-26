@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:zofa_client/admin/screens/add_new_product.dart';
 import 'package:zofa_client/admin/screens/add_new_category.dart';
 import 'package:zofa_client/admin/screens/admin_p_orders.dart';
+import 'package:zofa_client/admin/screens/delete_category.dart';
 import 'package:zofa_client/admin/screens/delete_product.dart';
 import 'package:zofa_client/admin/screens/edit_existing_product.dart';
 import 'package:zofa_client/admin/screens/edit_product_stock.dart';
@@ -50,6 +51,10 @@ class ProductFuncScreen extends StatelessWidget {
             CustomElevatedButton(
               label: 'עריכת מלאי מוצר',
               targetPage: EditProductStockScreen(),
+            ),
+            CustomElevatedButton(
+              label: 'מחיקת קטגוריה',
+              targetPage: DeleteCategory(),
             ),
           ],
         ),

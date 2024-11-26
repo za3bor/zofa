@@ -8,7 +8,6 @@ import 'package:zofa_client/screens/products.dart';
 import 'package:zofa_client/screens/rate_app.dart';
 import 'package:zofa_client/screens/share_app.dart';
 import 'package:zofa_client/screens/term_of_use.dart';
-import 'package:badges/badges.dart' as badges;
 import 'package:hive/hive.dart';
 import 'package:zofa_client/global.dart'; // Adjust the path accordingly
 
@@ -16,18 +15,32 @@ class TabsScreen extends StatefulWidget {
   const TabsScreen({super.key});
 
   @override
-  State<TabsScreen> createState() => _TabsScreenState();
+  State<TabsScreen> createState() {
+    return  TabsScreenState();
+  }
 }
 
-class _TabsScreenState extends State<TabsScreen> {
+class TabsScreenState extends State<TabsScreen> with SingleTickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int _selectedPageIndex = 0;
   int cartItemCount = 0;
+  // AnimationController for the spin effect
+  late AnimationController _controller;
+  late Animation<double> _rotation;
 
   @override
   void initState() {
     super.initState();
     _loadCartItemCount();
+    
+    // Initialize the animation controller and rotation animation
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
+    );
+    _rotation = Tween(begin: 0.0, end: 2 * 3.1416).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.linear),
+    );
   }
 
   /// Load the cart item count from Hive storage.
@@ -46,10 +59,21 @@ class _TabsScreenState extends State<TabsScreen> {
     });
   }
 
+  /// Trigger the cart spin animation from the "Add to Cart" action
+  void triggerCartSpin() {
+    _controller.forward(from: 0.0);  // Start the spin animation
+  }
+
   void _selectPage(int index) {
     setState(() {
       _selectedPageIndex = index;
     });
+  }
+
+    @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   void _navigateToDrawerPage(Widget page) {
@@ -59,19 +83,16 @@ class _TabsScreenState extends State<TabsScreen> {
     );
   }
 
-   @override
+  @override
   Widget build(BuildContext context) {
-    // Access theme properties
     final theme = Theme.of(context);
-
-    // Set custom brown color for the background
     const brownColor = Color(0xFF7A6244);
 
-    // Set active page and title based on selected tab
     Widget activePage = const ProductsScreen();
     var activePageTitle = 'מוצרים';
 
     if (_selectedPageIndex == 1) {
+      // Active page for BreadOrderScreen (as an example)
       activePage = const BreadOrderScreen();
       activePageTitle = 'לחם';
     }
@@ -83,53 +104,59 @@ class _TabsScreenState extends State<TabsScreen> {
           activePageTitle,
           style: theme.appBarTheme.titleTextStyle,
         ),
-        centerTitle: true, // This will center the title on both platforms
-
-        leading:
-            _selectedPageIndex == 0 // Only show the cart icon on the first tab
-                ? ValueListenableBuilder<int>(
-                    valueListenable: cartItemCountNotifier,
-                    builder: (context, cartCount, child) {
-                      return IconButton(
-                        icon: Stack(
-                          children: [
-                            const Icon(Icons.shopping_cart),
-                            if (cartCount > 0)
-                              Positioned(
-                                top: 0,
-                                right: 0,
-                                child: CircleAvatar(
-                                  radius: 8,
-                                  backgroundColor: Colors.red,
-                                  child: Text(
-                                    '$cartCount',
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 12,
-                                    ),
-                                  ),
+        centerTitle: true,
+        leading: _selectedPageIndex == 0
+            ? ValueListenableBuilder<int>(
+                valueListenable: cartItemCountNotifier,
+                builder: (context, cartCount, child) {
+                  return IconButton(
+                    icon: Stack(
+                      children: [
+                        AnimatedBuilder(
+                          animation: _rotation,
+                          builder: (context, child) {
+                            return Transform.rotate(
+                              angle: _rotation.value,
+                              child: child,
+                            );
+                          },
+                          child: const Icon(Icons.shopping_cart),
+                        ),
+                        if (cartCount > 0)
+                          Positioned(
+                            top: 0,
+                            right: 0,
+                            child: CircleAvatar(
+                              radius: 8,
+                              backgroundColor: Colors.red,
+                              child: Text(
+                                '$cartCount',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
                                 ),
                               ),
-                          ],
-                        ),
-                        color: Colors.white, // Make icon white
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const CheckoutPageScreen(),
                             ),
-                          );
-                        },
+                          ),
+                      ],
+                    ),
+                    color: Colors.white,
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const CheckoutPageScreen(),
+                        ),
                       );
                     },
-                  )
-                : null, // If not on the first tab, don't show the cart icon
-
+                  );
+                },
+              )
+            : null,
         actions: [
           IconButton(
             icon: const Icon(Icons.menu),
-            color: Colors.white, // Make icon white
+            color: Colors.white,
             onPressed: () {
               _scaffoldKey.currentState?.openEndDrawer();
             },
@@ -140,9 +167,9 @@ class _TabsScreenState extends State<TabsScreen> {
       bottomNavigationBar: BottomNavigationBar(
         onTap: _selectPage,
         currentIndex: _selectedPageIndex,
-        selectedItemColor: Colors.white, // White icons for selected tab
-        unselectedItemColor: Colors.white, // White icons for unselected tab
-        backgroundColor: brownColor, // Set background to brown color
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.white,
+        backgroundColor: brownColor,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.storefront),
@@ -209,8 +236,8 @@ class _TabsScreenState extends State<TabsScreen> {
                   },
                 ),
                 ListTile(
-                  leading: Icon(Icons.info),
-                  title: Text(
+                  leading: const Icon(Icons.info),
+                  title: const Text(
                     'תנאי שימוש',
                   ),
                   onTap: () {

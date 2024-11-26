@@ -12,7 +12,6 @@ const pool = mysql.createPool({
   database: process.env.DB_NAME,
 });
 
-
 async function addNewCategory(category) {
   const { name } = category;
   try {
@@ -38,54 +37,85 @@ async function addNewCategory(category) {
   }
 }
 
+async function deleteCategoryById(categoryId) {
+  try {
+    // Remove the existing product-category relationships first
+    await removeExistingProductCategories(categoryId);
+
+    // Now, delete the category
+    const [result] = await pool.query("DELETE FROM category WHERE id = ?", [categoryId]);
+    return {
+      success: result.affectedRows > 0,
+      message: result.affectedRows > 0 ? "Category deleted successfully" : "Category not found",
+    };
+  } catch (err) {
+    console.error("Error deleting category:", err.message);
+    throw err;
+  }
+}
+
+async function removeExistingProductCategories(categoryId) {
+  try {
+    const [results] = await pool.query(
+      "DELETE FROM product_category WHERE category_id = ?",
+      [categoryId]
+    );
+
+    // Return true even if no rows are affected, as it’s not an error
+    return true;
+  } catch (err) {
+    console.error("Error removing existing categories:", err.message);
+    throw err;
+  }
+}
+
+
 async function addNewNote(content) {
   try {
     if (!content.trim()) {
       throw new Error("Content cannot be empty");
     }
-    
+
     const [result] = await pool.query(
       "INSERT INTO notes (content) VALUES (?)",
       [content]
     );
-    return { id: result.insertId, content, message: "Note added successfully!" };
+    return {
+      id: result.insertId,
+      content,
+      message: "Note added successfully!",
+    };
   } catch (err) {
     console.error("Error adding note:", err.message);
-    throw { message: err.message || "Error adding note" };  // Send the error message back
+    throw { message: err.message || "Error adding note" }; // Send the error message back
   }
 }
 
-
 async function deleteNoteById(id) {
   try {
-    const [result] = await pool.query(
-      "DELETE FROM notes WHERE id = ?",
-      [id]
-    );
+    const [result] = await pool.query("DELETE FROM notes WHERE id = ?", [id]);
     if (result.affectedRows === 0) {
       return { message: "Note not found" }; // Return a message if no rows were affected
     }
     return { message: "Note deleted successfully!" }; // Return success message
   } catch (err) {
     console.error("Error deleting note:", err.message);
-    throw new Error("Error deleting note");  // Throw error to be caught by the route handler
+    throw new Error("Error deleting note"); // Throw error to be caught by the route handler
   }
 }
-
 
 async function getAllNotes() {
   try {
     const [rows] = await pool.query("SELECT * FROM notes");
     if (rows.length === 0) {
-      return { message: "No notes found" };  // Return a message if no notes
+      return { message: "No notes found" }; // Return a message if no notes
     }
     return rows;
   } catch (err) {
     console.error("Error fetching notes:", err.message);
-    throw { message: err.message || "Error fetching notes" };  // Send error message
+    throw { message: err.message || "Error fetching notes" }; // Send error message
   }
 }
-
 
 // Function to add a new coupon
 async function addNewCoupon(code, percentage) {
@@ -145,7 +175,6 @@ async function validateCoupon(couponCode) {
   }
 }
 
-
 async function getAllCategories() {
   try {
     const [rows] = await pool.query("SELECT * FROM category");
@@ -187,22 +216,25 @@ async function uploadFileToB2(filePath, fileName) {
 async function deleteImageFromB2(barcode) {
   const fileName = `${barcode}.jpg`; // Assuming the image is saved with .jpg extension
 
-  const b2Url = 'https://api.backblazeb2.com/b2api/v2'; // Base URL for B2 API
+  const b2Url = "https://api.backblazeb2.com/b2api/v2"; // Base URL for B2 API
   const authResponse = await axios.post(`${b2Url}/b2_authorize_account`, {
     // Your B2 authorization here
   });
 
   const { authorizationToken, apiUrl } = authResponse.data;
 
-  const deleteResponse = await axios.delete(`${apiUrl}/b2_delete_file_version`, {
-    headers: {
-      Authorization: authorizationToken,
-    },
-    data: {
-      fileName: fileName,
-      fileId: barcode, // Replace with actual fileId if needed
-    },
-  });
+  const deleteResponse = await axios.delete(
+    `${apiUrl}/b2_delete_file_version`,
+    {
+      headers: {
+        Authorization: authorizationToken,
+      },
+      data: {
+        fileName: fileName,
+        fileId: barcode, // Replace with actual fileId if needed
+      },
+    }
+  );
 
   if (deleteResponse.status !== 204) {
     throw new Error("Failed to delete image from Backblaze");
@@ -251,5 +283,7 @@ module.exports = {
   getAllCoupons,
   deleteCouponById,
   validateCoupon,
+  deleteCategoryById,
+  removeExistingProductCategories,
   //deleteImageFromB2,
 };
