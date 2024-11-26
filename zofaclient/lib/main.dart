@@ -72,10 +72,46 @@ class _MyAppState extends State<MyApp> {
     bool isAdmin = adminDeviceIds.contains(deviceId);
 
     return MaterialApp(
+      theme: ThemeData(
+        // Define a custom theme for your app
+        primaryColor: Colors.brown[600], // Main color for AppBar and buttons
+        appBarTheme: AppBarTheme(
+          backgroundColor: Colors.brown[600], // AppBar background color
+          foregroundColor: Colors.white, // Text and icon color in the AppBar
+          titleTextStyle: const TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'Assistant',
+          ),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor:
+                Colors.brown[600], // Default button background color
+            foregroundColor: Colors.white, // Default button text color
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+        ),
+        cardColor: const Color.fromARGB(
+            255, 222, 210, 206), // Default card background color
+        textTheme: const TextTheme(
+          bodyLarge: TextStyle(
+            color: Colors.black, // Text color for cards and other content
+            fontFamily: 'Assistant',
+            fontSize: 16,
+          ),
+        ),
+        iconTheme: IconThemeData(
+          color: Colors.brown[600], // Default icon color
+        ),
+      ),
       home: Scaffold(
         body: isAdmin
             ? const AdminMainPageScreen() // Show admin screen for admin devices
-            : const AdminMainPageScreen(), // Show non-admin screen for non-admin devices
+            : const TabsScreen(), // Show non-admin screen for non-admin devices
       ),
     );
   }

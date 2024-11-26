@@ -47,7 +47,21 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           titleTextStyle: const TextStyle(
               color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold),
         ),
-        body: FutureBuilder<Map<String, dynamic>>(
+        body: Stack(
+        children: [
+          // Background Image
+          Opacity(
+            opacity: 0.6, // Adjust the opacity as desired
+            child: Container(
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/background.jpg'), // Your background image
+                  fit: BoxFit.cover, // Adjust to cover the entire screen
+                ),
+              ),
+            ),
+          ),
+        FutureBuilder<Map<String, dynamic>>(
           future: productDetails,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -87,30 +101,41 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Product Image Section
                     Center(
-                      child: Image.network(
-                        'https://f003.backblazeb2.com/file/zofapic/${widget.productId}.jpeg',
+                      child: Container(
+                        width: 500,
                         height: 300,
-                        width: 300,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    // Display "Out of Stock" message if stock is 0 or less
-                    if (stock == null || stock <= 0)
-                      const Padding(
-                        padding: EdgeInsets.only(top: 8.0),
-                        child: Center(
-                          child: Text(
-                            'המוצר אזל מהמלאי',
-                            style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.red),
+                        decoration: BoxDecoration(
+                          color: Colors
+                              .transparent, // Make the container background transparent
+                          borderRadius: BorderRadius.circular(
+                              10), // Optional: to round corners
+                        ),
+                        child: ColorFiltered(
+                          colorFilter: ColorFilter.mode(
+                            Colors.brown.withOpacity(
+                                0.3), // Set the desired background color (e.g., brown)
+                            BlendMode.hardLight, // Blend the color with the image
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: Image.network(
+                              'https://f003.backblazeb2.com/file/zofapic/${widget.productId}.jpeg',
+                              height: 300,
+                              width: 300,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return const Icon(
+                                  Icons.broken_image,
+                                  size: 50,
+                                  color: Colors.black,
+                                );
+                              },
+                            ),
                           ),
                         ),
                       ),
+                    ),
                     const SizedBox(height: 20),
 
                     // Product Name
@@ -288,6 +313,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               ),
             );
           },
+        ),
+        ],
         ),
       ),
     );

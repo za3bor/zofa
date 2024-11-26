@@ -6,7 +6,7 @@ import 'package:zofa_client/constant.dart';
 import 'package:zofa_client/screens/f_checkout_products.dart';
 
 class CheckoutPageScreen extends StatefulWidget {
-  const CheckoutPageScreen({Key? key}) : super(key: key);
+  const CheckoutPageScreen({super.key});
 
   @override
   State<CheckoutPageScreen> createState() => _CheckoutPageScreenState();
@@ -14,6 +14,8 @@ class CheckoutPageScreen extends StatefulWidget {
 
 class _CheckoutPageScreenState extends State<CheckoutPageScreen> {
   late Box cartBox;
+  final bcolor = Colors.brown[600];
+  final tcolor = Colors.black;
   List<Map<String, dynamic>> cartItems = [];
 
   @override
@@ -105,9 +107,16 @@ class _CheckoutPageScreenState extends State<CheckoutPageScreen> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('העגלה שלי'),
-          backgroundColor: Colors.green,
+          backgroundColor: bcolor, // Dark Brown: #7D3F0F
         ),
-        body: SingleChildScrollView(  // Wrap the entire body in SingleChildScrollView
+        body: Container(
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image:
+                  AssetImage('assets/background.jpg'), // Set background image
+              fit: BoxFit.cover, // Make sure it covers the entire screen
+            ),
+          ),
           child: cartItems.isEmpty
               ? Center(
                   child: Column(
@@ -120,97 +129,149 @@ class _CheckoutPageScreenState extends State<CheckoutPageScreen> {
                       const SizedBox(height: 20),
                       const Text(
                         'העגלה שלך ריקה!',
-                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Assistant'),
                       ),
                       const SizedBox(height: 10),
                       ElevatedButton(
                         onPressed: () {
                           Navigator.pop(context);
                         },
-                        child: const Text('חזור לחנות'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: bcolor, // Light Brown: #C27933
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                        child: const Text(
+                          'חזור לחנות',
+                          style: TextStyle(
+                              fontFamily: 'Assistant',
+                              fontSize: 16,
+                              color: Colors.black),
+                        ),
                       ),
                     ],
                   ),
                 )
               : Column(
                   children: [
-                    ListView.builder(
-                      padding: const EdgeInsets.all(10.0),
-                      itemCount: cartItems.length,
-                      shrinkWrap: true,  // To ensure the ListView doesn't take up the entire space
-                      itemBuilder: (context, index) {
-                        var item = cartItems[index];
-                        double totalPrice = item['price'] * item['quantity'];
+                    Expanded(
+                      child: ListView.builder(
+                        padding: const EdgeInsets.all(10.0),
+                        itemCount: cartItems.length,
+                        shrinkWrap: true,
+                        itemBuilder: (context, index) {
+                          var item = cartItems[index];
+                          double totalPrice = item['price'] * item['quantity'];
 
-                        return Card(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          elevation: 5,
-                          margin: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: Row(
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(10),
-                                  child: Image.network(
-                                    item['imageUrl'],
-                                    width: screenWidth * 0.25,
-                                    height: screenWidth * 0.25,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (context, error, stackTrace) {
-                                      return const Icon(
-                                        Icons.broken_image,
-                                        size: 50,
-                                        color: Colors.grey,
-                                      );
+                          return Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            elevation: 5,
+                            margin: const EdgeInsets.symmetric(vertical: 8.0),
+                            color: const Color.fromARGB(
+                                255, 222, 210, 206), // Light Beige: #99521C
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 12.0),
+                              child: Row(
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(10),
+                                    child: ColorFiltered(
+                                      colorFilter: ColorFilter.mode(
+                                        const Color.fromARGB(255, 121, 85, 72)
+                                            .withOpacity(
+                                                0.25), // Set the desired color with opacity
+                                        BlendMode.darken,
+                                      ),
+                                      child: Image.network(
+                                        item['imageUrl'],
+                                        width: screenWidth * 0.25,
+                                        height: screenWidth * 0.25,
+                                        fit: BoxFit.cover,
+                                        errorBuilder:
+                                            (context, error, stackTrace) {
+                                          return const Icon(
+                                            Icons.broken_image,
+                                            size: 50,
+                                            color: Colors.black,
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 15),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const SizedBox(height: 5),
+                                        Text(
+                                          item['name'],
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyLarge
+                                              ?.copyWith(
+                                                fontSize: 17,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                          maxLines: 2,
+                                          overflow: TextOverflow.visible,
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Text(
+                                          'כמות: ${item['quantity']}',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyLarge
+                                              ?.copyWith(
+                                                fontSize: 15,
+                                              ),
+                                        ),
+                                        const SizedBox(height: 5),
+                                        Text(
+                                          '₪${item['quantity']}*${item['price'].toStringAsFixed(2)}=${totalPrice.toStringAsFixed(2)}',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyLarge
+                                              ?.copyWith(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                        ),
+                                        const SizedBox(height: 5),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 15),
+                                  IconButton(
+                                    icon: Icon(
+                                      Icons.delete,
+                                      color: Theme.of(context)
+                                          .iconTheme
+                                          .color, // Use color from ThemeData
+                                    ),
+                                    onPressed: () {
+                                      _deleteCartItem(item['id']);
                                     },
                                   ),
-                                ),
-                                const SizedBox(width: 15),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        item['name'],
-                                        style: const TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                        maxLines: 2,
-                                        overflow: TextOverflow.visible,
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Text(
-                                        'כמות: ${item['quantity']}',
-                                        style: const TextStyle(fontSize: 14),
-                                      ),
-                                      Text(
-                                        '₪${item['quantity']}*${item['price'].toStringAsFixed(2)}=${totalPrice.toStringAsFixed(2)}',
-                                        style: const TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.green),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(width: 15),
-                                IconButton(
-                                  icon: const Icon(Icons.delete, color: Colors.red),
-                                  onPressed: () {
-                                    _deleteCartItem(item['id']);
-                                  },
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
-                        );
-                      },
+                          );
+                        },
+                      ),
                     ),
-                    const Divider(),
+                    const Divider(
+                      color: Color.fromRGBO(109, 76, 65, 1),
+                      thickness: 1.5,
+                    ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: Row(
@@ -219,14 +280,16 @@ class _CheckoutPageScreenState extends State<CheckoutPageScreen> {
                           const Text(
                             'סה״כ:',
                             style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold),
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'Assistant'),
                           ),
                           Text(
                             '₪${getTotalPrice().toStringAsFixed(2)}',
                             style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
-                              color: Colors.green,
+                              color: Colors.black, // Dark Brown: #7D3F0F
                             ),
                           ),
                         ],
@@ -240,7 +303,7 @@ class _CheckoutPageScreenState extends State<CheckoutPageScreen> {
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.all(15),
-                            backgroundColor: Colors.green,
+                            backgroundColor: bcolor, // Light Brown: #C27933
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20),
                             ),
@@ -257,8 +320,12 @@ class _CheckoutPageScreenState extends State<CheckoutPageScreen> {
                             );
                           },
                           child: const Text(
-                            'המשך לתשלום',
-                            style: TextStyle(fontSize: 16),
+                            'לסיום תהליך ההזמנה',
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.white,
+                              fontFamily: 'Assistant',
+                            ),
                           ),
                         ),
                       ),

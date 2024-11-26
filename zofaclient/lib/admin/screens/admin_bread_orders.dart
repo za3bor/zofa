@@ -148,7 +148,8 @@ class _AdminBreadOrdersScreenState extends State<AdminBreadOrdersScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('הזמנות לחם ליום ${widget.day} ', textDirection: TextDirection.rtl),
+        title: Text('הזמנות לחם ליום ${widget.day} ',
+            textDirection: TextDirection.rtl),
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -165,8 +166,7 @@ class _AdminBreadOrdersScreenState extends State<AdminBreadOrdersScreen> {
               : _breadOrders.isEmpty
                   ? const Center(
                       child: Text(
-                        'אין הזמנות זמינות להיום.',
-                        style: TextStyle(fontSize: 18, color: Colors.grey),
+                        '.אין הזמנות זמינות להיום',
                       ),
                     )
                   : ListView(
@@ -176,11 +176,6 @@ class _AdminBreadOrdersScreenState extends State<AdminBreadOrdersScreen> {
                           padding: EdgeInsets.only(bottom: 20.0),
                           child: Text(
                             'סיכום כמות לחמים להיום:',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.blueAccent,
-                            ),
                             textDirection: TextDirection.rtl,
                           ),
                         ),
@@ -191,11 +186,6 @@ class _AdminBreadOrdersScreenState extends State<AdminBreadOrdersScreen> {
                             child: ListTile(
                               title: Text(
                                 '${entry.key}: ${entry.value} יחידות',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.black87,
-                                ),
                                 textDirection: TextDirection.rtl,
                               ),
                               contentPadding: const EdgeInsets.symmetric(
@@ -206,11 +196,6 @@ class _AdminBreadOrdersScreenState extends State<AdminBreadOrdersScreen> {
                         const SizedBox(height: 20),
                         const Text(
                           'הזמנות לחם:',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.blueAccent,
-                          ),
                           textDirection: TextDirection.rtl,
                         ),
                         const SizedBox(height: 10),
@@ -233,23 +218,21 @@ class _AdminBreadOrdersScreenState extends State<AdminBreadOrdersScreen> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text('שם משתמש: ${order.userName}',
-                                          style: const TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold)),
-                                      Text('טלפון: ${order.phoneNumber}',
-                                          style: const TextStyle(fontSize: 16)),
-                                      Text('פרטי הזמנה: ${order.orderDetails}',
-                                          style: const TextStyle(fontSize: 16)),
                                       Text(
-                                          'סכום סופי: ₪${order.totalPrice.toStringAsFixed(2)}',
-                                          style: const TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold)),
-                                      Text('סטטוס: ${order.status}',
-                                          style: const TextStyle(
-                                              fontSize: 16,
-                                              color: Colors.green)),
+                                        'שם משתמש: ${order.userName}',
+                                      ),
+                                      Text(
+                                        'טלפון: ${order.phoneNumber}',
+                                      ),
+                                      Text(
+                                        'פרטי הזמנה: ${order.orderDetails}',
+                                      ),
+                                      Text(
+                                        'סכום סופי: ₪${order.totalPrice.toStringAsFixed(2)}',
+                                      ),
+                                      Text(
+                                        'סטטוס: ${order.status}',
+                                      ),
                                       const SizedBox(height: 10),
                                       Row(
                                         mainAxisAlignment:
@@ -258,8 +241,8 @@ class _AdminBreadOrdersScreenState extends State<AdminBreadOrdersScreen> {
                                           ElevatedButton(
                                             onPressed: buttonEnabled
                                                 ? () {
-                                                    changeStatus(order.id,
-                                                        'המתנה');
+                                                    changeStatus(
+                                                        order.id, 'המתנה');
                                                   }
                                                 : null,
                                             child: const Text('המתנה'),
@@ -268,8 +251,8 @@ class _AdminBreadOrdersScreenState extends State<AdminBreadOrdersScreen> {
                                           ElevatedButton(
                                             onPressed: buttonEnabled
                                                 ? () {
-                                                    changeStatus(order.id,
-                                                        'מוכן');
+                                                    changeStatus(
+                                                        order.id, 'מוכן');
                                                   }
                                                 : null,
                                             child: const Text('מוכן'),

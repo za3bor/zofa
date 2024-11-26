@@ -71,8 +71,6 @@ class _AddNewCategoryState extends State<AddNewCategory> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('הוספת ניתונים חדשים'),
-        backgroundColor: Colors.transparent, // Make AppBar background transparent
-        elevation: 0, // Remove AppBar shadow
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(18),

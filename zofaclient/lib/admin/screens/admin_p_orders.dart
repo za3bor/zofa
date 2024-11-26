@@ -79,7 +79,6 @@ class _ProductOrdersScreenState extends State<ProductOrdersScreen> {
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 16.0),
                         textStyle: const TextStyle(fontSize: 18),
-                        backgroundColor: Colors.blue,
                       ),
                       onPressed: () {
                         Navigator.push(

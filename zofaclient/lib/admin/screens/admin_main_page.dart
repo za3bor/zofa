@@ -14,52 +14,40 @@ class AdminMainPageScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Admin Dashboard',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
+          'לוח בקרה למנהל',
         ),
-        backgroundColor: Colors.teal,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: GridView.count(
           crossAxisCount: 2, // Two columns
-          mainAxisSpacing: 20.0, // Spacing between rows
-          crossAxisSpacing: 20.0, // Spacing between columns
-          childAspectRatio: 1.5, // Aspect ratio for button sizing
+          mainAxisSpacing: 16.0, // Adjusted spacing for a cleaner look
+          crossAxisSpacing: 16.0, // Adjusted spacing
+          childAspectRatio: 1.4, // Slightly adjusted aspect ratio
           children: const [
             CustomElevatedButton(
               label: 'מוצרים',
               targetPage: ProductFuncScreen(),
-              color: Colors.green, // Custom color for this button
             ),
             CustomElevatedButton(
               label: 'לחם',
               targetPage: BreadFuncScreen(),
-              color: Colors.green, // Custom color for this button
             ),
             CustomElevatedButton(
-              label: 'לקוח',
+              label: 'לקוחות',
               targetPage: TabsScreen(),
-              color: Colors.green, // Custom color for this button
             ),
             CustomElevatedButton(
-              label: 'notes',
+              label: 'הערות',
               targetPage: NotesScreen(),
-              color: Colors.green, // Custom color for this button
             ),
             CustomElevatedButton(
-              label: 'coupon',
+              label: 'קופונים',
               targetPage: CouponsScreen(),
-              color: Colors.red, // Custom color for this button
             ),
           ],
         ),
       ),
-      backgroundColor: Colors.grey[100], // Light background color
     );
   }
 }

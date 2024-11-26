@@ -246,326 +246,341 @@ class _ProductsScreenState extends State<ProductsScreen> {
       );
     }
 
-    return Column(
-      children: [
-        // Search bar
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: TextField(
-            controller: _searchController,
-            textAlign: TextAlign.right, // Right to left text alignment
-            decoration: InputDecoration(
-              prefixIcon: const Icon(Icons.search),
-              hintText: '...חיפוש מוצר',
-              hintStyle: const TextStyle(color: Colors.grey),
-              filled: true,
-              fillColor: Colors.grey[200],
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(30),
-                borderSide: BorderSide.none,
+    return Container(
+      decoration: const BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('assets/background.jpg'), // Set background image
+          fit: BoxFit.cover, // Make sure it covers the entire screen
+        ),
+      ),
+      child: Column(
+        children: [
+          // Search bar
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: TextField(
+              controller: _searchController,
+              textAlign: TextAlign.right, // Right to left text alignment
+              decoration: InputDecoration(
+                prefixIcon: const Icon(Icons.search),
+                hintText: '...חיפוש מוצר',
+                hintStyle: const TextStyle(color: Colors.grey),
+                filled: true,
+                fillColor: Colors.grey[200],
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30),
+                  borderSide: BorderSide.none,
+                ),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
               ),
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
             ),
           ),
-        ),
 
-        // Dynamic Filter Chips for categories with 'All' option
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          reverse: true,
-          controller: _scrollController,
-          child: Row(
-            mainAxisAlignment:
-                MainAxisAlignment.end, // Align chips to the right
-            textDirection: TextDirection.rtl, // Right to left for Hebrew
-            children: [
-              // 'All' Filter Chip
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: FilterChip(
-                  label: const Text('הכל'),
-                  selected: _selectAll,
-                  onSelected: (bool selected) {
-                    setState(() {
-                      _selectAll = true;
-                      _categorySelections.forEach((key, value) {
-                        _categorySelections[key] = false;
-                      });
-                    });
-                    _fetchProducts();
-                    if (_selectAll) {
-                      _scrollController.jumpTo(0);
-                    }
-                  },
-                  selectedColor: Colors.redAccent.withOpacity(0.3),
-                  backgroundColor: Colors.grey[200],
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
-              ),
-              // Other category Filter Chips
-              ..._categories.map((category) {
-                return Padding(
+          // Dynamic Filter Chips for categories with 'All' option
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            reverse: true,
+            controller: _scrollController,
+            child: Row(
+              mainAxisAlignment:
+                  MainAxisAlignment.end, // Align chips to the right
+              textDirection: TextDirection.rtl, // Right to left for Hebrew
+              children: [
+                // 'All' Filter Chip
+                Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: FilterChip(
-                    label: Text(category.name),
-                    selected: _categorySelections[category.id] ?? false,
+                    label: const Text('הכל'),
+                    selected: _selectAll,
                     onSelected: (bool selected) {
                       setState(() {
-                        _categorySelections[category.id] = selected;
-
-                        if (selected) {
-                          _selectAll = false;
-                        }
-
-                        if (!_categorySelections.containsValue(true)) {
-                          _selectAll = true;
-                        }
+                        _selectAll = true;
+                        _categorySelections.forEach((key, value) {
+                          _categorySelections[key] = false;
+                        });
                       });
                       _fetchProducts();
                       if (_selectAll) {
                         _scrollController.jumpTo(0);
                       }
                     },
-                    selectedColor: Colors.redAccent.withOpacity(0.3),
-                    backgroundColor: Colors.grey[200],
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
                     ),
                   ),
-                );
-              }).toList(),
-            ],
+                ),
+                // Other category Filter Chips
+                ..._categories.map((category) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: FilterChip(
+                      label: Text(category.name),
+                      selected: _categorySelections[category.id] ?? false,
+                      onSelected: (bool selected) {
+                        setState(() {
+                          _categorySelections[category.id] = selected;
+
+                          if (selected) {
+                            _selectAll = false;
+                          }
+
+                          if (!_categorySelections.containsValue(true)) {
+                            _selectAll = true;
+                          }
+                        });
+                        _fetchProducts();
+                        if (_selectAll) {
+                          _scrollController.jumpTo(0);
+                        }
+                      },
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                  );
+                })
+              ],
+            ),
           ),
-        ),
 
-        // Products display or error message
-        Expanded(
-          child: _filteredProducts.isEmpty
-              ? Center(
-                  child: Text(
-                    _searchController.text.isNotEmpty
-                        ? 'אין מוצרים להצגה' // No products match the search
-                        : _products.isEmpty
-                            ? 'אין מוצרים להצגה' // No products available
-                            : 'שגיאה בטעינת המוצרים, נסה שוב מאוחר יותר', // Error loading products
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.redAccent,
+          // Products display or error message
+          Expanded(
+            child: _filteredProducts.isEmpty
+                ? Center(
+                    child: Text(
+                      _searchController.text.isNotEmpty
+                          ? 'אין מוצרים להצגה' // No products match the search
+                          : _products.isEmpty
+                              ? 'אין מוצרים להצגה' // No products available
+                              : 'שגיאה בטעינת המוצרים, נסה שוב מאוחר יותר', // Error loading products
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.redAccent,
+                      ),
                     ),
-                  ),
-                )
-              : Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: GridView.builder(
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: MediaQuery.of(context).size.width > 600
-                          ? 3
-                          : 2, // Responsive grid
-                      crossAxisSpacing: 10,
-                      mainAxisSpacing: 10,
-                      childAspectRatio:
-                          0.50, // Adjust item height/width ratio for better look
-                    ),
-                    itemCount: _filteredProducts.length,
-                    itemBuilder: (ctx, index) {
-                      final product = _filteredProducts[index];
-                      final imageUrl =
-                          'https://f003.backblazeb2.com/file/zofapic/${product.id}.jpeg';
+                  )
+                : Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: GridView.builder(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: MediaQuery.of(context).size.width > 600
+                            ? 3
+                            : 2, // Responsive grid
+                        crossAxisSpacing: 10,
+                        mainAxisSpacing: 10,
+                        childAspectRatio:
+                            0.50, // Adjust item height/width ratio for better look
+                      ),
+                      itemCount: _filteredProducts.length,
+                      itemBuilder: (ctx, index) {
+                        final product = _filteredProducts[index];
+                        final imageUrl =
+                            'https://f003.backblazeb2.com/file/zofapic/${product.id}.jpeg';
 
-                      return GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ProductDetailsScreen(
-                                productId: product.id,
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ProductDetailsScreen(
+                                  productId: product.id,
+                                ),
+                              ),
+                            );
+                          },
+                          child: Card(
+                            color: Theme.of(context)
+                                .cardColor, // Use cardColor from ThemeData
+
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            elevation: 5,
+                            child: Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // Product Image
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(10),
+                                    child: imageUrl.isNotEmpty
+                                        ? ColorFiltered(
+                                            colorFilter: ColorFilter.mode(
+                                              const Color.fromARGB(
+                                                      255, 121, 85, 72)
+                                                  .withOpacity(
+                                                      0.25), // Set the desired color with opacity
+                                              BlendMode.darken,
+                                            ),
+                                            child: Image.network(
+                                              imageUrl,
+                                              fit: BoxFit.cover,
+                                              height: 150,
+                                              width: double.infinity,
+                                              loadingBuilder:
+                                                  (BuildContext context,
+                                                      Widget child,
+                                                      ImageChunkEvent?
+                                                          loadingProgress) {
+                                                if (loadingProgress == null) {
+                                                  return child;
+                                                }
+                                                return Center(
+                                                  child:
+                                                      CircularProgressIndicator(
+                                                    value: loadingProgress
+                                                                .expectedTotalBytes !=
+                                                            null
+                                                        ? loadingProgress
+                                                                .cumulativeBytesLoaded /
+                                                            (loadingProgress
+                                                                    .expectedTotalBytes ??
+                                                                1)
+                                                        : null,
+                                                  ),
+                                                );
+                                              },
+                                              errorBuilder:
+                                                  (BuildContext context,
+                                                      Object error,
+                                                      StackTrace? stackTrace) {
+                                                return const Icon(
+                                                    Icons.broken_image,
+                                                    size: 50,
+                                                    color: Colors.grey);
+                                              },
+                                            ),
+                                          )
+                                        : const Icon(Icons.broken_image,
+                                            size: 50, color: Colors.grey),
+                                  ),
+                                  const SizedBox(height: 10),
+
+                                  // Product Name (Right to Left alignment)
+                                  Align(
+                                    alignment: Alignment.centerRight,
+                                    child: Text(
+                                      product.name,
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black87,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 2,
+                                      textAlign: TextAlign
+                                          .right, // Ensuring RTL alignment for product name
+                                    ),
+                                  ),
+                                  const SizedBox(height: 5),
+
+                                  // Product Price
+                                  Center(
+                                    child: Text(
+                                      '₪ ${product.price.toStringAsFixed(1)}',
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                  if (!product.stock) ...[
+                                    const SizedBox(height: 5),
+                                    const Center(
+                                      child: Text(
+                                        'המוצר אזל מהמלאי',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 5),
+                                    Center(
+                                      child: ElevatedButton(
+                                        onPressed: null,
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.grey,
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 18, vertical: 8),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(30),
+                                          ),
+                                        ),
+                                        child: const Text(
+                                          'אזל מהמלאי',
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ] else ...[
+                                    // Quantity Controls
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        IconButton(
+                                          icon: const Icon(Icons.remove),
+                                          onPressed: () {
+                                            _decrementQuantity(product.id);
+                                          },
+                                        ),
+                                        Text(
+                                          '${_productQuantities[product.id] ?? 0}',
+                                          style: const TextStyle(fontSize: 16),
+                                        ),
+                                        IconButton(
+                                          icon: const Icon(Icons.add),
+                                          onPressed: () {
+                                            _incrementQuantity(product.id);
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 5),
+
+                                    // Add to Cart Button (Hebrew)
+                                    Center(
+                                      child: ElevatedButton(
+                                        onPressed: () => _addToCart(product.id),
+                                        style: ElevatedButton.styleFrom(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 18, vertical: 8),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(30),
+                                          ),
+                                        ),
+                                        child: const Text(
+                                          'הוסף לסל', // Hebrew for "Add to Cart"
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ],
                               ),
                             ),
-                          );
-                        },
-                        child: Card(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
                           ),
-                          elevation: 5,
-                          color: Colors.white,
-                          shadowColor: Colors.grey.withOpacity(0.2),
-                          child: Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                // Product Image
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(10),
-                                  child: imageUrl.isNotEmpty
-                                      ? Image.network(
-                                          imageUrl,
-                                          fit: BoxFit.cover,
-                                          height: 150,
-                                          width: double.infinity,
-                                          loadingBuilder: (BuildContext context,
-                                              Widget child,
-                                              ImageChunkEvent?
-                                                  loadingProgress) {
-                                            if (loadingProgress == null) {
-                                              return child;
-                                            }
-                                            return Center(
-                                              child: CircularProgressIndicator(
-                                                value: loadingProgress
-                                                            .expectedTotalBytes !=
-                                                        null
-                                                    ? loadingProgress
-                                                            .cumulativeBytesLoaded /
-                                                        (loadingProgress
-                                                                .expectedTotalBytes ??
-                                                            1)
-                                                    : null,
-                                              ),
-                                            );
-                                          },
-                                          errorBuilder: (BuildContext context,
-                                              Object error,
-                                              StackTrace? stackTrace) {
-                                            return const Icon(
-                                                Icons.broken_image,
-                                                size: 50,
-                                                color: Colors.grey);
-                                          },
-                                        )
-                                      : const Icon(Icons.broken_image,
-                                          size: 50, color: Colors.grey),
-                                ),
-                                const SizedBox(height: 10),
-
-                                // Product Name (Right to Left alignment)
-                                Align(
-                                  alignment: Alignment.centerRight,
-                                  child: Text(
-                                    product.name,
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black87,
-                                    ),
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 2,
-                                    textAlign: TextAlign
-                                        .right, // Ensuring RTL alignment for product name
-                                  ),
-                                ),
-                                const SizedBox(height: 5),
-
-                                // Product Price
-                                Center(
-                                  child: Text(
-                                    '₪ ${product.price.toStringAsFixed(1)}',
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.redAccent,
-                                    ),
-                                  ),
-                                ),
-                                if (!product.stock) ...[
-                                  const SizedBox(height: 5),
-                                  const Center(
-                                    child: Text(
-                                      'המוצר אזל מהמלאי',
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.grey,
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 5),
-                                  Center(
-                                    child: ElevatedButton(
-                                      onPressed: null,
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.grey,
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 18, vertical: 8),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(30),
-                                        ),
-                                      ),
-                                      child: const Text(
-                                        'אזל מהמלאי',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ] else ...[
-                                  // Quantity Controls
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      IconButton(
-                                        icon: const Icon(Icons.remove),
-                                        onPressed: () {
-                                          _decrementQuantity(product.id);
-                                        },
-                                      ),
-                                      Text(
-                                        '${_productQuantities[product.id] ?? 0}',
-                                        style: const TextStyle(fontSize: 16),
-                                      ),
-                                      IconButton(
-                                        icon: const Icon(Icons.add),
-                                        onPressed: () {
-                                          _incrementQuantity(product.id);
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 5),
-
-                                  // Add to Cart Button (Hebrew)
-                                  Center(
-                                    child: ElevatedButton(
-                                      onPressed: () => _addToCart(product.id),
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.redAccent,
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 18, vertical: 8),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(30),
-                                        ),
-                                      ),
-                                      child: const Text(
-                                        'הוסף לסל', // Hebrew for "Add to Cart"
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                    },
+                        );
+                      },
+                    ),
                   ),
-                ),
-        ),
-      ],
+          ),
+        ],
+      ),
     );
   }
 }

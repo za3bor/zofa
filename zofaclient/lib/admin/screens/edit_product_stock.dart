@@ -168,7 +168,6 @@ class _EditProductStockScreenState extends State<EditProductStockScreen> {
                                 borderRadius: BorderRadius.circular(15),
                               ),
                               elevation: 5,
-                              color: Colors.white,
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Column(
@@ -186,8 +185,7 @@ class _EditProductStockScreenState extends State<EditProductStockScreen> {
                                         width: double.infinity,
                                         loadingBuilder: (BuildContext context,
                                             Widget child,
-                                            ImageChunkEvent?
-                                                loadingProgress) {
+                                            ImageChunkEvent? loadingProgress) {
                                           if (loadingProgress == null) {
                                             return child;
                                           }
@@ -208,8 +206,10 @@ class _EditProductStockScreenState extends State<EditProductStockScreen> {
                                         errorBuilder: (BuildContext context,
                                             Object error,
                                             StackTrace? stackTrace) {
-                                          return const Icon(Icons.broken_image,
-                                              size: 50, color: Colors.grey);
+                                          return const Icon(
+                                            Icons.broken_image,
+                                            size: 50,
+                                          );
                                         },
                                       ),
                                     ),
@@ -220,11 +220,6 @@ class _EditProductStockScreenState extends State<EditProductStockScreen> {
                                       alignment: Alignment.centerRight,
                                       child: Text(
                                         product.name,
-                                        style: const TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.black87,
-                                        ),
                                         overflow: TextOverflow.ellipsis,
                                         maxLines: 2,
                                       ),
@@ -235,11 +230,6 @@ class _EditProductStockScreenState extends State<EditProductStockScreen> {
                                     Center(
                                       child: Text(
                                         '\₪${product.price.toStringAsFixed(1)}',
-                                        style: const TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.redAccent,
-                                        ),
                                       ),
                                     ),
                                     const SizedBox(height: 5),
@@ -248,8 +238,7 @@ class _EditProductStockScreenState extends State<EditProductStockScreen> {
                                     Center(
                                       child: ElevatedButton(
                                         onPressed: () async {
-                                          final newStockStatus =
-                                              !product.stock;
+                                          final newStockStatus = !product.stock;
                                           setState(() {
                                             product.stock = newStockStatus;
                                           });
@@ -263,11 +252,7 @@ class _EditProductStockScreenState extends State<EditProductStockScreen> {
                                               : Colors.red,
                                         ),
                                         child: Text(
-                                          product.stock
-                                              ? 'במלאי'
-                                              : 'לא במלאי',
-                                          style: const TextStyle(
-                                              color: Colors.white),
+                                          product.stock ? 'במלאי' : 'לא במלאי',
                                         ),
                                       ),
                                     )

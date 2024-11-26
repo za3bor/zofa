@@ -11,42 +11,33 @@ class BreadFuncScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'BreadFunc Dashboard',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
+          'לוח בקרה ללחם',
         ),
-        backgroundColor: Colors.teal,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: GridView.count(
           crossAxisCount: 2, // Two columns
-          mainAxisSpacing: 20.0, // Spacing between rows
-          crossAxisSpacing: 20.0, // Spacing between columns
-          childAspectRatio: 1.5, // Aspect ratio for button sizing
+          mainAxisSpacing: 16.0, // Reduced spacing for a more compact layout
+          crossAxisSpacing: 16.0, // Reduced spacing
+          childAspectRatio:
+              1.4, // Adjusted aspect ratio for better button sizing
           children: const [
             CustomElevatedButton(
               label: 'הוספת סוג לחם חדש',
               targetPage: AddNewBread(),
-              color: Colors.orange, // Custom color for this button
             ),
             CustomElevatedButton(
               label: 'צפייה בהזמנות לחם יום שלישי',
-              targetPage: AdminBreadOrdersScreen(day: "שלישי",),
-              color: Colors.purple, // Custom color for this button
+              targetPage: AdminBreadOrdersScreen(day: "שלישי"),
             ),
             CustomElevatedButton(
               label: 'צפייה בהזמנות לחם יום שישי',
-              targetPage: AdminBreadOrdersScreen(day: "שישי",),
-              color: Colors.purple, // Custom color for this button
+              targetPage: AdminBreadOrdersScreen(day: "שישי"),
             ),
           ],
         ),
       ),
-      backgroundColor: Colors.grey[100], // Light background color
     );
   }
 }

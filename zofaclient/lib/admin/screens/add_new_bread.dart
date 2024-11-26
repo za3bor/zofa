@@ -85,8 +85,6 @@ class _AddNewBreadState extends State<AddNewBread> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('הוספת סוג לחם חדש'),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(18),

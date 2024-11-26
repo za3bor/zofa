@@ -57,7 +57,8 @@ class _TabsScreenState extends State<TabsScreen> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const CheckoutPageScreen()),
+                  MaterialPageRoute(
+                      builder: (context) => const CheckoutPageScreen()),
                 );
               },
             ),
@@ -94,26 +95,14 @@ class _TabsScreenState extends State<TabsScreen> {
               padding: EdgeInsets.zero,
               children: <Widget>[
                 const DrawerHeader(
-                  decoration: BoxDecoration(
-                    color: Colors
-                        .transparent, // Make the header transparent so the background shows
-                  ),
                   child: Text(
                     'ניווט',
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold),
                   ),
                 ),
                 ListTile(
                   leading: const Icon(Icons.home),
                   title: const Text(
                     'צור קשר',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                    ),
                   ),
                   onTap: () {
                     _navigateToDrawerPage(ContactUsScreen());
@@ -123,10 +112,6 @@ class _TabsScreenState extends State<TabsScreen> {
                   leading: const Icon(Icons.person),
                   title: const Text(
                     'אודות האפליקציה',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                    ),
                   ),
                   onTap: () {
                     _navigateToDrawerPage(const AboutAppScreen());
@@ -136,10 +121,6 @@ class _TabsScreenState extends State<TabsScreen> {
                   leading: const Icon(Icons.settings),
                   title: const Text(
                     'הגדרות',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                    ),
                   ),
                   onTap: () {
                     _navigateToDrawerPage(const ShareAppScreen());
@@ -149,10 +130,6 @@ class _TabsScreenState extends State<TabsScreen> {
                   leading: const Icon(Icons.notifications),
                   title: const Text(
                     'הערות',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                    ),
                   ),
                   onTap: () {
                     _navigateToDrawerPage(const RateAppScreen());
@@ -162,10 +139,6 @@ class _TabsScreenState extends State<TabsScreen> {
                   leading: const Icon(Icons.info),
                   title: const Text(
                     'תנאי שימוש',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                    ),
                   ),
                   onTap: () {
                     _navigateToDrawerPage(const TermOfUseScreen());
