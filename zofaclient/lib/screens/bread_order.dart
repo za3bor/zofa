@@ -130,56 +130,72 @@ void checkTime() {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Directionality(
-        textDirection: TextDirection.rtl,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              Text(
-                'הזמנת לחם ליום $day',
-                style: const TextStyle(
-                  fontSize: 24.0,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 16.0),
-              ...breadList.map((bread) {
-                return Column(
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    body: Directionality(
+      textDirection: TextDirection.rtl,
+      child: Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/background.jpg'), // Set background image
+            fit: BoxFit.cover, // Ensure the image covers the entire screen
+          ),
+        ),
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
                   children: [
-                    BreadQuantityRow(
-                      name: bread.name,
-                      price: bread.price,
-                      onQuantitySelected: (int quantity) {
-                        onQuantitySelected(bread, quantity);
-                      },
-                      quantity: bread.quantity,
+                    Text(
+                      'הזמנת לחם ליום $day',
+                      style: const TextStyle(
+                        fontSize: 24.0,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(height: 16.0),
+                    ...breadList.map((bread) {
+                      return Column(
+                        children: [
+                          BreadQuantityRow(
+                            name: bread.name,
+                            price: bread.price,
+                            onQuantitySelected: (int quantity) {
+                              onQuantitySelected(bread, quantity);
+                            },
+                            quantity: bread.quantity,
+                          ),
+                          const SizedBox(height: 16.0),
+                        ],
+                      );
+                    })
                   ],
-                );
-              })
-            ],
-          ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: ElevatedButton(
+                onPressed: isButtonEnabled
+                    ? () {
+                        addToCart(context);
+                      }
+                    : null,
+                child: Text(
+                  buttonText,
+                  style: const TextStyle(color: Colors.white),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: ElevatedButton(
-          onPressed: isButtonEnabled
-              ? () {
-                  addToCart(context);
-                }
-              : null,
-          child: Text(
-            buttonText,
-            style: const TextStyle(color: Colors.white),
-          ),
-        ),
-      ),
-    );
-  }
+    ),
+  );
+}
+
+
 }

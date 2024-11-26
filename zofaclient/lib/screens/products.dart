@@ -249,7 +249,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
     return Container(
       decoration: const BoxDecoration(
         image: DecorationImage(
-          image: AssetImage('assets/background.jpg'), // Set background image
+          image: AssetImage('assets/background1.jpg'), // Set background image
           fit: BoxFit.cover, // Make sure it covers the entire screen
         ),
       ),
@@ -264,9 +264,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
               decoration: InputDecoration(
                 prefixIcon: const Icon(Icons.search),
                 hintText: '...חיפוש מוצר',
-                hintStyle: const TextStyle(color: Colors.grey),
+                hintStyle: const TextStyle(color: Colors.black),
                 filled: true,
-                fillColor: Colors.grey[200],
+                fillColor: const Color.fromARGB(255, 222, 210, 206),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30),
                   borderSide: BorderSide.none,
@@ -283,15 +283,21 @@ class _ProductsScreenState extends State<ProductsScreen> {
             reverse: true,
             controller: _scrollController,
             child: Row(
-              mainAxisAlignment:
-                  MainAxisAlignment.end, // Align chips to the right
-              textDirection: TextDirection.rtl, // Right to left for Hebrew
+              mainAxisAlignment: MainAxisAlignment.end,
+              textDirection: TextDirection.rtl,
               children: [
-                // 'All' Filter Chip
+                // 'All' Filter Chip with Icon and Gradient Background
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: FilterChip(
-                    label: const Text('הכל'),
+                    label: const Row(
+                      children: [
+                        Icon(Icons.all_inclusive,
+                            size: 18, color: Colors.white),
+                        SizedBox(width: 5),
+                        Text('הכל'),
+                      ],
+                    ),
                     selected: _selectAll,
                     onSelected: (bool selected) {
                       setState(() {
@@ -308,23 +314,39 @@ class _ProductsScreenState extends State<ProductsScreen> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
                     ),
+                    backgroundColor: _selectAll
+                        ? Colors.transparent // Keep transparent if not selected
+                        : const Color(
+                            0xFFC8A36D), // Light gray for non-selected
+                    selectedColor:
+                        const Color(0xFF7A6244), // Brown color for selected
+                    labelStyle: TextStyle(
+                      color: _selectAll ? Colors.white : Colors.black,
+                    ),
+                    side:
+                        const BorderSide(color: Color(0xFF7A6244), width: 1.5),
                   ),
                 ),
-                // Other category Filter Chips
+                // Other category Filter Chips with Icon, Text, and Gradient Background
                 ..._categories.map((category) {
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: FilterChip(
-                      label: Text(category.name),
+                      label: Row(
+                        children: [
+                          const Icon(Icons.category,
+                              size: 18, color: Colors.white), // Category icon
+                          const SizedBox(width: 5),
+                          Text(category.name), // Category name
+                        ],
+                      ),
                       selected: _categorySelections[category.id] ?? false,
                       onSelected: (bool selected) {
                         setState(() {
                           _categorySelections[category.id] = selected;
-
                           if (selected) {
                             _selectAll = false;
                           }
-
                           if (!_categorySelections.containsValue(true)) {
                             _selectAll = true;
                           }
@@ -337,6 +359,19 @@ class _ProductsScreenState extends State<ProductsScreen> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                       ),
+                      backgroundColor: _categorySelections[category.id] == true
+                          ? Colors.transparent // Keep transparent if selected
+                          : const Color(
+                              0xFFC8A36D), // Light gray for non-selected
+                      selectedColor:
+                          const Color(0xFF7A6244), // Brown color for selected
+                      labelStyle: TextStyle(
+                        color: _categorySelections[category.id] == true
+                            ? Colors.white
+                            : Colors.black,
+                      ),
+                      side: const BorderSide(
+                          color: Color(0xFF7A6244), width: 1.5),
                     ),
                   );
                 })
@@ -447,15 +482,21 @@ class _ProductsScreenState extends State<ProductsScreen> {
                                                   (BuildContext context,
                                                       Object error,
                                                       StackTrace? stackTrace) {
-                                                return const Icon(
-                                                    Icons.broken_image,
-                                                    size: 50,
-                                                    color: Colors.grey);
+                                                return Image.asset(
+                                                  'assets/noimage.jpg', // Path to your fallback image
+                                                  fit: BoxFit.cover,
+                                                  height: 150,
+                                                  width: double.infinity,
+                                                );
                                               },
                                             ),
                                           )
-                                        : const Icon(Icons.broken_image,
-                                            size: 50, color: Colors.grey),
+                                        : Image.asset(
+                                            'assets/noimage.jpg', // Path to your fallback image
+                                            fit: BoxFit.cover,
+                                            height: 150,
+                                            width: double.infinity,
+                                          ),
                                   ),
                                   const SizedBox(height: 10),
 

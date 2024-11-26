@@ -7,6 +7,7 @@ import 'package:zofa_client/screens/products.dart';
 import 'package:zofa_client/screens/rate_app.dart';
 import 'package:zofa_client/screens/share_app.dart';
 import 'package:zofa_client/screens/term_of_use.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class TabsScreen extends StatefulWidget {
   const TabsScreen({super.key});
@@ -38,32 +39,50 @@ class _TabsScreenState extends State<TabsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Access theme properties
+    final theme = Theme.of(context);
+
+    // Set custom brown color for the background
+    const brownColor = Color(0xFF7A6244);
+
+    // Set active page and title based on selected tab
     Widget activePage = const ProductsScreen();
-    var activePageTitle = 'Products';
+    var activePageTitle = 'מוצרים';
 
     if (_selectedPageIndex == 1) {
       activePage = const BreadOrderScreen();
-      activePageTitle = 'Bread';
+      activePageTitle = 'לחם';
     }
 
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text(activePageTitle),
+        title: Text(
+          activePageTitle,
+          style: theme.appBarTheme.titleTextStyle,
+        ),
+        centerTitle: true, // This will center the title on both platforms
+
+        leading:
+            _selectedPageIndex == 0 // Only show the cart icon on the first tab
+                ? IconButton(
+                    icon: const Icon(Icons.shopping_cart),
+                    color: Colors.white, // Make icon white
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const CheckoutPageScreen(),
+                        ),
+                      );
+                    },
+                  )
+                : null, // If not on the first tab, don't show the cart icon
+
         actions: [
-          if (_selectedPageIndex == 0) // Only show on the first tab
-            IconButton(
-              icon: const Icon(Icons.shopping_cart),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const CheckoutPageScreen()),
-                );
-              },
-            ),
           IconButton(
             icon: const Icon(Icons.menu),
+            color: Colors.white, // Make icon white
             onPressed: () {
               _scaffoldKey.currentState?.openEndDrawer();
             },
@@ -74,9 +93,18 @@ class _TabsScreenState extends State<TabsScreen> {
       bottomNavigationBar: BottomNavigationBar(
         onTap: _selectPage,
         currentIndex: _selectedPageIndex,
+        selectedItemColor: Colors.white, // White icons for selected tab
+        unselectedItemColor: Colors.white, // White icons for unselected tab
+        backgroundColor: brownColor, // Set background to brown color
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.set_meal), label: 'Shop'),
-          BottomNavigationBarItem(icon: Icon(Icons.dining), label: 'Bread'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.storefront),
+            label: 'מוצרים',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(FontAwesomeIcons.breadSlice),
+            label: 'לחם',
+          ),
         ],
       ),
       endDrawer: Directionality(
@@ -128,16 +156,14 @@ class _TabsScreenState extends State<TabsScreen> {
                 ),
                 ListTile(
                   leading: const Icon(Icons.notifications),
-                  title: const Text(
-                    'הערות',
-                  ),
+                  title: const Text('הערות'),
                   onTap: () {
                     _navigateToDrawerPage(const RateAppScreen());
                   },
                 ),
                 ListTile(
-                  leading: const Icon(Icons.info),
-                  title: const Text(
+                  leading: Icon(Icons.info),
+                  title: Text(
                     'תנאי שימוש',
                   ),
                   onTap: () {

@@ -74,11 +74,12 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       theme: ThemeData(
         // Define a custom theme for your app
-        primaryColor: Colors.brown[600], // Main color for AppBar and buttons
-        appBarTheme: AppBarTheme(
-          backgroundColor: Colors.brown[600], // AppBar background color
+        primaryColor:
+            const Color(0xFF7A6244), // Main color for AppBar and buttons
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Color(0xFF7A6244), // AppBar background color
           foregroundColor: Colors.white, // Text and icon color in the AppBar
-          titleTextStyle: const TextStyle(
+          titleTextStyle: TextStyle(
             color: Colors.white,
             fontSize: 20,
             fontWeight: FontWeight.bold,
@@ -88,7 +89,7 @@ class _MyAppState extends State<MyApp> {
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
             backgroundColor:
-                Colors.brown[600], // Default button background color
+                const Color(0xFF7A6244), // Default button background color
             foregroundColor: Colors.white, // Default button text color
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
@@ -104,8 +105,28 @@ class _MyAppState extends State<MyApp> {
             fontSize: 16,
           ),
         ),
-        iconTheme: IconThemeData(
-          color: Colors.brown[600], // Default icon color
+        iconTheme: const IconThemeData(
+          color: Color(0xFF7A6244), // Default icon color
+        ),
+        tabBarTheme: const TabBarTheme(
+          indicator: BoxDecoration(
+            color: Color(0xFF7A6244), // Background color for the active tab
+            borderRadius:
+                BorderRadius.all(Radius.circular(8)), // Rounded active tab
+          ),
+          labelColor: Colors.white, // Text color for active tabs
+          unselectedLabelColor:
+              Color(0xFF7A6244), // Text color for inactive tabs
+          labelStyle: TextStyle(
+            fontFamily: 'Assistant',
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+          ), // Text style for active tabs
+          unselectedLabelStyle: TextStyle(
+            fontFamily: 'Assistant',
+            fontWeight: FontWeight.normal,
+            fontSize: 16,
+          ), // Text style for inactive tabs
         ),
       ),
       home: Scaffold(

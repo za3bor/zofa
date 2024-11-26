@@ -14,8 +14,6 @@ class CheckoutPageScreen extends StatefulWidget {
 
 class _CheckoutPageScreenState extends State<CheckoutPageScreen> {
   late Box cartBox;
-  final bcolor = Colors.brown[600];
-  final tcolor = Colors.black;
   List<Map<String, dynamic>> cartItems = [];
 
   @override
@@ -107,7 +105,6 @@ class _CheckoutPageScreenState extends State<CheckoutPageScreen> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('העגלה שלי'),
-          backgroundColor: bcolor, // Dark Brown: #7D3F0F
         ),
         body: Container(
           decoration: const BoxDecoration(
@@ -140,7 +137,6 @@ class _CheckoutPageScreenState extends State<CheckoutPageScreen> {
                           Navigator.pop(context);
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: bcolor, // Light Brown: #C27933
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
                           ),
@@ -303,7 +299,6 @@ class _CheckoutPageScreenState extends State<CheckoutPageScreen> {
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.all(15),
-                            backgroundColor: bcolor, // Light Brown: #C27933
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20),
                             ),

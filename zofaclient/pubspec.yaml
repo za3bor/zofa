@@ -43,6 +43,7 @@ dependencies:
   google_fonts: ^6.2.1
   hive_flutter: ^1.1.0
   socket_io_client: ^3.0.2
+  font_awesome_flutter: ^10.8.0
 
 dev_dependencies:
   flutter_test:
@@ -72,8 +73,10 @@ flutter:
     - assets/salt.png
     - assets/sugar.png
     - assets/background.jpg
+    - assets/background1.jpg
     - assets/background2.jpg
     - assets/emptycart.png
+    - assets/noimage.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
