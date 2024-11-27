@@ -22,6 +22,8 @@ class _BreadOrderScreenState extends State<BreadOrderScreen> {
   bool isButtonEnabled = false; // Variable to track button state
   String day = ''; // Variable to track the day label
   String buttonText = 'הוסף לסל'; // Button text
+  bool isLoading = true; // Added variable for loading state
+  String? errorMessage; // New variable for error handling
 
   @override
   void initState() {
@@ -30,55 +32,65 @@ class _BreadOrderScreenState extends State<BreadOrderScreen> {
     checkTime();
   }
 
-void checkTime() {
-  final now = DateTime.now();
-  final currentDay = now.weekday;
-  final currentTime = TimeOfDay.fromDateTime(now);
+  void checkTime() {
+    final now = DateTime.now();
+    final currentDay = now.weekday;
+    final currentTime = TimeOfDay.fromDateTime(now);
 
-  // Define restriction times for easier comparisons
-  const startRestrictionTime = TimeOfDay(hour: 20, minute: 5);
-  const endRestrictionTime = TimeOfDay(hour: 20, minute: 0);
+    // Define restriction times for easier comparisons
+    const startRestrictionTime = TimeOfDay(hour: 20, minute: 5);
+    const endRestrictionTime = TimeOfDay(hour: 20, minute: 0);
 
-  bool isWithinRestriction(TimeOfDay current) {
-    return (current.hour == startRestrictionTime.hour && current.minute >= startRestrictionTime.minute) ||
-           (current.hour == endRestrictionTime.hour && current.minute < endRestrictionTime.minute);
-  }
-
-  setState(() {
-    if (isWithinRestriction(currentTime)) {
-      // Restriction time, set button disabled and message
-      day = '';
-      isButtonEnabled = false;
-      buttonText = 'המתן ל 8:05 כדי להזמין';
-    } else if (currentDay == DateTime.monday || currentDay == DateTime.tuesday ||
-               currentDay == DateTime.wednesday || (currentDay == DateTime.thursday && !isWithinRestriction(currentTime))) {
-      // Days when orders are open for 'שלישי'
-      day = 'שישי';
-      isButtonEnabled = true;
-      buttonText = 'הוסף לסל';
-    } else if ((currentDay == DateTime.thursday && isWithinRestriction(currentTime)) ||
-               currentDay == DateTime.friday || currentDay == DateTime.saturday || currentDay == DateTime.sunday) {
-      // Days when orders are open for 'שישי'
-      day = 'שלישי';
-      isButtonEnabled = true;
-      buttonText = 'הוסף לסל';
-    } else {
-      // Default to restriction if none matched
-      day = '';
-      isButtonEnabled = false;
-      buttonText = 'המתן ל 8:05 כדי להזמין';
+    bool isWithinRestriction(TimeOfDay current) {
+      return (current.hour == startRestrictionTime.hour &&
+              current.minute >= startRestrictionTime.minute) ||
+          (current.hour == endRestrictionTime.hour &&
+              current.minute < endRestrictionTime.minute);
     }
 
-    // Debugging prints to verify each variable's state
-    print('Day set to: $day');
-    print('Button Enabled: $isButtonEnabled');
-    print('Button Text: $buttonText');
-  });
-}
+    setState(() {
+      if (isWithinRestriction(currentTime)) {
+        // Restriction time, set button disabled and message
+        day = '';
+        isButtonEnabled = false;
+        buttonText = 'המתן ל 8:05 כדי להזמין';
+      } else if (currentDay == DateTime.monday ||
+          currentDay == DateTime.tuesday ||
+          currentDay == DateTime.wednesday ||
+          (currentDay == DateTime.thursday &&
+              !isWithinRestriction(currentTime))) {
+        // Days when orders are open for 'שלישי'
+        day = 'שישי';
+        isButtonEnabled = true;
+        buttonText = 'הוסף לסל';
+      } else if ((currentDay == DateTime.thursday &&
+              isWithinRestriction(currentTime)) ||
+          currentDay == DateTime.friday ||
+          currentDay == DateTime.saturday ||
+          currentDay == DateTime.sunday) {
+        // Days when orders are open for 'שישי'
+        day = 'שלישי';
+        isButtonEnabled = true;
+        buttonText = 'הוסף לסל';
+      } else {
+        // Default to restriction if none matched
+        day = '';
+        isButtonEnabled = false;
+        buttonText = 'המתן ל 8:05 כדי להזמין';
+      }
 
-
+      // Debugging prints to verify each variable's state
+      print('Day set to: $day');
+      print('Button Enabled: $isButtonEnabled');
+      print('Button Text: $buttonText');
+    });
+  }
 
   Future<void> fetchBreadData() async {
+    setState(() {
+      isLoading = true; // Ensure loading starts when data fetch begins
+      errorMessage = null; // Reset error message before fetching data
+    });
     try {
       final response = await http
           .get(Uri.parse('http://$ipAddress:3000/api/showAllBreadTypes'));
@@ -98,6 +110,14 @@ void checkTime() {
       }
     } catch (e) {
       print('Error fetching bread data: $e');
+      setState(() {
+        errorMessage =
+            'שגיאה בטעינת נתונים. נסה שוב מאוחר יותר'; // Error message in Hebrew
+      });
+    } finally {
+      setState(() {
+        isLoading = false; // Ensure loading finishes
+      });
     }
   }
 
@@ -130,72 +150,90 @@ void checkTime() {
     );
   }
 
-@override
-Widget build(BuildContext context) {
-  return Scaffold(
-    body: Directionality(
-      textDirection: TextDirection.rtl,
-      child: Container(
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/background.jpg'), // Set background image
-            fit: BoxFit.cover, // Ensure the image covers the entire screen
-          ),
-        ),
-        child: Column(
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(16.0),
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: isLoading
+          ? const Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(), // Spinner
+                  SizedBox(height: 16),
+                  Text(
+                    'טוען נתונים, אנא המתן...', // "Loading data, please wait..."
+                    style: TextStyle(fontSize: 18),
+                  ),
+                ],
+              ),
+            )
+          : Directionality(
+              textDirection: TextDirection.rtl,
+              child: Container(
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage(
+                        'assets/background.jpg'), // Set background image
+                    fit: BoxFit
+                        .cover, // Ensure the image covers the entire screen
+                  ),
+                ),
                 child: Column(
                   children: [
-                    Text(
-                      'הזמנת לחם ליום $day',
-                      style: const TextStyle(
-                        fontSize: 24.0,
-                        fontWeight: FontWeight.bold,
+                    Expanded(
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          children: [
+                            Text(
+                              'הזמנת לחם ליום $day', // "Bread order for $day"
+                              style: const TextStyle(
+                                fontSize: 24.0,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 16.0),
+                            // Display the bread list with quantity rows
+                            ...breadList.map((bread) {
+                              return Column(
+                                children: [
+                                  BreadQuantityRow(
+                                    name: bread.name,
+                                    price: bread.price,
+                                    onQuantitySelected: (int quantity) {
+                                      onQuantitySelected(bread, quantity);
+                                    },
+                                    quantity: bread.quantity,
+                                  ),
+                                  const SizedBox(height: 16.0),
+                                ],
+                              );
+                            }).toList(),
+                          ],
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 16.0),
-                    ...breadList.map((bread) {
-                      return Column(
-                        children: [
-                          BreadQuantityRow(
-                            name: bread.name,
-                            price: bread.price,
-                            onQuantitySelected: (int quantity) {
-                              onQuantitySelected(bread, quantity);
-                            },
-                            quantity: bread.quantity,
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: SizedBox(
+                        width: 395, // Set the desired width here
+                        child: ElevatedButton(
+                          onPressed: isButtonEnabled
+                              ? () {
+                                  addToCart(context);
+                                }
+                              : null,
+                          child: Text(
+                            buttonText, // Button text based on the time restriction
+                            style: const TextStyle(color: Colors.white),
                           ),
-                          const SizedBox(height: 16.0),
-                        ],
-                      );
-                    })
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: ElevatedButton(
-                onPressed: isButtonEnabled
-                    ? () {
-                        addToCart(context);
-                      }
-                    : null,
-                child: Text(
-                  buttonText,
-                  style: const TextStyle(color: Colors.white),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    ),
-  );
-}
-
-
+    );
+  }
 }

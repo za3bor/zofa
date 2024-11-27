@@ -16,11 +16,12 @@ class TabsScreen extends StatefulWidget {
 
   @override
   State<TabsScreen> createState() {
-    return  TabsScreenState();
+    return TabsScreenState();
   }
 }
 
-class TabsScreenState extends State<TabsScreen> with SingleTickerProviderStateMixin {
+class TabsScreenState extends State<TabsScreen>
+    with SingleTickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int _selectedPageIndex = 0;
   int cartItemCount = 0;
@@ -31,8 +32,8 @@ class TabsScreenState extends State<TabsScreen> with SingleTickerProviderStateMi
   @override
   void initState() {
     super.initState();
-    _loadCartItemCount();
-    
+    _loadInitialCartItemCount();
+
     // Initialize the animation controller and rotation animation
     _controller = AnimationController(
       vsync: this,
@@ -43,25 +44,20 @@ class TabsScreenState extends State<TabsScreen> with SingleTickerProviderStateMi
     );
   }
 
-  /// Load the cart item count from Hive storage.
-  Future<void> _loadCartItemCount() async {
+  /// Directly read `cartItemCountNotifier.value` on load
+  void _loadInitialCartItemCount() async {
     var box = await Hive.openBox('cart');
     Map cartData = box.get('cart', defaultValue: {});
 
-    // Ensure the sum is cast to an int
-    int count = cartData.values.fold<int>(
+    cartItemCountNotifier.value = cartData.values.fold<int>(
       0,
       (sum, item) => sum + ((item['quantity'] ?? 0) as int),
     );
-
-    setState(() {
-      cartItemCount = count;
-    });
   }
 
   /// Trigger the cart spin animation from the "Add to Cart" action
   void triggerCartSpin() {
-    _controller.forward(from: 0.0);  // Start the spin animation
+    _controller.forward(from: 0.0); // Start the spin animation
   }
 
   void _selectPage(int index) {
@@ -70,7 +66,7 @@ class TabsScreenState extends State<TabsScreen> with SingleTickerProviderStateMi
     });
   }
 
-    @override
+  @override
   void dispose() {
     _controller.dispose();
     super.dispose();
@@ -184,68 +180,56 @@ class TabsScreenState extends State<TabsScreen> with SingleTickerProviderStateMi
       endDrawer: Directionality(
         textDirection: TextDirection.rtl, // Set text direction to RTL
         child: Drawer(
-          child: Container(
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image:
-                    AssetImage('assets/background2.jpg'), // Use your image path
-                fit: BoxFit.cover, // Ensure the image covers the whole drawer
-                opacity: 0.78,
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: <Widget>[
+              const DrawerHeader(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image:
+                        AssetImage('assets/drawer.jpeg'), // Use your image path
+                    fit: BoxFit
+                        .cover, // Ensures the image fills the DrawerHeader
+                  ),
+                ),
+                child: Align(),
               ),
-            ),
-            child: ListView(
-              padding: EdgeInsets.zero,
-              children: <Widget>[
-                const DrawerHeader(
-                  child: Text(
-                    'ניווט',
-                  ),
-                ),
-                ListTile(
-                  leading: const Icon(Icons.home),
-                  title: const Text(
-                    'צור קשר',
-                  ),
-                  onTap: () {
-                    _navigateToDrawerPage(ContactUsScreen());
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.person),
-                  title: const Text(
-                    'אודות האפליקציה',
-                  ),
-                  onTap: () {
-                    _navigateToDrawerPage(const AboutAppScreen());
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.settings),
-                  title: const Text(
-                    'הגדרות',
-                  ),
-                  onTap: () {
-                    _navigateToDrawerPage(const ShareAppScreen());
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.notifications),
-                  title: const Text('הערות'),
-                  onTap: () {
-                    _navigateToDrawerPage(const RateAppScreen());
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.info),
-                  title: const Text(
-                    'תנאי שימוש',
-                  ),
-                  onTap: () {
-                    _navigateToDrawerPage(const TermOfUseScreen());
-                  },
-                ),
-              ],
-            ),
+              ListTile(
+                leading: const Icon(Icons.home),
+                title: const Text('צור קשר'),
+                onTap: () {
+                  _navigateToDrawerPage(ContactUsScreen());
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.person),
+                title: const Text('אודות האפליקציה'),
+                onTap: () {
+                  _navigateToDrawerPage(const AboutAppScreen());
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.settings),
+                title: const Text('הגדרות'),
+                onTap: () {
+                  _navigateToDrawerPage(const ShareAppScreen());
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.notifications),
+                title: const Text('הערות'),
+                onTap: () {
+                  _navigateToDrawerPage(const RateAppScreen());
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.info),
+                title: const Text('תנאי שימוש'),
+                onTap: () {
+                  _navigateToDrawerPage(const TermOfUseScreen());
+                },
+              ),
+            ],
           ),
         ),
       ),

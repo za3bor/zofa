@@ -107,12 +107,12 @@ class _CheckoutPageScreenState extends State<CheckoutPageScreen> {
     var box = await Hive.openBox('cart');
     Map cartData = box.get('cart', defaultValue: {});
 
-    int totalQuantity = cartData.values.fold(0, (int sum, item) {
-      return sum + (item['quantity'] ?? 0)
-          as int; // Ensure the result is treated as an int
-    });
+    int totalQuantity = cartData.values.fold<int>(
+      0,
+      (sum, item) => sum + ((item['quantity'] ?? 0) as int),
+    );
 
-    // Update the cart item count notifier to reflect the new quantity
+    // Update the global cart item count
     cartItemCountNotifier.value = totalQuantity;
   }
 

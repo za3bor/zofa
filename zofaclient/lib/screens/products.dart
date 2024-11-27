@@ -32,6 +32,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
       ScrollController(); // ScrollController for SingleChildScrollView
   final Map<int, int> _productQuantities =
       {}; // Map to store product quantities
+  late Future<void> combinedFuture; // Combines both future calls
+  bool _isLoading = false; // Shared loading state
 
   late IO.Socket _socket; // Declare the socket instance
 
@@ -95,6 +97,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
   }
 
   Future<void> _fetchCategories() async {
+    setState(() {
+      _isLoading = true; // Start loading
+    });
     try {
       final response = await http.get(
         Uri.parse('http://$ipAddress:3000/api/getAllCategories'),
@@ -124,10 +129,17 @@ class _ProductsScreenState extends State<ProductsScreen> {
         _categoriesError = true; // Set error state
       });
       print('Error fetching categories: $e');
+    } finally {
+      setState(() {
+        _isLoading = false; // Stop loading
+      });
     }
   }
 
   Future<void> _fetchProducts() async {
+    setState(() {
+      _isLoading = true; // Set loading state to true while fetching
+    });
     List<int> selectedCategoryIds = _selectAll
         ? []
         : _categorySelections.entries
@@ -160,11 +172,16 @@ class _ProductsScreenState extends State<ProductsScreen> {
           for (var product in _products) {
             _productQuantities[product.id] = 0;
           }
+          _isLoading = false; // Set loading state to false once data is loaded
         });
       } else {
         throw Exception('Failed to load products');
       }
     } catch (e) {
+      setState(() {
+        _isLoading = false; // Set loading state to false on error
+        _categoriesError = true; // Set error state
+      });
       print('Error fetching products: $e');
     }
   }
@@ -222,6 +239,11 @@ class _ProductsScreenState extends State<ProductsScreen> {
       await box.put('cart', cartData);
 
       // Update the global cart count
+
+      // cartItemCountNotifier.value = cartData.values.fold<int>(
+      //0,
+      // (sum, item) => sum + ((item['quantity'] ?? 0) as int),
+      // );
       int newCount = cartData.values.fold<int>(
         0,
         (sum, item) => sum + (item['quantity'] as int), // Explicit cast to int
@@ -247,6 +269,13 @@ class _ProductsScreenState extends State<ProductsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Center(
+        child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(Colors.brown),
+        ),
+      );
+    }
     if (_categoriesError) {
       // Display error message if categories failed to load
       return const Center(
@@ -396,249 +425,264 @@ class _ProductsScreenState extends State<ProductsScreen> {
 
           // Products display or error message
           Expanded(
-            child: _filteredProducts.isEmpty
-                ? Center(
-                    child: Text(
-                      _searchController.text.isNotEmpty
-                          ? 'אין מוצרים להצגה' // No products match the search
-                          : _products.isEmpty
-                              ? 'אין מוצרים להצגה' // No products available
-                              : 'שגיאה בטעינת המוצרים, נסה שוב מאוחר יותר', // Error loading products
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.redAccent,
-                      ),
-                    ),
+            child: _isLoading
+                ? const Center(
+                    child: CircularProgressIndicator(),
                   )
-                : Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: GridView.builder(
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: MediaQuery.of(context).size.width > 600
-                            ? 3
-                            : 2, // Responsive grid
-                        crossAxisSpacing: 10,
-                        mainAxisSpacing: 10,
-                        childAspectRatio:
-                            0.52, // Adjust item height/width ratio for better look
-                      ),
-                      itemCount: _filteredProducts.length,
-                      itemBuilder: (ctx, index) {
-                        final product = _filteredProducts[index];
-                        final imageUrl =
-                            'https://f003.backblazeb2.com/file/zofapic/${product.id}.jpeg';
+                : _filteredProducts.isEmpty
+                    ? Center(
+                        child: Text(
+                          _searchController.text.isNotEmpty
+                              ? 'אין מוצרים להצגה' // No products match the search
+                              : _products.isEmpty
+                                  ? 'אין מוצרים להצגה' // No products available
+                                  : 'שגיאה בטעינת המוצרים, נסה שוב מאוחר יותר', // Error loading products
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.redAccent,
+                          ),
+                        ),
+                      )
+                    : Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: GridView.builder(
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount:
+                                MediaQuery.of(context).size.width > 600
+                                    ? 3
+                                    : 2, // Responsive grid
+                            crossAxisSpacing: 10,
+                            mainAxisSpacing: 10,
+                            childAspectRatio:
+                                0.52, // Adjust item height/width ratio for better look
+                          ),
+                          itemCount: _filteredProducts.length,
+                          itemBuilder: (ctx, index) {
+                            final product = _filteredProducts[index];
+                            final imageUrl =
+                                'https://f003.backblazeb2.com/file/zofapic/${product.id}.jpeg';
 
-                        return GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ProductDetailsScreen(
-                                  productId: product.id,
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ProductDetailsScreen(
+                                      productId: product.id,
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: Card(
+                                color: Theme.of(context)
+                                    .cardColor, // Use cardColor from ThemeData
+
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                elevation: 5,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(12.0),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      // Product Image
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(10),
+                                        child: imageUrl
+                                                .isNotEmpty // This is for checking a String (imageUrl)
+                                            ? Hero(
+                                                tag:
+                                                    'imageHero-${product.id}', // Unique tag for Hero animation
+                                                child: ColorFiltered(
+                                                  colorFilter: ColorFilter.mode(
+                                                    const Color.fromARGB(
+                                                            255, 121, 85, 72)
+                                                        .withOpacity(0.25),
+                                                    BlendMode.darken,
+                                                  ),
+                                                  child: Image.network(
+                                                    imageUrl,
+                                                    fit: BoxFit.cover,
+                                                    height: 150,
+                                                    width: double.infinity,
+                                                    loadingBuilder: (BuildContext
+                                                            context,
+                                                        Widget child,
+                                                        ImageChunkEvent?
+                                                            loadingProgress) {
+                                                      if (loadingProgress ==
+                                                          null) {
+                                                        return child;
+                                                      }
+                                                      return Center(
+                                                        child:
+                                                            CircularProgressIndicator(
+                                                          value: loadingProgress
+                                                                      .expectedTotalBytes !=
+                                                                  null
+                                                              ? loadingProgress
+                                                                      .cumulativeBytesLoaded /
+                                                                  (loadingProgress
+                                                                          .expectedTotalBytes ??
+                                                                      1)
+                                                              : null,
+                                                        ),
+                                                      );
+                                                    },
+                                                    errorBuilder:
+                                                        (BuildContext context,
+                                                            Object error,
+                                                            StackTrace?
+                                                                stackTrace) {
+                                                      return Image.asset(
+                                                        'assets/noimage.jpg', // Fallback image
+                                                        fit: BoxFit.cover,
+                                                        height: 150,
+                                                        width: double.infinity,
+                                                      );
+                                                    },
+                                                  ),
+                                                ),
+                                              )
+                                            : Image.asset(
+                                                'assets/noimage.jpg', // Fallback image if no imageUrl is present
+                                                fit: BoxFit.cover,
+                                                height: 150,
+                                                width: double.infinity,
+                                              ),
+                                      ),
+
+                                      const SizedBox(height: 10),
+
+                                      // Product Name (Right to Left alignment)
+                                      Align(
+                                        alignment: Alignment.centerRight,
+                                        child: Text(
+                                          product.name,
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black87,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 2,
+                                          textAlign: TextAlign
+                                              .right, // Ensuring RTL alignment for product name
+                                        ),
+                                      ),
+                                      const SizedBox(height: 5),
+
+                                      // Product Price
+                                      Center(
+                                        child: Text(
+                                          '₪ ${product.price.toStringAsFixed(1)}',
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                      if (!product.stock) ...[
+                                        const SizedBox(height: 5),
+                                        const Center(
+                                          child: Text(
+                                            'המוצר אזל מהמלאי',
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.grey,
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 5),
+                                        Center(
+                                          child: ElevatedButton(
+                                            onPressed: null,
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: Colors.grey,
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 18,
+                                                      vertical: 8),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(30),
+                                              ),
+                                            ),
+                                            child: const Text(
+                                              'אזל מהמלאי',
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ] else ...[
+                                        // Quantity Controls
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            IconButton(
+                                              icon: const Icon(Icons.remove),
+                                              onPressed: () {
+                                                _decrementQuantity(product.id);
+                                              },
+                                            ),
+                                            Text(
+                                              '${_productQuantities[product.id] ?? 0}',
+                                              style:
+                                                  const TextStyle(fontSize: 16),
+                                            ),
+                                            IconButton(
+                                              icon: const Icon(Icons.add),
+                                              onPressed: () {
+                                                _incrementQuantity(product.id);
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 5),
+
+                                        // Add to Cart Button (Hebrew)
+                                        Center(
+                                          child: ElevatedButton(
+                                            onPressed: () =>
+                                                _addToCart(product.id),
+                                            style: ElevatedButton.styleFrom(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 18,
+                                                      vertical: 8),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(30),
+                                              ),
+                                            ),
+                                            child: const Text(
+                                              'הוסף לסל', // Hebrew for "Add to Cart"
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ],
+                                  ),
                                 ),
                               ),
                             );
                           },
-                          child: Card(
-                            color: Theme.of(context)
-                                .cardColor, // Use cardColor from ThemeData
-
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            elevation: 5,
-                            child: Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  // Product Image
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(10),
-                                    child: imageUrl
-                                            .isNotEmpty // This is for checking a String (imageUrl)
-                                        ? Hero(
-                                            tag:
-                                                'imageHero-${product.id}', // Unique tag for Hero animation
-                                            child: ColorFiltered(
-                                              colorFilter: ColorFilter.mode(
-                                                const Color.fromARGB(
-                                                        255, 121, 85, 72)
-                                                    .withOpacity(0.25),
-                                                BlendMode.darken,
-                                              ),
-                                              child: Image.network(
-                                                imageUrl,
-                                                fit: BoxFit.cover,
-                                                height: 150,
-                                                width: double.infinity,
-                                                loadingBuilder:
-                                                    (BuildContext context,
-                                                        Widget child,
-                                                        ImageChunkEvent?
-                                                            loadingProgress) {
-                                                  if (loadingProgress == null) {
-                                                    return child;
-                                                  }
-                                                  return Center(
-                                                    child:
-                                                        CircularProgressIndicator(
-                                                      value: loadingProgress
-                                                                  .expectedTotalBytes !=
-                                                              null
-                                                          ? loadingProgress
-                                                                  .cumulativeBytesLoaded /
-                                                              (loadingProgress
-                                                                      .expectedTotalBytes ??
-                                                                  1)
-                                                          : null,
-                                                    ),
-                                                  );
-                                                },
-                                                errorBuilder: (BuildContext
-                                                        context,
-                                                    Object error,
-                                                    StackTrace? stackTrace) {
-                                                  return Image.asset(
-                                                    'assets/noimage.jpg', // Fallback image
-                                                    fit: BoxFit.cover,
-                                                    height: 150,
-                                                    width: double.infinity,
-                                                  );
-                                                },
-                                              ),
-                                            ),
-                                          )
-                                        : Image.asset(
-                                            'assets/noimage.jpg', // Fallback image if no imageUrl is present
-                                            fit: BoxFit.cover,
-                                            height: 150,
-                                            width: double.infinity,
-                                          ),
-                                  ),
-
-                                  const SizedBox(height: 10),
-
-                                  // Product Name (Right to Left alignment)
-                                  Align(
-                                    alignment: Alignment.centerRight,
-                                    child: Text(
-                                      product.name,
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black87,
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 2,
-                                      textAlign: TextAlign
-                                          .right, // Ensuring RTL alignment for product name
-                                    ),
-                                  ),
-                                  const SizedBox(height: 5),
-
-                                  // Product Price
-                                  Center(
-                                    child: Text(
-                                      '₪ ${product.price.toStringAsFixed(1)}',
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                  if (!product.stock) ...[
-                                    const SizedBox(height: 5),
-                                    const Center(
-                                      child: Text(
-                                        'המוצר אזל מהמלאי',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.grey,
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 5),
-                                    Center(
-                                      child: ElevatedButton(
-                                        onPressed: null,
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: Colors.grey,
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 18, vertical: 8),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(30),
-                                          ),
-                                        ),
-                                        child: const Text(
-                                          'אזל מהמלאי',
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ] else ...[
-                                    // Quantity Controls
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        IconButton(
-                                          icon: const Icon(Icons.remove),
-                                          onPressed: () {
-                                            _decrementQuantity(product.id);
-                                          },
-                                        ),
-                                        Text(
-                                          '${_productQuantities[product.id] ?? 0}',
-                                          style: const TextStyle(fontSize: 16),
-                                        ),
-                                        IconButton(
-                                          icon: const Icon(Icons.add),
-                                          onPressed: () {
-                                            _incrementQuantity(product.id);
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 5),
-
-                                    // Add to Cart Button (Hebrew)
-                                    Center(
-                                      child: ElevatedButton(
-                                        onPressed: () => _addToCart(product.id),
-                                        style: ElevatedButton.styleFrom(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 18, vertical: 8),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(30),
-                                          ),
-                                        ),
-                                        child: const Text(
-                                          'הוסף לסל', // Hebrew for "Add to Cart"
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ],
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
+                        ),
+                      ),
           ),
         ],
       ),
