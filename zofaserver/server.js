@@ -564,6 +564,24 @@ app.post("/api/saveProductCategories", async (req, res) => {
   }
 });
 
+// DELETE route to Bread Order by ID
+app.delete("/api/deleteBreadOrder/:id", async (req, res) => {
+  const { id } = req.params; // Get the Bread Order ID from request parameters
+  
+  try {
+    const result = await breadDataHandler.deleteBreadOrderById(id); // Call function to delete Bread Order
+    if (result.affectedRows > 0) {
+      // Check if any rows were affected
+      res.status(200).json({ message: "Bread Order deleted successfully" }); // Send success response
+    } else {
+      res.status(404).json({ error: "Bread Order not found" }); // Handle case where Bread Order does not exist
+    }
+  } catch (err) {
+    console.error("Error deleting Bread Order:", err.message);
+    res.status(500).json({ error: "Error deleting Bread Order" });
+  }
+});
+
 // Example Socket.IO Event
 io.on("connection", (socket) => {
   console.log("A user connected:", socket.id);

@@ -34,49 +34,51 @@ class _BreadOrderScreenState extends State<BreadOrderScreen> {
 
   void checkTime() {
     final now = DateTime.now();
-    final currentDay = now.weekday;
+    final currentDay = now.weekday; // Monday = 1, Sunday = 7
     final currentTime = TimeOfDay.fromDateTime(now);
 
-    // Define restriction times for easier comparisons
-    const startRestrictionTime = TimeOfDay(hour: 20, minute: 5);
-    const endRestrictionTime = TimeOfDay(hour: 20, minute: 0);
+    // Define restriction times
+    const startThursdayEvening = TimeOfDay(hour: 20, minute: 15); // 8:15 PM
+    const endMondayEvening = TimeOfDay(hour: 20, minute: 0); // 8:00 PM
+    const startMondayEvening = TimeOfDay(hour: 20, minute: 15); // 8:15 PM
+    const endThursdayEvening = TimeOfDay(hour: 20, minute: 0); // 8:00 PM
 
-    bool isWithinRestriction(TimeOfDay current) {
-      return (current.hour == startRestrictionTime.hour &&
-              current.minute >= startRestrictionTime.minute) ||
-          (current.hour == endRestrictionTime.hour &&
-              current.minute < endRestrictionTime.minute);
+    // Helper function to compare times
+    bool isAfterOrEqual(TimeOfDay time1, TimeOfDay time2) {
+      return time1.hour > time2.hour ||
+          (time1.hour == time2.hour && time1.minute >= time2.minute);
+    }
+
+    bool isBefore(TimeOfDay time1, TimeOfDay time2) {
+      return time1.hour < time2.hour ||
+          (time1.hour == time2.hour && time1.minute < time2.minute);
     }
 
     setState(() {
-      if (isWithinRestriction(currentTime)) {
-        // Restriction time, set button disabled and message
-        day = '';
-        isButtonEnabled = false;
-        buttonText = 'המתן ל 8:05 כדי להזמין';
-      } else if (currentDay == DateTime.monday ||
-          currentDay == DateTime.tuesday ||
-          currentDay == DateTime.wednesday ||
-          (currentDay == DateTime.thursday &&
-              !isWithinRestriction(currentTime))) {
-        // Days when orders are open for 'שלישי'
-        day = 'שישי';
+      if ((currentDay == DateTime.thursday &&
+              isAfterOrEqual(currentTime, startThursdayEvening)) ||
+          (currentDay == DateTime.friday ||
+              currentDay == DateTime.saturday ||
+              currentDay == DateTime.sunday ||
+              (currentDay == DateTime.monday &&
+                  isBefore(currentTime, endMondayEvening)))) {
+        day = 'שלישי'; // Tuesday
         isButtonEnabled = true;
         buttonText = 'הוסף לסל';
-      } else if ((currentDay == DateTime.thursday &&
-              isWithinRestriction(currentTime)) ||
-          currentDay == DateTime.friday ||
-          currentDay == DateTime.saturday ||
-          currentDay == DateTime.sunday) {
-        // Days when orders are open for 'שישי'
-        day = 'שלישי';
+      } else if ((currentDay == DateTime.monday &&
+              isAfterOrEqual(currentTime, startMondayEvening)) ||
+          (currentDay == DateTime.tuesday ||
+              currentDay == DateTime.wednesday ||
+              (currentDay == DateTime.thursday &&
+                  isBefore(currentTime, endThursdayEvening)))) {
+        day = 'שישי'; // Friday
         isButtonEnabled = true;
         buttonText = 'הוסף לסל';
       } else {
-        // Default to restriction if none matched
+        // Outside ordering hours
         day = '';
         isButtonEnabled = false;
-        buttonText = 'המתן ל 8:05 כדי להזמין';
+        buttonText = 'הזמנה אינה זמינה כעת';
       }
 
       // Debugging prints to verify each variable's state

@@ -96,6 +96,35 @@ class _AdminBreadOrdersScreenState extends State<AdminBreadOrdersScreen> {
     getOrders();
   }
 
+// Function to delete bread order
+  Future<void> deleteOrder(int orderId) async {
+    try {
+      setState(() {
+        buttonEnabled = false;
+      });
+
+      final response = await http.delete(
+        Uri.parse('http://$ipAddress:3000/api/deleteBreadOrder/$orderId'),
+      );
+
+      if (response.statusCode == 200) {
+        setState(() {
+          _breadOrders.removeWhere(
+              (order) => order.id == orderId); // Remove the order from the list
+        });
+        _showSnackbar('ההזמנה נמחקה בהצלחה.');
+      } else {
+        throw Exception('Failed to delete bread order.');
+      }
+    } catch (e) {
+      _showSnackbar('שגיאה במחיקת ההזמנה.');
+    } finally {
+      setState(() {
+        buttonEnabled = true;
+      });
+    }
+  }
+
   Future<void> changeStatus(int orderId, String newStatus) async {
     try {
       setState(() {
@@ -157,10 +186,7 @@ class _AdminBreadOrdersScreenState extends State<AdminBreadOrdersScreen> {
               ? Center(
                   child: Text(
                     _errorMessage!,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      color: Colors.red,
-                    ),
+                    style: const TextStyle(fontSize: 18, color: Colors.red),
                   ),
                 )
               : _breadOrders.isEmpty
@@ -205,6 +231,10 @@ class _AdminBreadOrdersScreenState extends State<AdminBreadOrdersScreen> {
                           itemCount: _breadOrders.length,
                           itemBuilder: (context, index) {
                             final order = _breadOrders[index];
+                            // Determine button states based on the order status
+                            bool isReady = order.status == 'מוכן';
+                            bool isShipped = order.status == 'שלח';
+
                             return Card(
                               margin:
                                   const EdgeInsets.symmetric(vertical: 10.0),
@@ -218,44 +248,43 @@ class _AdminBreadOrdersScreenState extends State<AdminBreadOrdersScreen> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
+                                      Text('שם משתמש: ${order.userName}'),
+                                      Text('טלפון: ${order.phoneNumber}'),
+                                      Text('פרטי הזמנה: ${order.orderDetails}'),
                                       Text(
-                                        'שם משתמש: ${order.userName}',
-                                      ),
-                                      Text(
-                                        'טלפון: ${order.phoneNumber}',
-                                      ),
-                                      Text(
-                                        'פרטי הזמנה: ${order.orderDetails}',
-                                      ),
-                                      Text(
-                                        'סכום סופי: ₪${order.totalPrice.toStringAsFixed(2)}',
-                                      ),
-                                      Text(
-                                        'סטטוס: ${order.status}',
-                                      ),
+                                          'סכום סופי: ₪${order.totalPrice.toStringAsFixed(2)}'),
+                                      Text('סטטוס: ${order.status}'),
                                       const SizedBox(height: 10),
                                       Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.end,
                                         children: [
                                           ElevatedButton(
-                                            onPressed: buttonEnabled
-                                                ? () {
+                                            onPressed: isShipped || isReady
+                                                ? null
+                                                : () {
                                                     changeStatus(
-                                                        order.id, 'המתנה');
-                                                  }
-                                                : null,
-                                            child: const Text('המתנה'),
+                                                        order.id, 'מוכן');
+                                                  },
+                                            child: const Text('מוכן'),
                                           ),
                                           const SizedBox(width: 8.0),
                                           ElevatedButton(
-                                            onPressed: buttonEnabled
-                                                ? () {
+                                            onPressed: isShipped
+                                                ? null
+                                                : () {
                                                     changeStatus(
-                                                        order.id, 'מוכן');
-                                                  }
-                                                : null,
-                                            child: const Text('מוכן'),
+                                                        order.id, 'שלח');
+                                                  },
+                                            child: const Text('שלח'),
+                                          ),
+                                          const SizedBox(width: 8.0),
+                                          ElevatedButton(
+                                            onPressed: () {
+                                              deleteOrder(
+                                                  order.id); // Call deleteOrder
+                                            },
+                                            child: const Text('מחק'),
                                           ),
                                         ],
                                       ),

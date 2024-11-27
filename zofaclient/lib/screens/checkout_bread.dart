@@ -66,7 +66,7 @@ class _CheckoutBreadScreenState extends State<CheckoutBreadScreen> {
         'phoneNumber': _phoneController.text,
         'orderDetails': result,
         'totalPrice': totalSum,
-        'status': 'Received',
+        'status': 'התקבל',
         'day': widget.day, // Add 'day' to the request body
       }),
     );
