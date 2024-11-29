@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert'; // For JSON decoding
 import 'package:zofa_client/constant.dart';
 
 class AddNewCategory extends StatefulWidget {

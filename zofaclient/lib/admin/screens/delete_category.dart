@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert'; // For JSON decoding
 import 'package:zofa_client/constant.dart';
 import 'package:zofa_client/models/category.dart';
 
@@ -15,7 +14,7 @@ class DeleteCategory extends StatefulWidget {
 
 class _DeleteCategoryState extends State<DeleteCategory> {
   List<Category> _categories = []; // List to hold categories
-  Map<int, bool> _categorySelections = {}; // Map to track selections for categories
+  final Map<int, bool> _categorySelections = {}; // Map to track selections for categories
   int? _selectedCategoryId; // Store the selected category's ID
 
   // Fetch categories from the server

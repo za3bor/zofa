@@ -5,7 +5,7 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:zofa_client/admin/screens/admin_main_page.dart';
-import 'package:zofa_client/screens/tabs.dart'; // Ensure this import is correct
+import 'package:zofa_client/screens/tabs.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -132,7 +132,7 @@ class _MyAppState extends State<MyApp> {
       home: Scaffold(
         body: isAdmin
             ? const AdminMainPageScreen() // Show admin screen for admin devices
-            : const AdminMainPageScreen(), // Show non-admin screen for non-admin devices
+            : const TabsScreen(), // Show non-admin screen for non-admin devices
       ),
     );
   }

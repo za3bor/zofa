@@ -210,25 +210,25 @@ class _BreadOrderScreenState extends State<BreadOrderScreen> {
                                   const SizedBox(height: 16.0),
                                 ],
                               );
-                            }).toList(),
+                            }),
+                            Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: SizedBox(
+                                width: 395, // Set the desired width here
+                                child: ElevatedButton(
+                                  onPressed: isButtonEnabled
+                                      ? () {
+                                          addToCart(context);
+                                        }
+                                      : null,
+                                  child: Text(
+                                    buttonText, // Button text based on the time restriction
+                                    style: const TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                              ),
+                            ),
                           ],
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: SizedBox(
-                        width: 395, // Set the desired width here
-                        child: ElevatedButton(
-                          onPressed: isButtonEnabled
-                              ? () {
-                                  addToCart(context);
-                                }
-                              : null,
-                          child: Text(
-                            buttonText, // Button text based on the time restriction
-                            style: const TextStyle(color: Colors.white),
-                          ),
                         ),
                       ),
                     ),

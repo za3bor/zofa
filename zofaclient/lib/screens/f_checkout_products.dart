@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:zofa_client/constant.dart';
 import 'package:hive/hive.dart';
-import 'dart:convert';
 
 class ProductCheckoutPage extends StatefulWidget {
   final double totalPrice;
@@ -12,7 +11,9 @@ class ProductCheckoutPage extends StatefulWidget {
       {super.key, required this.totalPrice, required this.cartItems});
 
   @override
-  State<ProductCheckoutPage> createState() => _CheckoutPageState();
+  State<ProductCheckoutPage> createState() {
+    return _CheckoutPageState();
+  }
 }
 
 class _CheckoutPageState extends State<ProductCheckoutPage> {
@@ -55,35 +56,42 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
     if (response.statusCode == 200) {
       // Parse the JSON response
       final data = jsonDecode(response.body);
-      final discountPercentage = double.tryParse(data['percentage'].toString()) ?? 0.0;
+      final discountPercentage =
+          double.tryParse(data['percentage'].toString()) ?? 0.0;
 
       setState(() {
-        _discountedPrice = widget.totalPrice * (1 - discountPercentage / 100); // Apply percentage discount
+        _discountedPrice = widget.totalPrice *
+            (1 - discountPercentage / 100); // Apply percentage discount
         _isCouponApplied = true;
-        _couponColor = Colors.green;  // Change color to green
-        _couponMessage = 'קופון יושם בהצלחה!';  // Success message
+        _couponColor = Colors.green; // Change color to green
+        _couponMessage = 'קופון יושם בהצלחה!'; // Success message
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('קופון יושם בהצלחה!', textDirection: TextDirection.rtl),
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content:
+                Text('קופון יושם בהצלחה!', textDirection: TextDirection.rtl),
+          ),
+        );
+      }
     } else {
       setState(() {
-        _couponColor = Colors.red;  // Change color to red
-        _couponMessage = 'קוד קופון לא תקף';  // Invalid coupon message
+        _couponColor = Colors.red; // Change color to red
+        _couponMessage = 'קוד קופון לא תקף'; // Invalid coupon message
 
         // Reset the price to the original price when the coupon is invalid
         _discountedPrice = widget.totalPrice;
         _isCouponApplied = false;
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('קוד קופון לא תקף', textDirection: TextDirection.rtl),
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('קוד קופון לא תקף', textDirection: TextDirection.rtl),
+          ),
+        );
+      }
     }
   }
 
@@ -139,18 +147,23 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
       var box = await Hive.openBox('cart');
       await box.clear();
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content:
-              Text('ההזמנה נשלחה בהצלחה', textDirection: TextDirection.rtl),
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content:
+                Text('ההזמנה נשלחה בהצלחה', textDirection: TextDirection.rtl),
+          ),
+        );
+      }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('יש בעיה נא להתקשר', textDirection: TextDirection.rtl),
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content:
+                Text('יש בעיה נא להתקשר', textDirection: TextDirection.rtl),
+          ),
+        );
+      }
       print(response.body);
     }
   }

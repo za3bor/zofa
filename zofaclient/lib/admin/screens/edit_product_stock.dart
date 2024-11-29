@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:zofa_client/models/product.dart';
@@ -8,7 +7,9 @@ class EditProductStockScreen extends StatefulWidget {
   const EditProductStockScreen({super.key});
 
   @override
-  State<EditProductStockScreen> createState() => _EditProductStockScreenState();
+  State<EditProductStockScreen> createState() {
+    return _EditProductStockScreenState();
+  }
 }
 
 class _EditProductStockScreenState extends State<EditProductStockScreen> {
@@ -229,7 +230,7 @@ class _EditProductStockScreenState extends State<EditProductStockScreen> {
                                     // Product Price
                                     Center(
                                       child: Text(
-                                        '\₪${product.price.toStringAsFixed(1)}',
+                                        '₪${product.price.toStringAsFixed(1)}',
                                       ),
                                     ),
                                     const SizedBox(height: 5),

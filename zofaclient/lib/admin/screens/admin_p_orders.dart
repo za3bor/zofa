@@ -8,7 +8,9 @@ class ProductOrdersScreen extends StatefulWidget {
   const ProductOrdersScreen({super.key});
 
   @override
-  State<ProductOrdersScreen> createState() => _ProductOrdersScreenState();
+  State<ProductOrdersScreen> createState() {
+    return _ProductOrdersScreenState();
+  }
 }
 
 class _ProductOrdersScreenState extends State<ProductOrdersScreen> {
@@ -43,12 +45,14 @@ class _ProductOrdersScreenState extends State<ProductOrdersScreen> {
       }
     } catch (error) {
       print('Error: $error');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('שגיאה בטעינת ההזמנות. אנא נסה שוב מאוחר יותר.'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('שגיאה בטעינת ההזמנות. אנא נסה שוב מאוחר יותר.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 

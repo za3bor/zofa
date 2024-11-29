@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:zofa_client/models/bread.dart';
 import 'package:http/http.dart' as http;
 import 'package:zofa_client/constant.dart';
+import 'package:zofa_client/widgets/snow_layer.dart';
 
 class CheckoutBreadScreen extends StatefulWidget {
   final List<MapEntry<Bread, int>> selectedItems;
@@ -74,17 +75,21 @@ class _CheckoutBreadScreenState extends State<CheckoutBreadScreen> {
     if (response.statusCode == 201) {
       _nameController.clear();
       _phoneController.clear();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content:
-                Text('ההזמנה נשלחה בהצלחה', textDirection: TextDirection.rtl)),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text('ההזמנה נשלחה בהצלחה',
+                  textDirection: TextDirection.rtl)),
+        );
+      }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content:
-                Text('יש בעיה נא להתקשר', textDirection: TextDirection.rtl)),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content:
+                  Text('יש בעיה נא להתקשר', textDirection: TextDirection.rtl)),
+        );
+      }
       print(response.body);
     }
   }
@@ -100,122 +105,157 @@ class _CheckoutBreadScreenState extends State<CheckoutBreadScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        flexibleSpace: const SnowLayer(), // Snow falling in the appBar
         title: const Text(
           'ביקורת הזמנה',
           style: TextStyle(fontFamily: 'Heebo'),
           textDirection: TextDirection.rtl,
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Directionality(
-          textDirection: TextDirection.rtl,
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Card(
-                  elevation: 3.0,
-                  margin: const EdgeInsets.only(bottom: 16.0),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'פריטים שנבחרו:',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18.0,
-                          ),
-                        ),
-                        const SizedBox(height: 8.0),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: widget.selectedItems.map((entry) {
-                            double itemTotal = entry.key.price * entry.value;
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 8.0),
-                                  child: Text(
-                                    '${entry.key.name}', // Only bread name
-                                    style: const TextStyle(fontSize: 16.0),
-                                  ),
-                                ),
-                                Row(
-                                  children: [
-                                    Text(
-                                      '${entry.value}x${entry.key.price.toStringAsFixed(2)}=${itemTotal.toStringAsFixed(2)}₪',
-                                      style: const TextStyle(fontSize: 16.0),
-                                    ),
-                                  ],
-                                ),
-                                const Divider(
-                                  color: Colors.grey,
-                                  thickness: 1,
-                                  height: 20,
-                                ),
-                              ],
-                            );
-                          }).toList(),
-                        ),
-                        const SizedBox(height: 10.0),
-                        Text(
-                          'סה"כ: ₪ ${totalPrice().toStringAsFixed(2)}',
-                          style: const TextStyle(
-                            fontSize: 16.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                // Add the payment info here
-                const Text(
-                  'תשלום וקבלה רק בחנות',
-                  style: TextStyle(
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.redAccent,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 16.0),
-                TextField(
-                  controller: _nameController,
-                  decoration: const InputDecoration(
-                    labelText: 'שם',
-                    border: OutlineInputBorder(),
-                  ),
-                  textDirection: TextDirection.rtl,
-                ),
-                const SizedBox(height: 16.0),
-                TextField(
-                  controller: _phoneController,
-                  keyboardType: TextInputType.phone,
-                  decoration: const InputDecoration(
-                    labelText: 'טלפון',
-                    border: OutlineInputBorder(),
-                  ),
-                  textDirection: TextDirection.rtl,
-                ),
-                const SizedBox(height: 16.0),
-                ElevatedButton(
-                  onPressed: _saveBreadOrder,
-                  child: const Text(
-                    'שלח',
-                    style: TextStyle(fontSize: 18.0),
-                    textDirection: TextDirection.rtl,
-                  ),
-                ),
-              ],
+      body: Stack(
+        children: [
+          // Full-Screen Background Image
+          Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image:
+                    AssetImage('assets/background.jpg'), // Path to your image
+                fit: BoxFit.cover, // Ensures it covers the entire screen
+              ),
             ),
           ),
-        ),
+          // Foreground Content
+          SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: MediaQuery.of(context)
+                    .size
+                    .height, // Ensure it fills the screen
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Card(
+                        color: Theme.of(context)
+                            .cardColor, // Use the card color from ThemeData
+
+                        elevation: 3.0,
+                        margin: const EdgeInsets.only(bottom: 16.0),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'פריטים שנבחרו:',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18.0,
+                                ),
+                              ),
+                              const SizedBox(height: 8.0),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: widget.selectedItems.map((entry) {
+                                  double itemTotal =
+                                      entry.key.price * entry.value;
+                                  return Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 8.0),
+                                        child: Text(
+                                          entry.key
+                                              .name, // Directly using the variable
+                                          style:
+                                              const TextStyle(fontSize: 16.0),
+                                        ),
+                                      ),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            '${entry.value}x${entry.key.price.toStringAsFixed(2)}=${itemTotal.toStringAsFixed(2)}₪',
+                                            style:
+                                                const TextStyle(fontSize: 16.0),
+                                          ),
+                                        ],
+                                      ),
+                                      const Divider(
+                                        color: Colors.grey,
+                                        thickness: 1,
+                                        height: 20,
+                                      ),
+                                    ],
+                                  );
+                                }).toList(),
+                              ),
+                              const SizedBox(height: 10.0),
+                              Text(
+                                'סה"כ: ₪ ${totalPrice().toStringAsFixed(2)}',
+                                style: const TextStyle(
+                                  fontSize: 16.0,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 5.0),
+                              const Text(
+                                'תשלום וקבלה רק בחנות',
+                                style: TextStyle(
+                                  fontSize: 16.0,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.redAccent,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16.0),
+                      TextField(
+                        controller: _nameController,
+                        decoration: const InputDecoration(
+                          labelText: 'שם',
+                          border: OutlineInputBorder(),
+                          filled: true, // Enables the background color
+                          fillColor: Color.fromARGB(255, 222, 210, 206),
+                        ),
+                        textDirection: TextDirection.rtl,
+                      ),
+                      const SizedBox(height: 16.0),
+                      TextField(
+                        controller: _phoneController,
+                        keyboardType: TextInputType.phone,
+                        decoration: const InputDecoration(
+                          labelText: 'טלפון',
+                          border: OutlineInputBorder(),
+                          filled: true, // Enables the background color
+                          fillColor: Color.fromARGB(255, 222, 210, 206),
+                        ),
+                        textDirection: TextDirection.rtl,
+                      ),
+                      const SizedBox(height: 16.0),
+                      ElevatedButton(
+                        onPressed: _saveBreadOrder,
+                        child: const Text(
+                          'שלח',
+                          style: TextStyle(fontSize: 18.0),
+                          textDirection: TextDirection.rtl,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

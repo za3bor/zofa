@@ -6,12 +6,13 @@ import 'package:zofa_client/constant.dart';
 import 'package:zofa_client/screens/product_details.dart';
 import 'package:hive/hive.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
-import 'dart:convert';
 import 'package:zofa_client/global.dart'; // Adjust the path accordingly
 import 'package:zofa_client/screens/tabs.dart'; // Import TabsScreen
 
 class ProductsScreen extends StatefulWidget {
-  const ProductsScreen({super.key});
+  const ProductsScreen({
+    super.key,
+  });
 
   @override
   State<ProductsScreen> createState() {
@@ -19,7 +20,8 @@ class ProductsScreen extends StatefulWidget {
   }
 }
 
-class _ProductsScreenState extends State<ProductsScreen> {
+class _ProductsScreenState extends State<ProductsScreen>
+    with TickerProviderStateMixin {
   List<Category> _categories = [];
   List<Product> _products = [];
   List<Product> _filteredProducts = [];
@@ -28,13 +30,15 @@ class _ProductsScreenState extends State<ProductsScreen> {
   bool _categoriesError =
       false; // To track if there's a problem with categories
   final TextEditingController _searchController = TextEditingController();
-  ScrollController _scrollController =
+  final ScrollController _scrollController =
       ScrollController(); // ScrollController for SingleChildScrollView
   final Map<int, int> _productQuantities =
       {}; // Map to store product quantities
   late Future<void> combinedFuture; // Combines both future calls
   bool _isLoading = false; // Shared loading state
-
+  late AnimationController _animationController;
+  late AnimationController _controller;
+  late Animation<Offset> _animation;
   late IO.Socket _socket; // Declare the socket instance
 
   @override
@@ -42,6 +46,21 @@ class _ProductsScreenState extends State<ProductsScreen> {
     super.initState();
     _initializeSocket();
     _fetchCategories();
+    _animationController = AnimationController(
+      vsync: this, // This is where the ticker is used.
+      duration: const Duration(seconds: 1),
+    );
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 200),
+      vsync: this,
+    );
+    _animation = Tween<Offset>(
+      begin: Offset.zero,
+      end: const Offset(0, -0.1), // Move up slightly
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeOut,
+    ));
     _searchController.addListener(() {
       _filterProducts();
     });
@@ -93,7 +112,16 @@ class _ProductsScreenState extends State<ProductsScreen> {
     _socket
         .dispose(); // Dispose of the socket connection when the screen is disposed
     _searchController.dispose();
+    _scrollController.dispose();
+    _animationController.dispose();
+    _controller.dispose();
+
     super.dispose();
+  }
+
+  void _animateButton() async {
+    await _controller.forward();
+    _controller.reverse();
   }
 
   Future<void> _fetchCategories() async {
@@ -332,7 +360,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
               children: [
                 // 'All' Filter Chip with Icon and Gradient Background
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 6.0),
                   child: FilterChip(
                     label: const Row(
                       children: [
@@ -356,7 +384,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                       }
                     },
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(15),
                     ),
                     backgroundColor: _selectAll
                         ? Colors.transparent // Keep transparent if not selected
@@ -374,7 +402,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 // Other category Filter Chips with Icon, Text, and Gradient Background
                 ..._categories.map((category) {
                   return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 6.0),
                     child: FilterChip(
                       label: Row(
                         children: [
@@ -401,7 +429,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                         }
                       },
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(15),
                       ),
                       backgroundColor: _categorySelections[category.id] == true
                           ? Colors.transparent // Keep transparent if selected

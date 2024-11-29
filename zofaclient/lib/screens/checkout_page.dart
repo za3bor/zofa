@@ -10,7 +10,9 @@ class CheckoutPageScreen extends StatefulWidget {
   const CheckoutPageScreen({super.key});
 
   @override
-  State<CheckoutPageScreen> createState() => _CheckoutPageScreenState();
+  State<CheckoutPageScreen> createState() {
+    return _CheckoutPageScreenState();
+  }
 }
 
 class _CheckoutPageScreenState extends State<CheckoutPageScreen> {

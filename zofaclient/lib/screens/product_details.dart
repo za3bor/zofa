@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert'; // Ensure you import this to use json.decode
 import 'package:zofa_client/constant.dart';
 
 class ProductDetailsScreen extends StatefulWidget {
@@ -141,7 +140,12 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                           ),
                         ),
                         const SizedBox(height: 20),
-
+                        if (stock==0) ...[
+                          const Text(
+                            'המוצר אזל מהמלאי',
+                            style: TextStyle(color: Colors.red),
+                          )
+                        ],
                         // Product Name
                         if (productData['name'] != null &&
                             productData['name'].isNotEmpty) ...[

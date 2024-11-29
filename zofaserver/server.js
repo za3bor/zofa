@@ -114,12 +114,12 @@ app.post("/api/addNewBreadOrder", async (req, res) => {
     if (success) {
       res
         .status(201)
-        .json({ message: "Vread order added successfully!", data: req.body });
+        .json({ message: "Bread order added successfully!", data: req.body });
     } else {
-      res.status(500).json({ error: "Error adding category" }); // Generic error for unexpected issues
+      res.status(500).json({ error: "Error adding Bread order" }); // Generic error for unexpected issues
     }
   } catch (err) {
-    console.error("Error adding category:", err.message);
+    console.error("Error adding Bread order:", err.message);
     res.status(400).json({ error: err.message }); // Send specific error message from dataHandler
   }
 });

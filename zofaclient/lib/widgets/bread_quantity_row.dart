@@ -38,7 +38,8 @@ class _BreadQuantityRowState extends State<BreadQuantityRow> {
       });
     }
   }
-@override
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16.0),
@@ -54,9 +55,15 @@ class _BreadQuantityRowState extends State<BreadQuantityRow> {
             Text(
               widget.name,
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    fontWeight: FontWeight.bold, // Customize weight for the title
-                  ) ??
+                        fontWeight:
+                            FontWeight.bold, // Customize weight for the title
+                      ) ??
                   const TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8.0),
+            Text(
+              '(מעורבב עם קמח מלא בלי תוספת סוכר)',
+              style: Theme.of(context).textTheme.bodyMedium,
             ),
             const SizedBox(height: 8.0),
             Row(
@@ -65,7 +72,9 @@ class _BreadQuantityRowState extends State<BreadQuantityRow> {
                   flex: 1,
                   child: Text(
                     '₪ ${widget.price.toStringAsFixed(2)}',
-                    style: Theme.of(context).textTheme.bodyLarge, // Use bodyLarge text style
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyLarge, // Use bodyLarge text style
                   ),
                 ),
                 Expanded(
@@ -115,7 +124,9 @@ class _BreadQuantityRowState extends State<BreadQuantityRow> {
                     alignment: Alignment.centerRight,
                     child: Text(
                       '${widget.quantity} יח',
-                      style: Theme.of(context).textTheme.bodyLarge, // Use bodyLarge text style
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyLarge, // Use bodyLarge text style
                     ),
                   ),
                 ),

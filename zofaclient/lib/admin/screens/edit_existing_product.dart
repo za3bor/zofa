@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:zofa_client/constant.dart';
 import 'package:zofa_client/models/category.dart';
 
@@ -42,7 +41,7 @@ class _TextFieldDropdownPageState extends State<EditExistingProductScreen> {
   ];
 
   List<Category> _categories = []; // List to store fetched categories
-  Map<int, bool> _categorySelections = {}; // Store selections for each category
+  final Map<int, bool> _categorySelections = {}; // Store selections for each category
 
   Future<void> _fetchCategories() async {
     try {
@@ -101,17 +100,21 @@ class _TextFieldDropdownPageState extends State<EditExistingProductScreen> {
           }
         });
       } else {
-        // If no categories are found for the barcode, show a message
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('Barcode not found or no categories assigned')),
-        );
+        if (mounted) {
+          // If no categories are found for the barcode, show a message
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+                content: Text('Barcode not found or no categories assigned')),
+          );
+        }
       }
     } catch (e) {
       print('Error fetching product categories: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Error fetching product categories')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Error fetching product categories')),
+        );
+      }
     }
   }
 
@@ -135,22 +138,28 @@ class _TextFieldDropdownPageState extends State<EditExistingProductScreen> {
         );
 
         if (response.statusCode == 200) {
-          // Handle success
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Product updated successfully')),
-          );
+          if (mounted) {
+            // Handle success
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Product updated successfully')),
+            );
+          }
           _barcodeController.clear();
           _newWordController.clear();
         } else {
-          // Handle failure
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Failed to update product')),
-          );
+          if (mounted) {
+            // Handle failure
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Failed to update product')),
+            );
+          }
         }
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Error: Unable to update product')),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Error: Unable to update product')),
+          );
+        }
       }
     } else {
       // Show error if field or text is missing
@@ -184,13 +193,17 @@ class _TextFieldDropdownPageState extends State<EditExistingProductScreen> {
         );
 
         if (response.statusCode == 200) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Categories saved successfully')),
-          );
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Categories saved successfully')),
+            );
+          }
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Failed to save categories')),
-          );
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Failed to save categories')),
+            );
+          }
         }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -199,9 +212,11 @@ class _TextFieldDropdownPageState extends State<EditExistingProductScreen> {
       }
     } catch (e) {
       print('Error saving categories: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Error saving categories')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Error saving categories')),
+        );
+      }
     }
   }
 

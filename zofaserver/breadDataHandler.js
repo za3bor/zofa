@@ -50,8 +50,14 @@ async function getAllBreadOrders(day) {
 }
 
 async function addNewBreadOrder(breadOrder) {
-  const { username, phoneNumber, orderDetails, totalPrice, status, day } =
+  let { username, phoneNumber, orderDetails, totalPrice, status, day } =
     breadOrder;
+
+      // Check if the phone number starts with "0" and replace it with "+972"
+  if (phoneNumber.startsWith('0')) {
+    phoneNumber = '+972' + phoneNumber.substring(1); // Remove the "0" and add +972
+  }
+  
   try {
     const [results] = await pool.query(
       "INSERT INTO bread_orders (username, phone_number, order_details, total_price, status, day) VALUES (?, ?, ?, ?, ?, ?)",

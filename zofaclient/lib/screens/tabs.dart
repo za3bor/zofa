@@ -9,7 +9,8 @@ import 'package:zofa_client/screens/rate_app.dart';
 import 'package:zofa_client/screens/share_app.dart';
 import 'package:zofa_client/screens/term_of_use.dart';
 import 'package:hive/hive.dart';
-import 'package:zofa_client/global.dart'; // Adjust the path accordingly
+import 'package:zofa_client/global.dart';
+import 'package:zofa_client/widgets/snow_layer.dart'; // Adjust the path accordingly
 
 class TabsScreen extends StatefulWidget {
   const TabsScreen({super.key});
@@ -96,6 +97,7 @@ class TabsScreenState extends State<TabsScreen>
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
+        flexibleSpace: const SnowLayer(), // Directly use SnowLayer without Container
         title: Text(
           activePageTitle,
           style: theme.appBarTheme.titleTextStyle,
@@ -180,56 +182,60 @@ class TabsScreenState extends State<TabsScreen>
       endDrawer: Directionality(
         textDirection: TextDirection.rtl, // Set text direction to RTL
         child: Drawer(
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: <Widget>[
-              const DrawerHeader(
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image:
-                        AssetImage('assets/drawer.jpeg'), // Use your image path
-                    fit: BoxFit
-                        .cover, // Ensures the image fills the DrawerHeader
+          child: Container(
+            color: const Color.fromARGB(
+                255, 222, 210, 206), // Set the background color here
+            child: ListView(
+              padding: EdgeInsets.zero,
+              children: <Widget>[
+                const DrawerHeader(
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage(
+                          'assets/drawer.jpeg'), // Use your image path
+                      fit: BoxFit
+                          .cover, // Ensures the image fills the DrawerHeader
+                    ),
                   ),
+                  child: Align(),
                 ),
-                child: Align(),
-              ),
-              ListTile(
-                leading: const Icon(Icons.home),
-                title: const Text('צור קשר'),
-                onTap: () {
-                  _navigateToDrawerPage(ContactUsScreen());
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.person),
-                title: const Text('אודות האפליקציה'),
-                onTap: () {
-                  _navigateToDrawerPage(const AboutAppScreen());
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.settings),
-                title: const Text('הגדרות'),
-                onTap: () {
-                  _navigateToDrawerPage(const ShareAppScreen());
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.notifications),
-                title: const Text('הערות'),
-                onTap: () {
-                  _navigateToDrawerPage(const RateAppScreen());
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.info),
-                title: const Text('תנאי שימוש'),
-                onTap: () {
-                  _navigateToDrawerPage(const TermOfUseScreen());
-                },
-              ),
-            ],
+                ListTile(
+                  leading: const Icon(Icons.home),
+                  title: const Text('צור קשר'),
+                  onTap: () {
+                    _navigateToDrawerPage(ContactUsScreen());
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.person),
+                  title: const Text('אודות האפליקציה'),
+                  onTap: () {
+                    _navigateToDrawerPage(const AboutAppScreen());
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.settings),
+                  title: const Text('הגדרות'),
+                  onTap: () {
+                    _navigateToDrawerPage(const ShareAppScreen());
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.notifications),
+                  title: const Text('הערות'),
+                  onTap: () {
+                    _navigateToDrawerPage(const RateAppScreen());
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.info),
+                  title: const Text('תנאי שימוש'),
+                  onTap: () {
+                    _navigateToDrawerPage(const TermOfUseScreen());
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),

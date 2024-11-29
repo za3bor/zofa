@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:zofa_client/models/bread_orders.dart';
 import 'package:zofa_client/constant.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AdminBreadOrdersScreen extends StatefulWidget {
   final String day;
@@ -167,6 +168,17 @@ class _AdminBreadOrdersScreenState extends State<AdminBreadOrdersScreen> {
     }
   }
 
+  void sendWhatsApp(String phoneNumber, String message) async {
+    final uri = Uri.parse(
+        'https://wa.me/$phoneNumber?text=${Uri.encodeComponent(message)}');
+
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    } else {
+      throw 'Could not send WhatsApp message';
+    }
+  }
+
   void _showSnackbar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message)),
@@ -275,6 +287,9 @@ class _AdminBreadOrdersScreenState extends State<AdminBreadOrdersScreen> {
                                                 : () {
                                                     changeStatus(
                                                         order.id, 'שלח');
+                                                    sendWhatsApp(
+                                                        order.phoneNumber,
+                                                        'ההזמנה מוכנה');
                                                   },
                                             child: const Text('שלח'),
                                           ),
