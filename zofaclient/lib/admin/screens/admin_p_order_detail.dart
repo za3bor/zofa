@@ -31,43 +31,60 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     }
   }
 
-  // Parse the order details and fetch details for each product
   Future<void> getProductDetails() async {
     try {
-      // Split the order details string (e.g., "1:2 3:4") and process each part
-      List<String> orderItems = widget.order.orderDetails.split(' ');
-      print('Parsed order items: $orderItems'); // Debugging log
+      // Clean up the order details string to handle newlines
+      String cleanedOrderDetails =
+          widget.order.orderDetails.replaceAll('\n', ' ').trim();
 
-      // List to hold the futures for fetching product details
-      List<Future<Map<String, dynamic>>> fetchFutures = [];
+      // Log cleaned order details
+      print('Cleaned Order Details: $cleanedOrderDetails');
+
+      // Split the cleaned order details string
+      List<String> orderItems = cleanedOrderDetails.split(' ');
+
+      // Log parsed items
+      print('Parsed Order Items: $orderItems');
 
       // Create a list of futures to fetch all product details
+      List<Future<Map<String, dynamic>>> fetchFutures = [];
       for (var item in orderItems) {
-        // Split product ID and quantity by ':'
-        List<String> productData = item.split(':');
-        int productId = int.parse(productData[0]);
-        String quantity = productData[1]; // Keep the quantity as a String
+        try {
+          List<String> productData = item.split(':');
+          int productId = int.parse(productData[0]);
+          String quantity = productData[1];
 
-        // Add future to the list for each product
-        fetchFutures.add(fetchProductDetails(productId).then((productDetails) {
-          // Map the product details and quantity for display
-          return {
-            'name': productDetails[
-                'name'], // Assuming the response has a 'name' field
-            'quantity': quantity, // The quantity comes from the order
-          };
-        }));
+          // Log each product ID and quantity
+          print('Product ID: $productId, Quantity: $quantity');
+
+          // Fetch product details
+          fetchFutures
+              .add(fetchProductDetails(productId).then((productDetails) {
+            // Log fetched product details
+            print('Fetched details for product ID $productId: $productDetails');
+
+            return {
+              'id': productId,
+              'name': productDetails['name'],
+              'quantity': quantity,
+            };
+          }));
+        } catch (e) {
+          print('Error parsing product item: $item, Error: $e');
+        }
       }
 
-      // Wait for all the futures to complete and update the UI
+      // Wait for all fetch operations to complete
       List<Map<String, dynamic>> fetchedProducts =
           await Future.wait(fetchFutures);
-      print('Fetched product details: $fetchedProducts'); // Debugging log
 
-      // Update the UI with the fetched product details
+      // Update state with fetched products
       setState(() {
         productDetailsList = fetchedProducts;
       });
+
+      // Log final product details list
+      print('Final Product Details List: $productDetailsList');
     } catch (error) {
       print('Error fetching product details: $error');
       if (mounted) {
@@ -89,12 +106,11 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('פרטי הזמנה ${widget.order.id}')),
-      body: Directionality(
-        textDirection:
-            TextDirection.rtl, // Set the text direction to right-to-left
-        child: Padding(
+    return Directionality(
+      textDirection: TextDirection.rtl, // Set the entire page direction to RTL
+      child: Scaffold(
+        appBar: AppBar(title: Text('פרטי הזמנה ${widget.order.id}')),
+        body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment:
@@ -132,19 +148,24 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                 style: TextStyle(fontSize: 16),
               ),
               const SizedBox(height: 10),
-              // Display product details
               productDetailsList.isEmpty
                   ? const Center(
-                      child:
-                          CircularProgressIndicator()) // Show loading until data is fetched
-                  : Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: productDetailsList.map((product) {
-                        return Text(
-                          '${product['name']} - כמות: ${product['quantity']}',
-                          style: const TextStyle(fontSize: 16),
-                        );
-                      }).toList(),
+                      child: CircularProgressIndicator(),
+                    ) // Show loading until data is fetched
+                  : Expanded(
+                      child: ListView.builder(
+                        itemCount: productDetailsList.length,
+                        itemBuilder: (context, index) {
+                          final product = productDetailsList[index];
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 4.0),
+                            child: Text(
+                              'מזהה: ${product['id']} | שם: ${product['name']} | כמות: ${product['quantity']}',
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                          );
+                        },
+                      ),
                     ),
             ],
           ),

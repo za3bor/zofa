@@ -6,8 +6,8 @@ import 'package:zofa_client/constant.dart';
 import 'package:zofa_client/screens/product_details.dart';
 import 'package:hive/hive.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
-import 'package:zofa_client/global.dart'; // Adjust the path accordingly
-import 'package:zofa_client/screens/tabs.dart'; // Import TabsScreen
+import 'package:zofa_client/global.dart';
+import 'package:zofa_client/screens/tabs.dart';
 
 class ProductsScreen extends StatefulWidget {
   const ProductsScreen({
@@ -484,7 +484,7 @@ class _ProductsScreenState extends State<ProductsScreen>
                             crossAxisSpacing: 10,
                             mainAxisSpacing: 10,
                             childAspectRatio:
-                                0.52, // Adjust item height/width ratio for better look
+                                0.49, // Adjust item height/width ratio for better look
                           ),
                           itemCount: _filteredProducts.length,
                           itemBuilder: (ctx, index) {
@@ -597,7 +597,7 @@ class _ProductsScreenState extends State<ProductsScreen>
                                             color: Colors.black87,
                                           ),
                                           overflow: TextOverflow.ellipsis,
-                                          maxLines: 2,
+                                          maxLines: 3,
                                           textAlign: TextAlign
                                               .right, // Ensuring RTL alignment for product name
                                         ),

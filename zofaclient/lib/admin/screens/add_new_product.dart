@@ -4,7 +4,8 @@ import 'package:http/http.dart' as http;
 import 'package:zofa_client/constant.dart';
 import 'package:zofa_client/models/category.dart';
 import 'package:image_picker/image_picker.dart';
-
+import 'package:image/image.dart' as img;  // For resizing
+import 'package:path_provider/path_provider.dart';  // For saving resized images if needed
 class AddNewProductScreen extends StatefulWidget {
   const AddNewProductScreen({super.key});
   @override
@@ -125,6 +126,7 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
       // Show a user-friendly message or log the error
     }
   }
+
 
   Future<void> _fetchCategories() async {
     try {

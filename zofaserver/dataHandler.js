@@ -20,7 +20,7 @@ async function addNewCategory(category) {
       [name]
     );
     if (existingCategories.length > 0) {
-      return { success: false, message: "Category already exists" }; // Return a specific message if the category exists
+      return { success: false, message: "Category already exists" };
     }
 
     const [results] = await pool.query(
@@ -30,19 +30,17 @@ async function addNewCategory(category) {
     return {
       success: results.affectedRows > 0,
       message: "Category added successfully",
-    }; // Return success message if inserted
+    };
   } catch (err) {
     console.error("Error inserting category:", err.message);
-    throw err; // Re-throw the error for handling in the server code
+    throw err;
   }
 }
 
 async function deleteCategoryById(categoryId) {
   try {
-    // Remove the existing product-category relationships first
     await removeExistingProductCategories(categoryId);
 
-    // Now, delete the category
     const [result] = await pool.query("DELETE FROM category WHERE id = ?", [categoryId]);
     return {
       success: result.affectedRows > 0,
@@ -61,7 +59,6 @@ async function removeExistingProductCategories(categoryId) {
       [categoryId]
     );
 
-    // Return true even if no rows are affected, as it’s not an error
     return true;
   } catch (err) {
     console.error("Error removing existing categories:", err.message);
@@ -87,7 +84,7 @@ async function addNewNote(content) {
     };
   } catch (err) {
     console.error("Error adding note:", err.message);
-    throw { message: err.message || "Error adding note" }; // Send the error message back
+    throw { message: err.message || "Error adding note" };
   }
 }
 
@@ -95,12 +92,12 @@ async function deleteNoteById(id) {
   try {
     const [result] = await pool.query("DELETE FROM notes WHERE id = ?", [id]);
     if (result.affectedRows === 0) {
-      return { message: "Note not found" }; // Return a message if no rows were affected
+      return { message: "Note not found" };
     }
-    return { message: "Note deleted successfully!" }; // Return success message
+    return { message: "Note deleted successfully!" };
   } catch (err) {
     console.error("Error deleting note:", err.message);
-    throw new Error("Error deleting note"); // Throw error to be caught by the route handler
+    throw new Error("Error deleting note");
   }
 }
 
@@ -108,51 +105,48 @@ async function getAllNotes() {
   try {
     const [rows] = await pool.query("SELECT * FROM notes");
     if (rows.length === 0) {
-      return { message: "No notes found" }; // Return a message if no notes
+      return { message: "No notes found" };
     }
     return rows;
   } catch (err) {
     console.error("Error fetching notes:", err.message);
-    throw { message: err.message || "Error fetching notes" }; // Send error message
+    throw { message: err.message || "Error fetching notes" };
   }
 }
 
-// Function to add a new coupon
 async function addNewCoupon(code, percentage) {
   try {
     const [result] = await pool.query(
       "INSERT INTO coupons (code, percentage) VALUES (?, ?)",
       [code, percentage]
     );
-    return { id: result.insertId, code, percentage }; // Return the new coupon data
+    return { id: result.insertId, code, percentage };
   } catch (err) {
     console.error("Error adding coupon:", err.message);
-    throw err; // Throw the error to be handled by the route
+    throw err;
   }
 }
 
-// Function to get all coupons
 async function getAllCoupons() {
   try {
     const [rows] = await pool.query("SELECT * FROM coupons");
-    return rows.length === 0 ? [] : rows; // Return an empty array if no coupons found
+    return rows.length === 0 ? [] : rows;
   } catch (err) {
     console.error("Error fetching coupons:", err.message);
-    throw err; // Throw the error to be handled by the route
+    throw err;
   }
 }
 
-// Function to delete a coupon by ID
 async function deleteCouponById(id) {
   try {
     const [result] = await pool.query(
       "DELETE FROM coupons WHERE id = ?",
-      [id] // Use the provided ID to delete the coupon
+      [id]
     );
-    return result; // Return the result of the deletion
+    return result;
   } catch (err) {
     console.error("Error deleting coupon:", err.message);
-    throw err; // Throw the error to be handled by the route
+    throw err;e
   }
 }
 
@@ -163,15 +157,13 @@ async function validateCoupon(couponCode) {
       [couponCode]
     );
 
-    // If no rows are found, return null to indicate no match
     if (rows.length === 0) {
       return null;
     }
-    // Return the percentage if the coupon is found
     return rows[0].percentage;
   } catch (err) {
     console.error("Error validating coupon:", err.message);
-    throw err; // Rethrow the error to let the caller handle it
+    throw err;
   }
 }
 
@@ -212,13 +204,11 @@ async function uploadFileToB2(filePath, fileName) {
   }
 }
 
-// Function to delete the image from Backblaze B2
 async function deleteImageFromB2(barcode) {
-  const fileName = `${barcode}.jpg`; // Assuming the image is saved with .jpg extension
+  const fileName = `${barcode}.jpg`;
 
-  const b2Url = "https://api.backblazeb2.com/b2api/v2"; // Base URL for B2 API
+  const b2Url = "https://api.backblazeb2.com/b2api/v2";
   const authResponse = await axios.post(`${b2Url}/b2_authorize_account`, {
-    // Your B2 authorization here
   });
 
   const { authorizationToken, apiUrl } = authResponse.data;
@@ -231,7 +221,7 @@ async function deleteImageFromB2(barcode) {
       },
       data: {
         fileName: fileName,
-        fileId: barcode, // Replace with actual fileId if needed
+        fileId: barcode,
       },
     }
   );
@@ -243,25 +233,22 @@ async function deleteImageFromB2(barcode) {
 
 async function getFileFromB2(fileName) {
   try {
-    // Authorize with B2
-    const authResponse = await b2.authorize(); // Ensure b2 is initialized and configured
-    const authorizationToken = authResponse.data.authorizationToken; // Get the token
+    const authResponse = await b2.authorize();
+    const authorizationToken = authResponse.data.authorizationToken;
 
-    // Construct the download URL for the file
     const downloadUrl = `https://f003.backblazeb2.com/file/zofapic/${fileName}`;
 
     console.log("Attempting to download file from URL:", downloadUrl);
 
-    // Fetch the file
     const response = await axios.get(downloadUrl, {
       headers: {
-        Authorization: authorizationToken, // Use the token directly without 'Bearer'
+        Authorization: authorizationToken,
       },
-      responseType: "arraybuffer", // Set response type to binary
+      responseType: "arraybuffer",
     });
 
     console.log("File downloaded successfully");
-    return response.data; // This will be the binary data of the file
+    return response.data;
   } catch (error) {
     console.error(
       "Error downloading file from B2:",

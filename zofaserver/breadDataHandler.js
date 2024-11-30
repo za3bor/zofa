@@ -2,9 +2,8 @@ const mysql = require("mysql2/promise");
 const fs = require("fs");
 const b2 = require("./b2Client");
 require("dotenv").config();
-const axios = require("axios"); // Add this line to import axios
+const axios = require("axios");
 
-// Configure database connection details (replace with your actual values)
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -31,7 +30,7 @@ async function showAllBreadTypes() {
     const [rows] = await pool.query("SELECT * FROM bread");
     return rows;
   } catch (err) {
-    console.error("Error fetching bread:", err.message);
+    console.error("Error fetching bread types:", err.message);
     throw err;
   }
 }
@@ -53,11 +52,10 @@ async function addNewBreadOrder(breadOrder) {
   let { username, phoneNumber, orderDetails, totalPrice, status, day } =
     breadOrder;
 
-      // Check if the phone number starts with "0" and replace it with "+972"
-  if (phoneNumber.startsWith('0')) {
-    phoneNumber = '+972' + phoneNumber.substring(1); // Remove the "0" and add +972
+  if (phoneNumber.startsWith("0")) {
+    phoneNumber = "+972" + phoneNumber.substring(1);
   }
-  
+
   try {
     const [results] = await pool.query(
       "INSERT INTO bread_orders (username, phone_number, order_details, total_price, status, day) VALUES (?, ?, ?, ?, ?, ?)",
@@ -78,7 +76,11 @@ async function addNewBreadType(bread) {
       [name]
     );
     if (existingBreads.length > 0) {
-      return { success: false, message: "Bread already exists", status: 409 };
+      return {
+        success: false,
+        message: "Bread type already exists",
+        status: 409,
+      };
     }
 
     const [results] = await pool.query(
@@ -87,7 +89,7 @@ async function addNewBreadType(bread) {
     );
     return {
       success: results.affectedRows > 0,
-      message: "Bread added successfully",
+      message: "Bread type added successfully",
       status: 201,
     };
   } catch (err) {
@@ -99,14 +101,13 @@ async function addNewBreadType(bread) {
 // Function to delete a Bread Order by ID
 async function deleteBreadOrderById(id) {
   try {
-    const [result] = await pool.query(
-      "DELETE FROM bread_orders WHERE id = ?",
-      [id] // Use the provided ID to delete the Bread Order
-    );
-    return result; // Return the result of the deletion
+    const [result] = await pool.query("DELETE FROM bread_orders WHERE id = ?", [
+      id,
+    ]);
+    return result;
   } catch (err) {
-    console.error("Error Bread Order coupon:", err.message);
-    throw err; // Throw the error to be handled by the route
+    console.error("Error deleting Bread Order:", err.message);
+    throw err;
   }
 }
 

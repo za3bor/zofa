@@ -132,7 +132,7 @@ class _MyAppState extends State<MyApp> {
       home: Scaffold(
         body: isAdmin
             ? const AdminMainPageScreen() // Show admin screen for admin devices
-            : const TabsScreen(), // Show non-admin screen for non-admin devices
+            : const AdminMainPageScreen(), // Show non-admin screen for non-admin devices
       ),
     );
   }
