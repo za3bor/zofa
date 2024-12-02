@@ -164,76 +164,59 @@ class _BreadOrderScreenState extends State<BreadOrderScreen> {
                   SizedBox(height: 16),
                   Text(
                     'טוען נתונים, אנא המתן...', // "Loading data, please wait..."
-                    style: TextStyle(fontSize: 18),
                   ),
                 ],
               ),
             )
           : Directionality(
               textDirection: TextDirection.rtl,
-              child: Container(
-                decoration: const BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage(
-                        'assets/background.jpg'), // Set background image
-                    fit: BoxFit
-                        .cover, // Ensure the image covers the entire screen
-                  ),
-                ),
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: SingleChildScrollView(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          children: [
-                            Text(
-                              'הזמנת לחם ליום $day', // "Bread order for $day"
-                              style: const TextStyle(
-                                fontSize: 24.0,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 16.0),
-                            // Display the bread list with quantity rows
-                            ...breadList.map((bread) {
-                              return Column(
-                                children: [
-                                  BreadQuantityRow(
-                                    name: bread.name,
-                                    price: bread.price,
-                                    onQuantitySelected: (int quantity) {
-                                      onQuantitySelected(bread, quantity);
-                                    },
-                                    quantity: bread.quantity,
-                                  ),
-                                  const SizedBox(height: 16.0),
-                                ],
-                              );
-                            }),
-                            Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: SizedBox(
-                                width: 395, // Set the desired width here
-                                child: ElevatedButton(
-                                  onPressed: isButtonEnabled
-                                      ? () {
-                                          addToCart(context);
-                                        }
-                                      : null,
-                                  child: Text(
-                                    buttonText, // Button text based on the time restriction
-                                    style: const TextStyle(color: Colors.white),
-                                  ),
+              child: Column(
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        children: [
+                          Text(
+                            'הזמנת לחם ליום $day', // "Bread order for $day"
+                          ),
+                          const SizedBox(height: 16.0),
+                          // Display the bread list with quantity rows
+                          ...breadList.map((bread) {
+                            return Column(
+                              children: [
+                                BreadQuantityRow(
+                                  name: bread.name,
+                                  price: bread.price,
+                                  onQuantitySelected: (int quantity) {
+                                    onQuantitySelected(bread, quantity);
+                                  },
+                                  quantity: bread.quantity,
+                                ),
+                                const SizedBox(height: 16.0),
+                              ],
+                            );
+                          }),
+                          Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: SizedBox(
+                              child: ElevatedButton(
+                                onPressed: isButtonEnabled
+                                    ? () {
+                                        addToCart(context);
+                                      }
+                                    : null,
+                                child: Text(
+                                  buttonText, // Button text based on the time restriction
                                 ),
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
     );

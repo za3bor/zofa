@@ -18,7 +18,6 @@ class CustomElevatedButton extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12), // Rounded corners for a modern look
         ),
-        elevation: 4, // Subtle elevation for a softer shadow
       ),
       onPressed: () {
         Navigator.push(

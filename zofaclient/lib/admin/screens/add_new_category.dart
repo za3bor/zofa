@@ -71,14 +71,14 @@ class _AddNewCategoryState extends State<AddNewCategory> {
       appBar: AppBar(
         title: const Text('הוספת ניתונים חדשים'),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(18),
-        child: Column(
-          children: [
-            const SizedBox(height: 5),
-            Directionality(
-              textDirection: TextDirection.rtl,
-              child: TextField(
+      body: Directionality(
+        textDirection: TextDirection.rtl,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(18),
+          child: Column(
+            children: [
+              const SizedBox(height: 5),
+              TextField(
                 controller: _categoryController,
                 maxLength: 100,
                 decoration: const InputDecoration(
@@ -87,12 +87,12 @@ class _AddNewCategoryState extends State<AddNewCategory> {
                 autocorrect: false,
                 textCapitalization: TextCapitalization.none,
               ),
-            ),
-            ElevatedButton(
-              onPressed: _addNewCategory,
-              child: const Text('הוספה קטגוריה'),
-            ),
-          ],
+              ElevatedButton(
+                onPressed: _addNewCategory,
+                child: const Text('הוספה קטגוריה'),
+              ),
+            ],
+          ),
         ),
       ),
     );

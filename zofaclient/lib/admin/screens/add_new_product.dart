@@ -4,8 +4,9 @@ import 'package:http/http.dart' as http;
 import 'package:zofa_client/constant.dart';
 import 'package:zofa_client/models/category.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:image/image.dart' as img;  // For resizing
-import 'package:path_provider/path_provider.dart';  // For saving resized images if needed
+import 'package:image/image.dart' as img; // For resizing
+import 'package:path_provider/path_provider.dart'; // For saving resized images if needed
+
 class AddNewProductScreen extends StatefulWidget {
   const AddNewProductScreen({super.key});
   @override
@@ -126,7 +127,6 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
       // Show a user-friendly message or log the error
     }
   }
-
 
   Future<void> _fetchCategories() async {
     try {
@@ -273,27 +273,27 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
       appBar: AppBar(
         title: const Text('הוסף מוצר חדש'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              // Image Picker Button
-              ElevatedButton(
-                onPressed: _pickImage,
-                child: const Text('בחר תמונה'), // "Choose Image" in Hebrew
-              ),
-              if (_image != null)
-                Image.file(
-                  _image!,
-                  height: 150,
-                  width: 150,
+      body: Directionality(
+        textDirection: TextDirection.rtl,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: ListView(
+              children: [
+                // Image Picker Button
+                ElevatedButton(
+                  onPressed: _pickImage,
+                  child: const Text('בחר תמונה'), // "Choose Image" in Hebrew
                 ),
-              // Text Fields for general product details
-              Directionality(
-                textDirection: TextDirection.rtl,
-                child: TextFormField(
+                if (_image != null)
+                  Image.file(
+                    _image!,
+                    height: 150,
+                    width: 150,
+                  ),
+                // Text Fields for general product details
+                TextFormField(
                   controller: _barcodeController,
                   decoration: const InputDecoration(labelText: 'ברקוד'),
                   keyboardType: TextInputType.number,
@@ -301,287 +301,196 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
                       ? 'יש להזין ברקוד'
                       : null, // "Enter barcode" in Hebrew
                 ),
-              ),
-              Directionality(
-                textDirection: TextDirection.rtl,
-                child: TextFormField(
+                TextFormField(
                   controller: _nameController,
                   decoration: const InputDecoration(labelText: 'שם המוצר'),
                   validator: (value) =>
                       value!.isEmpty ? 'Enter product name' : null,
                 ),
-              ),
-              Directionality(
-                textDirection: TextDirection.rtl,
-                child: TextFormField(
+                TextFormField(
                   controller: _dataController,
                   decoration: const InputDecoration(labelText: 'מידע'),
                 ),
-              ),
-              Directionality(
-                textDirection: TextDirection.rtl,
-                child: TextFormField(
+                TextFormField(
                   controller: _ingredientsController,
                   decoration: const InputDecoration(labelText: 'מרכיבים'),
                 ),
-              ),
-              Directionality(
-                textDirection: TextDirection.rtl,
-                child: TextFormField(
+                TextFormField(
                   controller: _additionalFeaturesController,
-                  decoration:
-                      const InputDecoration(labelText: 'מאפיינים נוספים'),
+                  decoration: const InputDecoration(labelText: 'מאפיינים נוספים'),
                 ),
-              ),
-              Directionality(
-                textDirection: TextDirection.rtl,
-                child: TextFormField(
+                TextFormField(
                   controller: _containsController,
                   decoration: const InputDecoration(labelText: 'מכיל'),
                 ),
-              ),
-              Directionality(
-                textDirection: TextDirection.rtl,
-                child: TextFormField(
+                TextFormField(
                   controller: _mayContainController,
                   decoration: const InputDecoration(labelText: 'עלול להכיל'),
                 ),
-              ),
-              Directionality(
-                textDirection: TextDirection.rtl,
-                child: TextFormField(
+                TextFormField(
                   controller: _allergiesController,
                   decoration: const InputDecoration(labelText: 'אלרגיות'),
                 ),
-              ),
-              Directionality(
-                textDirection: TextDirection.rtl,
-                child: TextFormField(
+                TextFormField(
                   controller: _priceController,
                   decoration: const InputDecoration(labelText: 'מחיר'),
                   keyboardType: TextInputType.number,
                 ),
-              ),
-
-              // Switches for product status
-              SwitchListTile(
-                title: const Text(
-                  'במלאי',
-                  textAlign: TextAlign.right,
-                ),
-                value: _inStock,
-                onChanged: (value) => setState(() => _inStock = value),
-                controlAffinity: ListTileControlAffinity.leading,
-              ),
-              SwitchListTile(
-                title: const Text(
-                  'משקה',
-                  textAlign: TextAlign.right,
-                ),
-                value: _isDrink,
-                onChanged: (value) => setState(() => _isDrink = value),
-                controlAffinity: ListTileControlAffinity.leading,
-              ),
-              SwitchListTile(
-                title: const Text(
-                  'בזוראת',
-                  textAlign: TextAlign.right,
-                ),
-                value: _isSeeds,
-                onChanged: (value) => setState(() => _isSeeds = value),
-                controlAffinity: ListTileControlAffinity.leading,
-              ),
-
-              // Categories as SwitchListTiles
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 10.0),
-                child: Text('קטגוריות',
-                    textAlign: TextAlign.right,
-                    style:
-                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              ),
-              ..._categories.map((category) {
-                return SwitchListTile(
-                  title: Text(
-                    category.name,
-                    textAlign: TextAlign.right,
+        
+                // Switches for product status
+                SwitchListTile(
+                  title: const Text(
+                    'במלאי',
                   ),
-                  value: _categorySelections[category.id] ?? false,
-                  controlAffinity: ListTileControlAffinity.leading,
-                  onChanged: (value) {
-                    setState(() {
-                      _categorySelections[category.id] =
-                          value; // Update selection
-                    });
-                  },
-                );
-              }),
-              const Text(
-                'סימנים',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.right,
-              ),
-              SwitchListTile(
-                title: const Text(
-                  'נתרו',
-                  textAlign: TextAlign.right,
+                  value: _inStock,
+                  onChanged: (value) => setState(() => _inStock = value),
                 ),
-                value: _containsSodium,
-                onChanged: (value) => setState(() => _containsSodium = value),
-                controlAffinity: ListTileControlAffinity.leading,
-              ),
-              SwitchListTile(
-                title: const Text(
-                  'סוכר',
-                  textAlign: TextAlign.right,
+                SwitchListTile(
+                  title: const Text(
+                    'משקה',
+                  ),
+                  value: _isDrink,
+                  onChanged: (value) => setState(() => _isDrink = value),
                 ),
-                value: _containsSugar,
-                onChanged: (value) => setState(() => _containsSugar = value),
-                controlAffinity: ListTileControlAffinity.leading,
-              ),
-              SwitchListTile(
-                title: const Text(
-                  'שומן',
-                  textAlign: TextAlign.right,
+                SwitchListTile(
+                  title: const Text(
+                    'בזוראת',
+                  ),
+                  value: _isSeeds,
+                  onChanged: (value) => setState(() => _isSeeds = value),
                 ),
-                value: _containsFat,
-                onChanged: (value) => setState(() => _containsFat = value),
-                controlAffinity: ListTileControlAffinity.leading,
-              ),
-              SwitchListTile(
-                title: const Text(
-                  'ירוק',
-                  textAlign: TextAlign.right,
+        
+                // Categories as SwitchListTiles
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 10.0),
+                  child: Text(
+                    'קטגוריות',
+                  ),
                 ),
-                value: _isGreen,
-                onChanged: (value) => setState(() => _isGreen = value),
-                controlAffinity: ListTileControlAffinity.leading,
-              ),
-              // Nutrition Fields
-              Directionality(
-                textDirection: TextDirection.rtl,
-                child: TextFormField(
+                ..._categories.map((category) {
+                  return SwitchListTile(
+                    title: Text(
+                      category.name,
+                    ),
+                    value: _categorySelections[category.id] ?? false,
+                    onChanged: (value) {
+                      setState(() {
+                        _categorySelections[category.id] =
+                            value; // Update selection
+                      });
+                    },
+                  );
+                }),
+                const Text(
+                  'סימנים',
+                ),
+                SwitchListTile(
+                  title: const Text(
+                    'נתרו',
+                  ),
+                  value: _containsSodium,
+                  onChanged: (value) => setState(() => _containsSodium = value),
+                ),
+                SwitchListTile(
+                  title: const Text(
+                    'סוכר',
+                  ),
+                  value: _containsSugar,
+                  onChanged: (value) => setState(() => _containsSugar = value),
+                ),
+                SwitchListTile(
+                  title: const Text(
+                    'שומן',
+                  ),
+                  value: _containsFat,
+                  onChanged: (value) => setState(() => _containsFat = value),
+                ),
+                SwitchListTile(
+                  title: const Text(
+                    'ירוק',
+                  ),
+                  value: _isGreen,
+                  onChanged: (value) => setState(() => _isGreen = value),
+                ),
+                // Nutrition Fields
+                TextFormField(
                   controller: _caloriesController,
                   decoration: const InputDecoration(labelText: 'קלוריות'),
                 ),
-              ),
-              Directionality(
-                textDirection: TextDirection.rtl,
-                child: TextFormField(
+                TextFormField(
                   controller: _totalFatController,
                   decoration: const InputDecoration(labelText: 'סה"כ שומן'),
                 ),
-              ),
-              SwitchListTile(
-                title: const Text(
-                  'מתוכם',
-                  textAlign: TextAlign.right,
+                SwitchListTile(
+                  title: const Text(
+                    'מתוכם',
+                  ),
+                  value: _ofWhichF,
+                  onChanged: (value) => setState(() => _ofWhichF = value),
                 ),
-                value: _ofWhichF,
-                onChanged: (value) => setState(() => _ofWhichF = value),
-                controlAffinity: ListTileControlAffinity.leading,
-              ),
-              Directionality(
-                textDirection: TextDirection.rtl,
-                child: TextFormField(
+                TextFormField(
                   controller: _saturatedFatController,
                   decoration: const InputDecoration(labelText: 'שומן רווי'),
                 ),
-              ),
-              Directionality(
-                textDirection: TextDirection.rtl,
-                child: TextFormField(
+                TextFormField(
                   controller: _transFatController,
                   decoration: const InputDecoration(labelText: 'שומן טרנס'),
                 ),
-              ),
-              Directionality(
-                textDirection: TextDirection.rtl,
-                child: TextFormField(
+                TextFormField(
                   controller: _cholesterolController,
                   decoration: const InputDecoration(labelText: 'כולסטרול'),
                 ),
-              ),
-              Directionality(
-                textDirection: TextDirection.rtl,
-                child: TextFormField(
+                TextFormField(
                   controller: _sodiumController,
                   decoration: const InputDecoration(labelText: 'נתרן'),
                 ),
-              ),
-              Directionality(
-                textDirection: TextDirection.rtl,
-                child: TextFormField(
+                TextFormField(
                   controller: _carbohydratesController,
                   decoration: const InputDecoration(labelText: 'פחמימות'),
                 ),
-              ),
-              SwitchListTile(
-                title: const Text(
-                  'מתוכם',
-                  textAlign: TextAlign.right,
+                SwitchListTile(
+                  title: const Text(
+                    'מתוכם',
+                  ),
+                  value: _ofWhichC,
+                  onChanged: (value) => setState(() => _ofWhichC = value),
                 ),
-                value: _ofWhichC,
-                onChanged: (value) => setState(() => _ofWhichC = value),
-                controlAffinity: ListTileControlAffinity.leading,
-              ),
-              Directionality(
-                textDirection: TextDirection.rtl,
-                child: TextFormField(
+                TextFormField(
                   controller: _sugarsController,
                   decoration: const InputDecoration(labelText: 'סוכרים'),
                 ),
-              ),
-              Directionality(
-                textDirection: TextDirection.rtl,
-                child: TextFormField(
+                TextFormField(
                   controller: _sugarTeaspoonsController,
                   decoration: const InputDecoration(labelText: 'כפיות סוכר'),
                 ),
-              ),
-              Directionality(
-                textDirection: TextDirection.rtl,
-                child: TextFormField(
+                TextFormField(
                   controller: _sugarAlcoholsController,
                   decoration: const InputDecoration(labelText: 'אלכוהול סוכר'),
                 ),
-              ),
-              Directionality(
-                textDirection: TextDirection.rtl,
-                child: TextFormField(
+                TextFormField(
                   controller: _dietaryFiberController,
-                  decoration:
-                      const InputDecoration(labelText: 'סיבים תזונתיים'),
+                  decoration: const InputDecoration(labelText: 'סיבים תזונתיים'),
                 ),
-              ),
-              Directionality(
-                textDirection: TextDirection.rtl,
-                child: TextFormField(
+                TextFormField(
                   controller: _proteinsController,
                   decoration: const InputDecoration(labelText: 'חלבונים'),
                 ),
-              ),
-              Directionality(
-                textDirection: TextDirection.rtl,
-                child: TextFormField(
+                TextFormField(
                   controller: _calciumController,
                   decoration: const InputDecoration(labelText: 'סידן'),
                 ),
-              ),
-              Directionality(
-                textDirection: TextDirection.rtl,
-                child: TextFormField(
+                TextFormField(
                   controller: _ironController,
                   decoration: const InputDecoration(labelText: 'ברזל'),
                 ),
-              ),
-
-              // Submit Button
-              ElevatedButton(
-                onPressed: _addProduct,
-                child: const Text('הוסף מוצר'),
-              ),
-            ],
+        
+                // Submit Button
+                ElevatedButton(
+                  onPressed: _addProduct,
+                  child: const Text('הוסף מוצר'),
+                ),
+              ],
+            ),
           ),
         ),
       ),

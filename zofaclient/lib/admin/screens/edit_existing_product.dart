@@ -237,107 +237,105 @@ class _TextFieldDropdownPageState extends State<EditExistingProductScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit Product'),
+        title: const Text('עריכת מוצר'),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Barcode TextField (Numbers only)
-              const Text(
-                'Enter Barcode:',
-                style: TextStyle(fontSize: 18),
-              ),
-              TextField(
-                controller: _barcodeController,
-                keyboardType: TextInputType.number, // Restrict to numbers
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Barcode',
+      body: Directionality(
+        textDirection: TextDirection.rtl,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Barcode TextField (Numbers only)
+                const Text(
+                  'הכנס ברקוד:',
                 ),
-              ),
-              const SizedBox(height: 20),
-
-              // Button to check and set categories
-              ElevatedButton(
-                onPressed: _fetchProductCategories,
-                child: const Text('Check Categories'),
-              ),
-              const SizedBox(height: 20),
-
-              // New Word TextField
-              const Text(
-                'Enter the new word:',
-                style: TextStyle(fontSize: 18),
-              ),
-              TextField(
-                controller: _newWordController,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'New Word',
+                TextField(
+                  controller: _barcodeController,
+                  keyboardType: TextInputType.number, // Restrict to numbers
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'ברקוד',
+                  ),
                 ),
-              ),
-              const SizedBox(height: 20),
-
-              // DropdownButton for field selection
-              const Text(
-                'Select an option:',
-                style: TextStyle(fontSize: 18),
-              ),
-              DropdownButton<String>(
-                value: _selectedItem,
-                hint: const Text('Choose an option'),
-                isExpanded: true,
-                items: _dropdownItems.map((String item) {
-                  return DropdownMenuItem<String>(
-                    value: item,
-                    child: Text(item),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    _selectedItem = newValue;
-                  });
-                },
-              ),
-              const SizedBox(height: 20),
-
-              // Change Field Button (Moved above categories)
-              ElevatedButton(
-                onPressed: _updateProduct,
-                child: const Text('Change Field'),
-              ),
-              const SizedBox(height: 20),
-
-              // Display Categories as Checkboxes
-              const Text(
-                'Select Categories:',
-                style: TextStyle(fontSize: 18),
-              ),
-              const SizedBox(height: 10),
-              Wrap(
-                children: _categories.map((category) {
-                  return CheckboxListTile(
-                    title: Text(category.name),
-                    value: _categorySelections[category.id],
-                    onChanged: (bool? value) {
-                      setState(() {
-                        _categorySelections[category.id] = value ?? false;
-                      });
-                    },
-                  );
-                }).toList(),
-              ),
-              const SizedBox(height: 20),
-
-              // Save Categories Button
-              ElevatedButton(
-                onPressed: _saveCategoryChanges,
-                child: const Text('Save Categories'),
-              ),
-            ],
+                const SizedBox(height: 20),
+        
+                // Button to check and set categories
+                ElevatedButton(
+                  onPressed: _fetchProductCategories,
+                  child: const Text('הפעל'),
+                ),
+                const SizedBox(height: 20),
+                // New Word TextField
+                const Text(
+                  'הכנס את הערך החדש:',
+                ),
+                TextField(
+                  controller: _newWordController,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'ערך חדש',
+                  ),
+                ),
+                const SizedBox(height: 20),
+        
+                // DropdownButton for field selection
+                const Text(
+                  'בחר:',
+                ),
+                DropdownButton<String>(
+                  value: _selectedItem,
+                  hint: const Text('תבחר אופציה'),
+                  isExpanded: true,
+                  items: _dropdownItems.map((String item) {
+                    return DropdownMenuItem<String>(
+                      value: item,
+                      child: Text(item),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      _selectedItem = newValue;
+                    });
+                  },
+                ),
+                const SizedBox(height: 20),
+        
+                // Change Field Button (Moved above categories)
+                ElevatedButton(
+                  onPressed: _updateProduct,
+                  child: const Text('תשנה'),
+                ),
+                const SizedBox(height: 20),
+        
+                // Display Categories as Checkboxes
+                const Text(
+                  'בחר קטגוריה/ות:',
+                ),
+                const SizedBox(height: 10),
+                Wrap(
+                  children: _categories.map((category) {
+                    return CheckboxListTile(
+                      title: Text(category.name),
+                      value: _categorySelections[category.id],
+                      onChanged: (bool? value) {
+                        setState(() {
+                          _categorySelections[category.id] = value ?? false;
+                        });
+                      },
+                    );
+                  }).toList(),
+                ),
+                const SizedBox(height: 20),
+        
+                // Save Categories Button
+                ElevatedButton(
+                  onPressed: _saveCategoryChanges,
+                  child: const Text('שמירה'),
+                ),
+              ],
+            ),
           ),
         ),
       ),

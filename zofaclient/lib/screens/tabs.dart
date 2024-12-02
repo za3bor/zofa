@@ -82,9 +82,6 @@ class TabsScreenState extends State<TabsScreen>
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    const brownColor = Color(0xFF7A6244);
-
     Widget activePage = const ProductsScreen();
     var activePageTitle = 'מוצרים';
 
@@ -97,12 +94,11 @@ class TabsScreenState extends State<TabsScreen>
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        flexibleSpace: const SnowLayer(), // Directly use SnowLayer without Container
+        flexibleSpace:
+            const SnowLayer(), // Directly use SnowLayer without Container
         title: Text(
           activePageTitle,
-          style: theme.appBarTheme.titleTextStyle,
         ),
-        centerTitle: true,
         leading: _selectedPageIndex == 0
             ? ValueListenableBuilder<int>(
                 valueListenable: cartItemCountNotifier,
@@ -138,7 +134,6 @@ class TabsScreenState extends State<TabsScreen>
                           ),
                       ],
                     ),
-                    color: Colors.white,
                     onPressed: () {
                       Navigator.push(
                         context,
@@ -152,12 +147,42 @@ class TabsScreenState extends State<TabsScreen>
               )
             : null,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.menu),
-            color: Colors.white,
-            onPressed: () {
-              _scaffoldKey.currentState?.openEndDrawer();
-            },
+          // Stack to overlay the hat image on the drawer icon
+          Padding(
+            padding: const EdgeInsets.only(
+                right: 8.0), // Adjust the padding as needed
+            child: Stack(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.menu),
+                  onPressed: () {
+                    _scaffoldKey.currentState?.openEndDrawer();
+                  },
+                ),
+                // The hat image placed on top of the drawer icon
+                Positioned(
+                  top: -7, // Adjust the position of the hat image vertically
+                  right:
+                      10, // Move the hat a little bit to the left by increasing the right value
+                  child: GestureDetector(
+                    onTap: () {
+                      // Open the drawer when the hat is tapped
+                      _scaffoldKey.currentState?.openEndDrawer();
+                    },
+                    child: Transform(
+                      alignment: Alignment.center,
+                      transform: Matrix4.rotationZ(-0.1) // Rotate if needed
+                        ..scale(-1.0, 1.0, 1.0), // Horizontal flip if needed
+                      child: Image.asset(
+                        'assets/icons/hat.png', // Path to your hat image
+                        width: 40.0, // Adjust the size of the hat
+                        height: 35.0,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -165,9 +190,6 @@ class TabsScreenState extends State<TabsScreen>
       bottomNavigationBar: BottomNavigationBar(
         onTap: _selectPage,
         currentIndex: _selectedPageIndex,
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.white,
-        backgroundColor: brownColor,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.storefront),
@@ -179,63 +201,59 @@ class TabsScreenState extends State<TabsScreen>
           ),
         ],
       ),
-      endDrawer: Directionality(
-        textDirection: TextDirection.rtl, // Set text direction to RTL
-        child: Drawer(
-          child: Container(
-            color: const Color.fromARGB(
-                255, 222, 210, 206), // Set the background color here
-            child: ListView(
-              padding: EdgeInsets.zero,
-              children: <Widget>[
-                const DrawerHeader(
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage(
-                          'assets/drawer.jpeg'), // Use your image path
-                      fit: BoxFit
-                          .cover, // Ensures the image fills the DrawerHeader
-                    ),
+      endDrawer: Drawer(
+        child: Directionality(
+          textDirection: TextDirection.rtl,
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: <Widget>[
+              const DrawerHeader(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image:
+                        AssetImage('assets/drawer.jpeg'), // Use your image path
+                    fit: BoxFit
+                        .cover, // Ensures the image fills the DrawerHeader
                   ),
-                  child: Align(),
                 ),
-                ListTile(
-                  leading: const Icon(Icons.home),
-                  title: const Text('צור קשר'),
-                  onTap: () {
-                    _navigateToDrawerPage(ContactUsScreen());
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.person),
-                  title: const Text('אודות האפליקציה'),
-                  onTap: () {
-                    _navigateToDrawerPage(const AboutAppScreen());
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.settings),
-                  title: const Text('הגדרות'),
-                  onTap: () {
-                    _navigateToDrawerPage(const ShareAppScreen());
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.notifications),
-                  title: const Text('הערות'),
-                  onTap: () {
-                    _navigateToDrawerPage(const RateAppScreen());
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.info),
-                  title: const Text('תנאי שימוש'),
-                  onTap: () {
-                    _navigateToDrawerPage(const TermOfUseScreen());
-                  },
-                ),
-              ],
-            ),
+                child: Align(),
+              ),
+              ListTile(
+                leading: const Icon(Icons.home),
+                title: const Text('צור קשר'),
+                onTap: () {
+                  _navigateToDrawerPage(ContactUsScreen());
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.person),
+                title: const Text('אודות האפליקציה'),
+                onTap: () {
+                  _navigateToDrawerPage(const AboutAppScreen());
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.settings),
+                title: const Text('הגדרות'),
+                onTap: () {
+                  _navigateToDrawerPage(const ShareAppScreen());
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.notifications),
+                title: const Text('הערות'),
+                onTap: () {
+                  _navigateToDrawerPage(const RateAppScreen());
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.info),
+                title: const Text('תנאי שימוש'),
+                onTap: () {
+                  _navigateToDrawerPage(const TermOfUseScreen());
+                },
+              ),
+            ],
           ),
         ),
       ),

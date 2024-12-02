@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:zofa_client/constant.dart';
 import 'package:hive/hive.dart';
+import 'package:zofa_client/global.dart'; // Adjust the path accordingly
 
 class ProductCheckoutPage extends StatefulWidget {
   final double totalPrice;
@@ -95,6 +96,16 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
     }
   }
 
+  void _loadInitialCartItemCount() async {
+    var box = await Hive.openBox('cart');
+    Map cartData = box.get('cart', defaultValue: {});
+
+    cartItemCountNotifier.value = cartData.values.fold<int>(
+      0,
+      (sum, item) => sum + ((item['quantity'] ?? 0) as int),
+    );
+  }
+
   void _saveProductOrder() async {
     String orderDetails = widget.cartItems
         .map((item) => '${item['id']}:${item['quantity']}\n')
@@ -183,115 +194,114 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
       appBar: AppBar(
         title: const Text('Checkout'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Enter your details',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _nameController,
-              decoration: const InputDecoration(labelText: 'Name'),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _phoneController,
-              decoration: const InputDecoration(labelText: 'Phone Number'),
-              keyboardType: TextInputType.phone,
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _emailController,
-              decoration: const InputDecoration(labelText: 'Email'),
-              keyboardType: TextInputType.emailAddress,
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _couponController,
-                    decoration: InputDecoration(
-                      labelText: 'Coupon Code',
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: _couponColor),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: _couponColor),
+      body: Directionality(
+        textDirection: TextDirection.rtl,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              const Text(
+                'Enter your details',
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: _nameController,
+                decoration: const InputDecoration(labelText: 'Name'),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: _phoneController,
+                decoration: const InputDecoration(labelText: 'Phone Number'),
+                keyboardType: TextInputType.phone,
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: _emailController,
+                decoration: const InputDecoration(labelText: 'Email'),
+                keyboardType: TextInputType.emailAddress,
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _couponController,
+                      decoration: InputDecoration(
+                        labelText: 'Coupon Code',
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: _couponColor),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: _couponColor),
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 8),
-                ElevatedButton(
-                  onPressed: _applyCoupon,
-                  child: const Text('Apply'),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              _couponMessage,
-              style: TextStyle(
-                color: _couponColor,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              'Selected Products:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Column(
-              children: widget.cartItems.map((item) {
-                return Text('${item['name']} x${item['quantity']}');
-              }).toList(),
-            ),
-            const SizedBox(height: 16),
-            // Display the old price with a strikethrough and the new price
-            _isCouponApplied
-                ? Row(
-                    children: [
-                      Text(
-                        'Total Price: \$${widget.totalPrice.toStringAsFixed(2)}',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          decoration: TextDecoration.lineThrough,
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Text(
-                        'New Price: \$${_discountedPrice.toStringAsFixed(2)}',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.green,
-                        ),
-                      ),
-                    ],
-                  )
-                : Text(
-                    'Total Price: \$${widget.totalPrice.toStringAsFixed(2)}',
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  const SizedBox(width: 8),
+                  ElevatedButton(
+                    onPressed: _applyCoupon,
+                    child: const Text('Apply'),
                   ),
-            const SizedBox(height: 16),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: _saveProductOrder,
-                child: const Text('Pay'),
+                ],
               ),
-            ),
-          ],
+              const SizedBox(height: 8),
+              Text(
+                _couponMessage,
+                style: TextStyle(
+                  color: _couponColor,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Selected Products:',
+              ),
+              const SizedBox(height: 8),
+              Column(
+                children: widget.cartItems.map((item) {
+                  return Text('${item['name']} x${item['quantity']}');
+                }).toList(),
+              ),
+              const SizedBox(height: 16),
+              // Display the old price with a strikethrough and the new price
+              _isCouponApplied
+                  ? Row(
+                      children: [
+                        Text(
+                          'Total Price: \$${widget.totalPrice.toStringAsFixed(2)}',
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            decoration: TextDecoration.lineThrough,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Text(
+                          'New Price: \$${_discountedPrice.toStringAsFixed(2)}',
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.green,
+                          ),
+                        ),
+                      ],
+                    )
+                  : Text(
+                      'Total Price: \$${widget.totalPrice.toStringAsFixed(2)}',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+              const SizedBox(height: 16),
+              SizedBox(
+                child: ElevatedButton(
+                  onPressed: _saveProductOrder,
+                  child: const Text('Pay'),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

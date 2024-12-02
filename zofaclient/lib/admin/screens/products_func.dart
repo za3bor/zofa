@@ -19,44 +19,47 @@ class ProductFuncScreen extends StatelessWidget {
           'לוח בקרה למוצרים',
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: GridView.count(
-          crossAxisCount: 2, // Two columns
-          mainAxisSpacing: 16.0, // Reduced spacing for a more compact layout
-          crossAxisSpacing: 16.0, // Reduced spacing
-          childAspectRatio:
-              1.4, // Adjusted aspect ratio for better button sizing
-          children: const [
-            CustomElevatedButton(
-              label: 'הוספת קטגוריה חדשה',
-              targetPage: AddNewCategory(),
-            ),
-            CustomElevatedButton(
-              label: 'הוספת מוצר חדש',
-              targetPage: AddNewProductScreen(),
-            ),
-            CustomElevatedButton(
-              label: 'צפייה בהזמנות מוצרים',
-              targetPage: ProductOrdersScreen(),
-            ),
-            CustomElevatedButton(
-              label: 'עריכת מוצר קיים',
-              targetPage: EditExistingProductScreen(),
-            ),
-            CustomElevatedButton(
-              label: 'מחק מוצר קיים',
-              targetPage: DeleteProductScreen(),
-            ),
-            CustomElevatedButton(
-              label: 'עריכת מלאי מוצר',
-              targetPage: EditProductStockScreen(),
-            ),
-            CustomElevatedButton(
-              label: 'מחיקת קטגוריה',
-              targetPage: DeleteCategory(),
-            ),
-          ],
+      body: Directionality(
+        textDirection: TextDirection.rtl,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: GridView.count(
+            crossAxisCount: 2, // Two columns
+            mainAxisSpacing: 16.0, // Reduced spacing for a more compact layout
+            crossAxisSpacing: 16.0, // Reduced spacing
+            childAspectRatio:
+                1.4, // Adjusted aspect ratio for better button sizing
+            children: const [
+              CustomElevatedButton(
+                label: 'הוספת קטגוריה חדשה',
+                targetPage: AddNewCategory(),
+              ),
+              CustomElevatedButton(
+                label: 'הוספת מוצר חדש',
+                targetPage: AddNewProductScreen(),
+              ),
+              CustomElevatedButton(
+                label: 'צפייה בהזמנות מוצרים',
+                targetPage: ProductOrdersScreen(),
+              ),
+              CustomElevatedButton(
+                label: 'עריכת מוצר קיים',
+                targetPage: EditExistingProductScreen(),
+              ),
+              CustomElevatedButton(
+                label: 'מחק מוצר קיים',
+                targetPage: DeleteProductScreen(),
+              ),
+              CustomElevatedButton(
+                label: 'עריכת מלאי מוצר',
+                targetPage: EditProductStockScreen(),
+              ),
+              CustomElevatedButton(
+                label: 'מחיקת קטגוריה',
+                targetPage: DeleteCategory(),
+              ),
+            ],
+          ),
         ),
       ),
     );

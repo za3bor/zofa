@@ -174,76 +174,78 @@ class _NotesScreenState extends State<NotesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Notes'),
+        title: const Text('פתקים'),
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              controller: _controller,
-              decoration: InputDecoration(
-                labelText: 'Write a note...',
-                border: const OutlineInputBorder(),
-                suffixIcon: IconButton(
-                  icon: const Icon(Icons.add),
-                  onPressed: _addNote,
+      body: Directionality(
+        textDirection: TextDirection.rtl,
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                controller: _controller,
+                decoration: InputDecoration(
+                  labelText: 'כתוב פתק...',
+                  border: const OutlineInputBorder(),
+                  suffixIcon: IconButton(
+                    icon: const Icon(Icons.add),
+                    onPressed: _addNote,
+                  ),
                 ),
               ),
             ),
-          ),
-          _isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : Expanded(
-                  child: _notes.isEmpty
-                      ? const Center(child: Text('No notes available'))
-                      : ListView.builder(
-                          itemCount: _notes.length,
-                          itemBuilder: (context, index) {
-                            return Dismissible(
-                              key: Key(_notes[index].id.toString()),
-                              direction: DismissDirection.endToStart,
-                              background: Container(
-                                color: Colors.red,
-                                alignment: Alignment.centerRight,
-                                child: const Padding(
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 20.0),
-                                  child:
-                                      Icon(Icons.delete, color: Colors.white),
-                                ),
-                              ),
-                              onDismissed: (direction) async {
-                                final noteId = _notes[index].id;
-
-                                setState(() {
-                                  _notes.removeAt(index);
-                                });
-
-                                try {
-                                  await _deleteNote(noteId);
-                                } catch (e) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content:
-                                          Text('Failed to delete note: $e'),
-                                    ),
-                                  );
-                                }
-                              },
-                              child: ListTile(
-                                leading: CircleAvatar(
-                                  child: Text(
-                                    _notes[index].content[0].toUpperCase(),
+            _isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : Expanded(
+                    child: _notes.isEmpty
+                        ? const Center(child: Text('No notes available'))
+                        : ListView.builder(
+                            itemCount: _notes.length,
+                            itemBuilder: (context, index) {
+                              return Dismissible(
+                                key: Key(_notes[index].id.toString()),
+                                direction: DismissDirection.endToStart,
+                                background: Container(
+                                  color: Colors.red,
+                                  alignment: Alignment.centerRight,
+                                  child: const Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 20.0),
+                                    child: Icon(Icons.delete),
                                   ),
                                 ),
-                                title: Text(_notes[index].content),
-                              ),
-                            );
-                          },
-                        ),
-                ),
-        ],
+                                onDismissed: (direction) async {
+                                  final noteId = _notes[index].id;
+
+                                  setState(() {
+                                    _notes.removeAt(index);
+                                  });
+
+                                  try {
+                                    await _deleteNote(noteId);
+                                  } catch (e) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content:
+                                            Text('Failed to delete note: $e'),
+                                      ),
+                                    );
+                                  }
+                                },
+                                child: ListTile(
+                                  leading: CircleAvatar(
+                                    child: Text(
+                                      _notes[index].content[0].toUpperCase(),
+                                    ),
+                                  ),
+                                  title: Text(_notes[index].content),
+                                ),
+                              );
+                            },
+                          ),
+                  ),
+          ],
+        ),
       ),
     );
   }

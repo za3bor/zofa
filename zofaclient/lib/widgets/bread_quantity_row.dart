@@ -45,95 +45,75 @@ class _BreadQuantityRowState extends State<BreadQuantityRow> {
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10.0),
-        color: Theme.of(context).cardColor, // Use the card color from ThemeData
       ),
-      child: Directionality(
-        textDirection: TextDirection.rtl,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              widget.name,
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        fontWeight:
-                            FontWeight.bold, // Customize weight for the title
-                      ) ??
-                  const TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8.0),
-            Text(
-              '(מעורבב עם קמח מלא בלי תוספת סוכר)',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            const SizedBox(height: 8.0),
-            Row(
-              children: [
-                Expanded(
-                  flex: 1,
-                  child: Text(
-                    '₪ ${widget.price.toStringAsFixed(2)}',
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyLarge, // Use bodyLarge text style
-                  ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            widget.name,
+          ),
+          const SizedBox(height: 8.0),
+          const Text(
+            '(מעורבב עם קמח מלא בלי תוספת סוכר)',
+          ),
+          const SizedBox(height: 8.0),
+          Row(
+            children: [
+              Expanded(
+                flex: 1,
+                child: Text(
+                  '₪ ${widget.price.toStringAsFixed(2)}',
                 ),
-                Expanded(
-                  flex: 2,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      InkWell(
-                        onTap: increaseQuantity,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(4.0),
-                          ),
-                          child: const Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Icon(Icons.add),
-                          ),
+              ),
+              Expanded(
+                flex: 2,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    InkWell(
+                      onTap: increaseQuantity,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(4.0),
+                        ),
+                        child: const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Icon(Icons.add),
                         ),
                       ),
-                      const SizedBox(width: 8.0),
-                      Text(
-                        quantity.toString(),
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16.0, // Adjust the font size if needed
-                            ),
-                      ),
-                      const SizedBox(width: 8.0),
-                      InkWell(
-                        onTap: decreaseQuantity,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(4.0),
-                          ),
-                          child: const Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Icon(Icons.remove),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  flex: 1,
-                  child: Container(
-                    alignment: Alignment.centerRight,
-                    child: Text(
-                      '${widget.quantity} יח',
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyLarge, // Use bodyLarge text style
                     ),
+                    const SizedBox(width: 8.0),
+                    Text(
+                      quantity.toString(),
+                    ),
+                    const SizedBox(width: 8.0),
+                    InkWell(
+                      onTap: decreaseQuantity,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(4.0),
+                        ),
+                        child: const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Icon(Icons.remove),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                flex: 1,
+                child: Container(
+                  alignment: Alignment.centerRight,
+                  child: Text(
+                    '${widget.quantity} יח',
                   ),
                 ),
-              ],
-            ),
-          ],
-        ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

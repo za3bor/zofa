@@ -48,7 +48,7 @@ class AboutAppScreen extends StatelessWidget {
         title: const Text('אודות האפליקציה'),
       ),
       body: Directionality(
-        textDirection: TextDirection.rtl, // Force RTL for all children
+        textDirection: TextDirection.rtl,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -58,43 +58,23 @@ class AboutAppScreen extends StatelessWidget {
               // App name
               const Text(
                 'שם האפליקציה: Zofa Shop', // App name in Hebrew
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.right, // Right-align the text
               ),
               const SizedBox(height: 20),
 
               const Text(
                 'גרסה: 3.02.4', // App name in Hebrew
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.right, // Right-align the text
               ),
               const SizedBox(height: 20),
 
               // Developer name
               const Text(
                 'מפתח: פאדי סרור', // Developer's name in Hebrew
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
-                textAlign: TextAlign.right, // Right-align the text
               ),
               const SizedBox(height: 20),
 
               // Contact section title
               const Text(
                 'צור קשר:',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.right, // Right-align the text
               ),
               const SizedBox(height: 10),
 
@@ -113,11 +93,6 @@ class AboutAppScreen extends StatelessWidget {
                     onTap: () => _launchURL(linkedinUrl),
                     child: const Text(
                       'פאדי סרור', // LinkedIn name in Hebrew
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.blue,
-                      ),
-                      textAlign: TextAlign.right, // Right-align the text
                     ),
                   ),
                 ],
@@ -139,11 +114,6 @@ class AboutAppScreen extends StatelessWidget {
                     onTap: () => _launchURL(emailUrl),
                     child: const Text(
                       'fadisrour.zarbor@gmail.com', // Email address in Hebrew
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.blue,
-                      ),
-                      textAlign: TextAlign.right, // Right-align the text
                     ),
                   ),
                 ],

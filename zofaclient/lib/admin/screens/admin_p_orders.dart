@@ -65,39 +65,41 @@ class _ProductOrdersScreenState extends State<ProductOrdersScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('הזמנות')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: _productOrders.isEmpty
-            ? Center(
-                child: Text('אין הזמנות זמינות.',
-                    style: TextStyle(fontSize: 18, color: Colors.grey[600])))
-            : ListView.builder(
-                itemCount: _productOrders.length,
-                itemBuilder: (context, index) {
-                  final order = _productOrders[index];
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16.0),
-                        textStyle: const TextStyle(fontSize: 18),
+      appBar: AppBar(
+        title: const Text('הזמנות'),
+      ),
+      body: Directionality(
+        textDirection: TextDirection.rtl,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: _productOrders.isEmpty
+              ? Center(
+                  child: Text('אין הזמנות זמינות.',
+                      style: TextStyle(fontSize: 18, color: Colors.grey[600])))
+              : ListView.builder(
+                  itemCount: _productOrders.length,
+                  itemBuilder: (context, index) {
+                    final order = _productOrders[index];
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: ElevatedButton(
+        
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => OrderDetailsScreen(
+                                  order:
+                                      order), // Pass selected order to details screen
+                            ),
+                          );
+                        },
+                        child: Text('הזמנה ${order.id}'),
                       ),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => OrderDetailsScreen(
-                                order:
-                                    order), // Pass selected order to details screen
-                          ),
-                        );
-                      },
-                      child: Text('הזמנה ${order.id}'),
-                    ),
-                  );
-                },
-              ),
+                    );
+                  },
+                ),
+        ),
       ),
     );
   }

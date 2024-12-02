@@ -108,54 +108,33 @@ class _CheckoutBreadScreenState extends State<CheckoutBreadScreen> {
         flexibleSpace: const SnowLayer(), // Snow falling in the appBar
         title: const Text(
           'ביקורת הזמנה',
-          style: TextStyle(fontFamily: 'Heebo'),
-          textDirection: TextDirection.rtl,
         ),
       ),
-      body: Stack(
-        children: [
-          // Full-Screen Background Image
-          Container(
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image:
-                    AssetImage('assets/background.jpg'), // Path to your image
-                fit: BoxFit.cover, // Ensures it covers the entire screen
-              ),
-            ),
-          ),
-          // Foreground Content
-          SingleChildScrollView(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight: MediaQuery.of(context)
-                    .size
-                    .height, // Ensure it fills the screen
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Directionality(
-                  textDirection: TextDirection.rtl,
+      body: Directionality(
+        textDirection: TextDirection.rtl,
+        child: Stack(
+          children: [
+            // Foreground Content
+            SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: MediaQuery.of(context)
+                      .size
+                      .height, // Ensure it fills the screen
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Card(
-                        color: Theme.of(context)
-                            .cardColor, // Use the card color from ThemeData
-
-                        elevation: 3.0,
                         margin: const EdgeInsets.only(bottom: 16.0),
                         child: Padding(
                           padding: const EdgeInsets.all(16.0),
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const Text(
                                 'פריטים שנבחרו:',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18.0,
-                                ),
                               ),
                               const SizedBox(height: 8.0),
                               Column(
@@ -164,8 +143,6 @@ class _CheckoutBreadScreenState extends State<CheckoutBreadScreen> {
                                   double itemTotal =
                                       entry.key.price * entry.value;
                                   return Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
                                     children: [
                                       Padding(
                                         padding: const EdgeInsets.symmetric(
@@ -173,16 +150,15 @@ class _CheckoutBreadScreenState extends State<CheckoutBreadScreen> {
                                         child: Text(
                                           entry.key
                                               .name, // Directly using the variable
-                                          style:
-                                              const TextStyle(fontSize: 16.0),
                                         ),
                                       ),
                                       Row(
                                         children: [
-                                          Text(
-                                            '${entry.value}x${entry.key.price.toStringAsFixed(2)}=${itemTotal.toStringAsFixed(2)}₪',
-                                            style:
-                                                const TextStyle(fontSize: 16.0),
+                                          Directionality(
+                                            textDirection: TextDirection.ltr,
+                                            child: Text(
+                                              '${entry.value} X ${entry.key.price.toStringAsFixed(2)} = ${itemTotal.toStringAsFixed(2)} ₪',
+                                            ),
                                           ),
                                         ],
                                       ),
@@ -198,10 +174,6 @@ class _CheckoutBreadScreenState extends State<CheckoutBreadScreen> {
                               const SizedBox(height: 10.0),
                               Text(
                                 'סה"כ: ₪ ${totalPrice().toStringAsFixed(2)}',
-                                style: const TextStyle(
-                                  fontSize: 16.0,
-                                  fontWeight: FontWeight.bold,
-                                ),
                               ),
                               const SizedBox(height: 5.0),
                               const Text(
@@ -211,7 +183,6 @@ class _CheckoutBreadScreenState extends State<CheckoutBreadScreen> {
                                   fontWeight: FontWeight.bold,
                                   color: Colors.redAccent,
                                 ),
-                                textAlign: TextAlign.center,
                               ),
                             ],
                           ),
@@ -223,10 +194,7 @@ class _CheckoutBreadScreenState extends State<CheckoutBreadScreen> {
                         decoration: const InputDecoration(
                           labelText: 'שם',
                           border: OutlineInputBorder(),
-                          filled: true, // Enables the background color
-                          fillColor: Color.fromARGB(255, 222, 210, 206),
                         ),
-                        textDirection: TextDirection.rtl,
                       ),
                       const SizedBox(height: 16.0),
                       TextField(
@@ -235,18 +203,13 @@ class _CheckoutBreadScreenState extends State<CheckoutBreadScreen> {
                         decoration: const InputDecoration(
                           labelText: 'טלפון',
                           border: OutlineInputBorder(),
-                          filled: true, // Enables the background color
-                          fillColor: Color.fromARGB(255, 222, 210, 206),
                         ),
-                        textDirection: TextDirection.rtl,
                       ),
                       const SizedBox(height: 16.0),
                       ElevatedButton(
                         onPressed: _saveBreadOrder,
                         child: const Text(
                           'שלח',
-                          style: TextStyle(fontSize: 18.0),
-                          textDirection: TextDirection.rtl,
                         ),
                       ),
                     ],
@@ -254,8 +217,8 @@ class _CheckoutBreadScreenState extends State<CheckoutBreadScreen> {
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

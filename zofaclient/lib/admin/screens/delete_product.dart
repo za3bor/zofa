@@ -85,13 +85,13 @@ class _DeleteProductScreenState extends State<DeleteProductScreen> {
       appBar: AppBar(
         title: const Text('מחיקת מוצר'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Directionality(
-              textDirection: TextDirection.rtl,
-              child: TextField(
+      body: Directionality(
+        textDirection: TextDirection.rtl,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              TextField(
                 controller: _productIdController,
                 decoration: const InputDecoration(
                   labelText: 'ברקוד',
@@ -99,29 +99,29 @@ class _DeleteProductScreenState extends State<DeleteProductScreen> {
                 ),
                 keyboardType: TextInputType.number,
               ),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                final productId = _productIdController.text.trim();
-                if (productId.isNotEmpty) {
-                  _deleteProduct(productId);
-                }
-              },
-              child: const Text('מחיקה'),
-            ),
-            const SizedBox(height: 20),
-            if (_message.isNotEmpty)
-              Text(
-                _message,
-                style: const TextStyle(color: Colors.green),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  final productId = _productIdController.text.trim();
+                  if (productId.isNotEmpty) {
+                    _deleteProduct(productId);
+                  }
+                },
+                child: const Text('מחיקה'),
               ),
-            if (_error.isNotEmpty)
-              Text(
-                _error,
-                style: const TextStyle(color: Colors.red),
-              ),
-          ],
+              const SizedBox(height: 20),
+              if (_message.isNotEmpty)
+                Text(
+                  _message,
+                  style: const TextStyle(color: Colors.green),
+                ),
+              if (_error.isNotEmpty)
+                Text(
+                  _error,
+                  style: const TextStyle(color: Colors.red),
+                ),
+            ],
+          ),
         ),
       ),
     );

@@ -6,7 +6,12 @@ class TermOfUseScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('About')),
-      body: const Center(child: Text('About Page')),
+      body: const Directionality(
+        textDirection: TextDirection.rtl,
+        child: Center(
+          child: Text('About Page'),
+        ),
+      ),
     );
   }
 }

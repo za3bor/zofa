@@ -186,68 +186,71 @@ class _CouponsScreenState extends State<CouponsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Coupons'),
+        title: const Text('קופונים'),
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              controller: _codeController,
-              decoration: const InputDecoration(
-                hintText: 'Enter coupon code...',
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              controller: _percentageController,
-              keyboardType: TextInputType.number, // Set keyboard type to number
-              decoration: InputDecoration(
-                hintText: 'Enter discount percentage...',
-                suffixIcon: IconButton(
-                  icon: const Icon(Icons.add),
-                  onPressed: _addCoupon,
+      body: Directionality(
+        textDirection: TextDirection.rtl,
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                controller: _codeController,
+                decoration: const InputDecoration(
+                  hintText: 'קופון קוד...',
                 ),
               ),
             ),
-          ),
-          // Check if there are any coupons
-          _coupons.isEmpty
-              ? const Expanded(
-                  child: Center(
-                    child: Text('No coupons available'),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                controller: _percentageController,
+                keyboardType: TextInputType.number, // Set keyboard type to number
+                decoration: InputDecoration(
+                  hintText: 'הנחה באחוזים...',
+                  suffixIcon: IconButton(
+                    icon: const Icon(Icons.add),
+                    onPressed: _addCoupon,
                   ),
-                )
-              : Expanded(
-                  child: ListView.builder(
-                    itemCount: _coupons.length,
-                    itemBuilder: (context, index) {
-                      return Dismissible(
-                        key: Key(_coupons[index].id.toString()),
-                        direction: DismissDirection.endToStart,
-                        background: Container(
-                          color: Colors.red,
-                          alignment: Alignment.centerRight,
-                          child: const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 20.0),
-                            child: Icon(Icons.delete, color: Colors.white),
+                ),
+              ),
+            ),
+            // Check if there are any coupons
+            _coupons.isEmpty
+                ? const Expanded(
+                    child: Center(
+                      child: Text('No coupons available'),
+                    ),
+                  )
+                : Expanded(
+                    child: ListView.builder(
+                      itemCount: _coupons.length,
+                      itemBuilder: (context, index) {
+                        return Dismissible(
+                          key: Key(_coupons[index].id.toString()),
+                          direction: DismissDirection.endToStart,
+                          background: Container(
+                            color: Colors.red,
+                            alignment: Alignment.centerRight,
+                            child: const Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 20.0),
+                              child: Icon(Icons.delete),
+                            ),
                           ),
-                        ),
-                        onDismissed: (direction) {
-                          _deleteCoupon(_coupons[index].id);
-                        },
-                        child: ListTile(
-                          title: Text(_coupons[index].code),
-                          subtitle:
-                              Text('Discount: ${_coupons[index].percentage}%'),
-                        ),
-                      );
-                    },
+                          onDismissed: (direction) {
+                            _deleteCoupon(_coupons[index].id);
+                          },
+                          child: ListTile(
+                            title: Text(_coupons[index].code),
+                            subtitle:
+                                Text('הנחה: ${_coupons[index].percentage}%'),
+                          ),
+                        );
+                      },
+                    ),
                   ),
-                ),
-        ],
+          ],
+        ),
       ),
     );
   }

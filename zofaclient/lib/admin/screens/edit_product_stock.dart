@@ -128,144 +128,150 @@ class _EditProductStockScreenState extends State<EditProductStockScreen> {
                     style: const TextStyle(fontSize: 18, color: Colors.red),
                   ),
                 )
-              : Column(
-                  children: [
-                    // Search bar
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: TextField(
-                        controller: _searchController,
-                        textAlign: TextAlign.right,
-                        decoration: InputDecoration(
-                          prefixIcon: const Icon(Icons.search),
-                          hintText: '...חיפוש מוצר',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    // GridView to display products
-                    Expanded(
-                      child: Padding(
+              : Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: Column(
+                    children: [
+                      // Search bar
+                      Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: GridView.builder(
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            crossAxisSpacing: 10,
-                            mainAxisSpacing: 10,
-                            childAspectRatio: 0.54,
+                        child: TextField(
+                          controller: _searchController,
+                          decoration: InputDecoration(
+                            prefixIcon: const Icon(Icons.search),
+                            hintText: '...חיפוש מוצר',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
                           ),
-                          itemCount: _filteredProducts.length,
-                          itemBuilder: (ctx, index) {
-                            final product = _filteredProducts[index];
-                            final imageUrl =
-                                'https://f003.backblazeb2.com/file/zofapic/${product.id}.jpeg';
-
-                            return Card(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                              elevation: 5,
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const SizedBox(height: 10),
-
-                                    // Product Image
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(10),
-                                      child: Image.network(
-                                        imageUrl,
-                                        fit: BoxFit.cover,
-                                        height: 150,
-                                        width: double.infinity,
-                                        loadingBuilder: (BuildContext context,
-                                            Widget child,
-                                            ImageChunkEvent? loadingProgress) {
-                                          if (loadingProgress == null) {
-                                            return child;
-                                          }
-                                          return Center(
-                                            child: CircularProgressIndicator(
-                                              value: loadingProgress
-                                                          .expectedTotalBytes !=
-                                                      null
-                                                  ? loadingProgress
-                                                          .cumulativeBytesLoaded /
-                                                      (loadingProgress
-                                                              .expectedTotalBytes ??
-                                                          1)
-                                                  : null,
-                                            ),
-                                          );
-                                        },
-                                        errorBuilder: (BuildContext context,
-                                            Object error,
-                                            StackTrace? stackTrace) {
-                                          return const Icon(
-                                            Icons.broken_image,
-                                            size: 50,
-                                          );
-                                        },
-                                      ),
-                                    ),
-                                    const SizedBox(height: 10),
-
-                                    // Product Name
-                                    Align(
-                                      alignment: Alignment.centerRight,
-                                      child: Text(
-                                        product.name,
-                                        overflow: TextOverflow.ellipsis,
-                                        maxLines: 2,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 5),
-
-                                    // Product Price
-                                    Center(
-                                      child: Text(
-                                        '₪${product.price.toStringAsFixed(1)}',
-                                      ),
-                                    ),
-                                    const SizedBox(height: 5),
-
-                                    // Stock status button
-                                    Center(
-                                      child: ElevatedButton(
-                                        onPressed: () async {
-                                          final newStockStatus = !product.stock;
-                                          setState(() {
-                                            product.stock = newStockStatus;
-                                          });
-
-                                          await _updateProductStock(
-                                              product.id, newStockStatus);
-                                        },
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: product.stock
-                                              ? Colors.green
-                                              : Colors.red,
-                                        ),
-                                        child: Text(
-                                          product.stock ? 'במלאי' : 'לא במלאי',
-                                        ),
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
                         ),
                       ),
-                    ),
-                  ],
+
+                      // GridView to display products
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: GridView.builder(
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              crossAxisSpacing: 10,
+                              mainAxisSpacing: 10,
+                              childAspectRatio: 0.54,
+                            ),
+                            itemCount: _filteredProducts.length,
+                            itemBuilder: (ctx, index) {
+                              final product = _filteredProducts[index];
+                              final imageUrl =
+                                  'https://f003.backblazeb2.com/file/zofapic/${product.id}.jpeg';
+
+                              return Card(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                elevation: 5,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const SizedBox(height: 10),
+
+                                      // Product Image
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(10),
+                                        child: Image.network(
+                                          imageUrl,
+                                          fit: BoxFit.cover,
+                                          height: 150,
+                                          width: double.infinity,
+                                          loadingBuilder: (BuildContext context,
+                                              Widget child,
+                                              ImageChunkEvent?
+                                                  loadingProgress) {
+                                            if (loadingProgress == null) {
+                                              return child;
+                                            }
+                                            return Center(
+                                              child: CircularProgressIndicator(
+                                                value: loadingProgress
+                                                            .expectedTotalBytes !=
+                                                        null
+                                                    ? loadingProgress
+                                                            .cumulativeBytesLoaded /
+                                                        (loadingProgress
+                                                                .expectedTotalBytes ??
+                                                            1)
+                                                    : null,
+                                              ),
+                                            );
+                                          },
+                                          errorBuilder: (BuildContext context,
+                                              Object error,
+                                              StackTrace? stackTrace) {
+                                            return const Icon(
+                                              Icons.broken_image,
+                                              size: 50,
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                      const SizedBox(height: 10),
+
+                                      // Product Name
+                                      Align(
+                                        alignment: Alignment.centerRight,
+                                        child: Text(
+                                          product.name,
+                                          overflow: TextOverflow.clip,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 5),
+
+                                      // Product Price
+                                      Center(
+                                        child: Text(
+                                          '₪${product.price.toStringAsFixed(1)}',
+                                        ),
+                                      ),
+                                      const SizedBox(height: 5),
+
+                                      // Stock status button
+                                      Center(
+                                        child: ElevatedButton(
+                                          onPressed: () async {
+                                            final newStockStatus =
+                                                !product.stock;
+                                            setState(() {
+                                              product.stock = newStockStatus;
+                                            });
+
+                                            await _updateProductStock(
+                                                product.id, newStockStatus);
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: product.stock
+                                                ? Colors.green
+                                                : Colors.red,
+                                          ),
+                                          child: Text(
+                                            product.stock
+                                                ? 'במלאי'
+                                                : 'לא במלאי',
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
     );
   }

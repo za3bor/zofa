@@ -104,15 +104,15 @@ class _DeleteCategoryState extends State<DeleteCategory> {
       appBar: AppBar(
         title: const Text('הסרת קטגוריה'),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(18),
-        child: Column(
-          children: [
-            const SizedBox(height: 5),
-            // Dropdown to select category
-            Directionality(
-              textDirection: TextDirection.rtl,
-              child: DropdownButton<int>(
+      body: Directionality(
+        textDirection: TextDirection.rtl,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(18),
+          child: Column(
+            children: [
+              const SizedBox(height: 5),
+              // Dropdown to select category
+              DropdownButton<int>(
                 hint: const Text('בחר קטגוריה'),
                 value: _selectedCategoryId,
                 onChanged: (int? newValue) {
@@ -127,13 +127,13 @@ class _DeleteCategoryState extends State<DeleteCategory> {
                   );
                 }).toList(),
               ),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _deleteCategory, // Call delete directly
-              child: const Text('הסרת קטגוריה'),
-            ),
-          ],
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _deleteCategory, // Call delete directly
+                child: const Text('הסרת קטגוריה'),
+              ),
+            ],
+          ),
         ),
       ),
     );

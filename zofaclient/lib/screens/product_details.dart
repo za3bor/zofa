@@ -35,13 +35,13 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.rtl, // Set the entire screen to RTL
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('פרטי המוצר'),
-        ),
-        body: Stack(
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('פרטי המוצר'),
+      ),
+      body: Directionality(
+        textDirection: TextDirection.rtl,
+        child: Stack(
           children: [
             Container(
               color: const Color.fromARGB(
@@ -51,8 +51,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               future: productDetails,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                      child: CircularProgressIndicator()); // Loading indicator
+                  return const Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
                   // Show error in a Snackbar
                   WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -64,54 +63,46 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     );
                   });
                   return const Center(
-                    child: Text(
-                        'שגיאה בטעינת פרטי המוצר.'), // Error message on screen
+                    child: Text('שגיאה בטעינת פרטי המוצר.'),
                   );
                 } else if (!snapshot.hasData || snapshot.data == null) {
-                  return const Center(
-                    child: Text('לא נמצאו פרטי מוצר.'),
-                  ); // No product details available message
+                  return const Center(child: Text('לא נמצאו פרטי מוצר.'));
                 }
-
+        
                 final productData = snapshot.data!;
                 final categories = productData['categories'] as List<dynamic>;
                 final allergies = productData['allergies'];
                 final healthMarking =
                     productData['healthMarking'] as List<dynamic>;
-                final nutritionalValues =
-                    productData['nutritionalValues'] ?? {};
+                final nutritionalValues = productData['nutritionalValues'] ?? {};
                 final stock = productData['in_stock'];
-
+        
                 return SingleChildScrollView(
-                  // Wrap the entire body in SingleChildScrollView
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        // Product Image Section
                         Center(
                           child: Container(
                             width: 500,
                             height: 300,
                             decoration: BoxDecoration(
-                              color: Colors
-                                  .transparent, // Make the container background transparent
-                              borderRadius: BorderRadius.circular(
-                                  10), // Optional: to round corners
+                              color: Colors.transparent,
+                              borderRadius: BorderRadius.circular(10),
                             ),
-                            child: ColorFiltered(
-                              colorFilter: ColorFilter.mode(
-                                const Color.fromARGB(255, 121, 85, 72).withOpacity(
-                                    0.25), // Set the desired color with opacity
-                                BlendMode.darken,
-                              ),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(10),
-                                child: widget.productId >
-                                        0 // Check if the product ID is a valid integer
-                                    ? Hero(
-                                        tag:
-                                            'imageHero-${widget.productId}', // Unique tag for Hero animation
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: widget.productId > 0
+                                  ? Hero(
+                                      tag: 'imageHero-${widget.productId}',
+                                      child: ColorFiltered(
+                                        colorFilter: ColorFilter.mode(
+                                          const Color.fromARGB(255, 121, 85, 72)
+                                              .withOpacity(0.25),
+                                          BlendMode.darken,
+                                        ),
                                         child: Image.network(
                                           'https://f003.backblazeb2.com/file/zofapic/${widget.productId}.jpeg',
                                           height: 300,
@@ -121,32 +112,33 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                               Object error,
                                               StackTrace? stackTrace) {
                                             return Image.asset(
-                                              'assets/noimage.jpg', // Fallback image if error loading
+                                              'assets/noimage.jpg',
                                               fit: BoxFit.cover,
                                               height: 300,
                                               width: 300,
                                             );
                                           },
                                         ),
-                                      )
-                                    : Image.asset(
-                                        'assets/noimage.jpg', // Fallback image if productId is invalid
-                                        fit: BoxFit.cover,
-                                        height: 300,
-                                        width: 300,
-                                      ),
-                              ),
+                                      ))
+                                  : Image.asset(
+                                      'assets/noimage.jpg',
+                                      fit: BoxFit.cover,
+                                      height: 300,
+                                      width: 300,
+                                    ),
                             ),
                           ),
                         ),
                         const SizedBox(height: 20),
-                        if (stock==0) ...[
+        
+                        // Stock information
+                        if (stock == 0)
                           const Text(
                             'המוצר אזל מהמלאי',
                             style: TextStyle(color: Colors.red),
-                          )
-                        ],
-                        // Product Name
+                          ),
+        
+                        // Product Data Sections
                         if (productData['name'] != null &&
                             productData['name'].isNotEmpty) ...[
                           buildSectionHeader('שם מוצר'),
@@ -155,7 +147,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                               style: const TextStyle(fontSize: 16)),
                           const SizedBox(height: 20),
                         ],
-
+        
                         // Product Data Section
                         if (productData['data'] != null &&
                             productData['data'].isNotEmpty) ...[
@@ -165,7 +157,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                               style: const TextStyle(fontSize: 14)),
                           const SizedBox(height: 20),
                         ],
-
+        
                         // Components Section
                         if (productData['components'] != null &&
                             productData['components'].isNotEmpty) ...[
@@ -175,7 +167,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                               style: const TextStyle(fontSize: 14)),
                           const SizedBox(height: 20),
                         ],
-
+        
                         // Additional Features Section
                         if (productData['additional_features'] != null &&
                             productData['additional_features'].isNotEmpty) ...[
@@ -187,7 +179,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                               style: const TextStyle(fontSize: 14)),
                           const SizedBox(height: 20),
                         ],
-
+        
                         // Contains Section
                         if (productData['contain'] != null &&
                             productData['contain'].isNotEmpty) ...[
@@ -197,7 +189,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                               style: const TextStyle(fontSize: 14)),
                           const SizedBox(height: 20),
                         ],
-
+        
                         // May Contain Section
                         if (productData['may_contain'] != null &&
                             productData['may_contain'].isNotEmpty) ...[
@@ -209,7 +201,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                               style: const TextStyle(fontSize: 14)),
                           const SizedBox(height: 20),
                         ],
-
+        
                         // Allergies Section
                         if (allergies != null && allergies.isNotEmpty) ...[
                           buildSectionHeader('אלרגנים'),
@@ -217,7 +209,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                           Text(allergies, style: const TextStyle(fontSize: 14)),
                           const SizedBox(height: 20),
                         ],
-
+        
                         // Categories Section
                         if (categories.isNotEmpty) ...[
                           buildSectionHeader('קטגוריות'),
@@ -226,7 +218,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                               style: const TextStyle(fontSize: 14)),
                           const SizedBox(height: 20),
                         ],
-
+        
                         // Health Marking Section
                         if (healthMarking.isNotEmpty) ...[
                           buildSectionHeader('סימונים בריאותיים'),
@@ -243,13 +235,13 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                           ),
                           const SizedBox(height: 20),
                         ],
-
+        
                         // Nutritional Values Header
                         buildSectionHeader(
                             'ערכים תזונתיים עבור 100 ${productData['is_beverage'] == 1 ? 'מ"ל' : 'גרם'}'),
-
+        
                         const SizedBox(height: 8),
-
+        
                         // Nutritional Values Table Section
                         nutritionalValues.isNotEmpty
                             ? Table(
@@ -281,17 +273,15 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                           '')
                                     tableRow('חומצות שומן טראנס',
                                         '${nutritionalValues['trans_fatty_acids']}'),
-                                  if (nutritionalValues['cholesterol'] !=
-                                          null &&
+                                  if (nutritionalValues['cholesterol'] != null &&
                                       nutritionalValues['cholesterol'] != '')
                                     tableRow('כולסטרול',
                                         '${nutritionalValues['cholesterol']}'),
                                   if (nutritionalValues['sodium'] != null &&
                                       nutritionalValues['sodium'] != '')
-                                    tableRow('נתרו',
-                                        '${nutritionalValues['sodium']}'),
-                                  if (nutritionalValues['total_carbs'] !=
-                                          null &&
+                                    tableRow(
+                                        'נתרו', '${nutritionalValues['sodium']}'),
+                                  if (nutritionalValues['total_carbs'] != null &&
                                       nutritionalValues['total_carbs'] != '')
                                     tableRow('סך הפחמימות מתוכן:',
                                         '${nutritionalValues['total_carbs']}'),
@@ -301,12 +291,10 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                         '${nutritionalValues['sugar']}'),
                                   if (nutritionalValues['sugar_teaspoons'] !=
                                           null &&
-                                      nutritionalValues['sugar_teaspoons'] !=
-                                          '')
+                                      nutritionalValues['sugar_teaspoons'] != '')
                                     tableRow('כפיות סוכר',
                                         '${nutritionalValues['sugar_teaspoons']}'),
-                                  if (nutritionalValues['rav_khaliem'] !=
-                                          null &&
+                                  if (nutritionalValues['rav_khaliem'] != null &&
                                       nutritionalValues['rav_khaliem'] != '')
                                     tableRow('רב קהליים',
                                         '${nutritionalValues['rav_khaliem']}'),
@@ -331,7 +319,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                               )
                             : const Text('אין ערכים תזונתיים זמינים.',
                                 style: TextStyle(fontSize: 14)),
-
+        
                         // Disclaimer Text
                         const SizedBox(height: 20),
                         const Divider(

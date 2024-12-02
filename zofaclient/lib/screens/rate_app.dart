@@ -6,7 +6,12 @@ class RateAppScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Notifications')),
-      body: const Center(child: Text('Notifications Page')),
+      body: const Directionality(
+        textDirection: TextDirection.rtl,
+        child: Center(
+          child: Text('Notifications Page'),
+        ),
+      ),
     );
   }
 }

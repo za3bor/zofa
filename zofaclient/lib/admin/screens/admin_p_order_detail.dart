@@ -106,41 +106,35 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.rtl, // Set the entire page direction to RTL
-      child: Scaffold(
-        appBar: AppBar(title: Text('פרטי הזמנה ${widget.order.id}')),
-        body: Padding(
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('פרטי הזמנה ${widget.order.id}'),
+      ),
+      body: Directionality(
+        textDirection: TextDirection.rtl,
+        child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            crossAxisAlignment:
-                CrossAxisAlignment.end, // Align text to the right
+            crossAxisAlignment: CrossAxisAlignment.start, // Align text to the right
             children: [
               Text(
                 'מספר הזמנה: ${widget.order.id}',
-                style:
-                    const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10),
               Text(
                 'שם הלקוח: ${widget.order.userName}',
-                style: const TextStyle(fontSize: 18),
               ),
               const SizedBox(height: 10),
               Text(
                 'טלפון: ${widget.order.phoneNumber}',
-                style: const TextStyle(fontSize: 18),
               ),
               const SizedBox(height: 10),
               Text(
                 'סטטוס: ${widget.order.status}',
-                style: const TextStyle(fontSize: 18),
               ),
               const SizedBox(height: 10),
               Text(
                 'סך הכל: ₪${widget.order.totalPrice.toStringAsFixed(2)}',
-                style:
-                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 20),
               const Text(

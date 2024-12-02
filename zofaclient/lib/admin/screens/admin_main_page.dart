@@ -17,41 +17,40 @@ class AdminMainPageScreen extends StatelessWidget {
         flexibleSpace: const SnowLayer(), // Directly use SnowLayer without Container
         title: const Text(
           'לוח בקרה למנהל',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: GridView.count(
-          crossAxisCount: 2, // Two columns
-          mainAxisSpacing: 16.0, // Adjusted spacing for a cleaner look
-          crossAxisSpacing: 16.0, // Adjusted spacing
-          childAspectRatio: 1.4, // Slightly adjusted aspect ratio
-          children: const [
-            CustomElevatedButton(
-              label: 'מוצרים',
-              targetPage: ProductFuncScreen(),
-            ),
-            CustomElevatedButton(
-              label: 'לחם',
-              targetPage: BreadFuncScreen(),
-            ),
-            CustomElevatedButton(
-              label: 'לקוחות',
-              targetPage: TabsScreen(),
-            ),
-            CustomElevatedButton(
-              label: 'הערות',
-              targetPage: NotesScreen(),
-            ),
-            CustomElevatedButton(
-              label: 'קופונים',
-              targetPage: CouponsScreen(),
-            ),
-          ],
+      body: Directionality(
+        textDirection: TextDirection.rtl,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: GridView.count(
+            crossAxisCount: 2, // Two columns
+            mainAxisSpacing: 16.0, // Adjusted spacing for a cleaner look
+            crossAxisSpacing: 16.0, // Adjusted spacing
+            childAspectRatio: 1.4, // Slightly adjusted aspect ratio
+            children: const [
+              CustomElevatedButton(
+                label: 'מוצרים',
+                targetPage: ProductFuncScreen(),
+              ),
+              CustomElevatedButton(
+                label: 'לחם',
+                targetPage: BreadFuncScreen(),
+              ),
+              CustomElevatedButton(
+                label: 'לקוחות',
+                targetPage: TabsScreen(),
+              ),
+              CustomElevatedButton(
+                label: 'הערות',
+                targetPage: NotesScreen(),
+              ),
+              CustomElevatedButton(
+                label: 'קופונים',
+                targetPage: CouponsScreen(),
+              ),
+            ],
+          ),
         ),
       ),
     );

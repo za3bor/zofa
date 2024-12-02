@@ -189,8 +189,9 @@ class _AdminBreadOrdersScreenState extends State<AdminBreadOrdersScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('הזמנות לחם ליום ${widget.day} ',
-            textDirection: TextDirection.rtl),
+        title: Text(
+          'הזמנות לחם ליום ${widget.day} ',
+        ),
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -207,55 +208,49 @@ class _AdminBreadOrdersScreenState extends State<AdminBreadOrdersScreen> {
                         '.אין הזמנות זמינות להיום',
                       ),
                     )
-                  : ListView(
-                      padding: const EdgeInsets.all(16.0),
-                      children: [
-                        const Padding(
-                          padding: EdgeInsets.only(bottom: 20.0),
-                          child: Text(
-                            'סיכום כמות לחמים להיום:',
-                            textDirection: TextDirection.rtl,
-                          ),
-                        ),
-                        ...breadQuantityMap.entries.map((entry) {
-                          return Card(
-                            margin: const EdgeInsets.symmetric(vertical: 5.0),
-                            color: Colors.grey[200],
-                            child: ListTile(
-                              title: Text(
-                                '${entry.key}: ${entry.value} יחידות',
-                                textDirection: TextDirection.rtl,
-                              ),
-                              contentPadding: const EdgeInsets.symmetric(
-                                  vertical: 10, horizontal: 16),
+                  : Directionality(
+                      textDirection: TextDirection.rtl,
+                      child: ListView(
+                        padding: const EdgeInsets.all(16.0),
+                        children: [
+                          const Padding(
+                            padding: EdgeInsets.only(bottom: 20.0),
+                            child: Text(
+                              'סיכום כמות לחמים להיום:',
                             ),
-                          );
-                        }),
-                        const SizedBox(height: 20),
-                        const Text(
-                          'הזמנות לחם:',
-                          textDirection: TextDirection.rtl,
-                        ),
-                        const SizedBox(height: 10),
-                        ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: _breadOrders.length,
-                          itemBuilder: (context, index) {
-                            final order = _breadOrders[index];
-                            // Determine button states based on the order status
-                            bool isReady = order.status == 'מוכן';
-                            bool isShipped = order.status == 'שלח';
-
+                          ),
+                          ...breadQuantityMap.entries.map((entry) {
                             return Card(
-                              margin:
-                                  const EdgeInsets.symmetric(vertical: 10.0),
-                              elevation: 5,
-                              shadowColor: Colors.grey.withOpacity(0.3),
-                              child: Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Directionality(
-                                  textDirection: TextDirection.rtl,
+                              margin: const EdgeInsets.symmetric(vertical: 5.0),
+                              child: ListTile(
+                                title: Text(
+                                  '${entry.key}: ${entry.value} יחידות',
+                                ),
+                                contentPadding: const EdgeInsets.symmetric(
+                                    vertical: 10, horizontal: 16),
+                              ),
+                            );
+                          }),
+                          const SizedBox(height: 20),
+                          const Text(
+                            'הזמנות לחם:',
+                          ),
+                          const SizedBox(height: 10),
+                          ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: _breadOrders.length,
+                            itemBuilder: (context, index) {
+                              final order = _breadOrders[index];
+                              // Determine button states based on the order status
+                              bool isReady = order.status == 'מוכן';
+                              bool isShipped = order.status == 'שלח';
+
+                              return Card(
+                                margin:
+                                    const EdgeInsets.symmetric(vertical: 10.0),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16.0),
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
@@ -306,11 +301,11 @@ class _AdminBreadOrdersScreenState extends State<AdminBreadOrdersScreen> {
                                     ],
                                   ),
                                 ),
-                              ),
-                            );
-                          },
-                        ),
-                      ],
+                              );
+                            },
+                          ),
+                        ],
+                      ),
                     ),
     );
   }

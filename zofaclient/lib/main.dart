@@ -6,6 +6,7 @@ import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:zofa_client/admin/screens/admin_main_page.dart';
 import 'package:zofa_client/screens/tabs.dart';
+import 'package:zofa_client/theme_data.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -64,71 +65,19 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     if (deviceId == null) {
-      // Show a loading indicator while device ID is being fetched
       return const Center(child: CircularProgressIndicator());
     }
-
-    // Check if the current device ID matches the admin devices list
     bool isAdmin = adminDeviceIds.contains(deviceId);
 
     return MaterialApp(
-      theme: ThemeData(
-        // Define a custom theme for your app
-        primaryColor:
-            const Color(0xFF7A6244), // Main color for AppBar and buttons
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFF7A6244), // AppBar background color
-          foregroundColor: Colors.white, // Text and icon color in the AppBar
-          titleTextStyle: TextStyle(
-            color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            fontFamily: 'Assistant',
-          ),
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor:
-                const Color(0xFF7A6244), // Default button background color
-            foregroundColor: Colors.white, // Default button text color
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-        ),
-        cardColor: const Color.fromARGB(
-            255, 222, 210, 206), // Default card background color
-        textTheme: const TextTheme(
-          bodyLarge: TextStyle(
-            color: Colors.black, // Text color for cards and other content
-            fontFamily: 'Assistant',
-            fontSize: 16,
-          ),
-        ),
-        iconTheme: const IconThemeData(
-          color: Color(0xFF7A6244), // Default icon color
-        ),
-        tabBarTheme: const TabBarTheme(
-          indicator: BoxDecoration(
-            color: Color(0xFF7A6244), // Background color for the active tab
-            borderRadius:
-                BorderRadius.all(Radius.circular(8)), // Rounded active tab
-          ),
-          labelColor: Colors.white, // Text color for active tabs
-          unselectedLabelColor:
-              Color(0xFF7A6244), // Text color for inactive tabs
-          labelStyle: TextStyle(
-            fontFamily: 'Assistant',
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
-          ), // Text style for active tabs
-          unselectedLabelStyle: TextStyle(
-            fontFamily: 'Assistant',
-            fontWeight: FontWeight.normal,
-            fontSize: 16,
-          ), // Text style for inactive tabs
-        ),
-      ),
+      title: 'Zofa',
+      theme: buildThemeData(), // Use the custom ThemeData
+      //builder: (context, child) {
+      //  return Directionality(
+       //   textDirection: TextDirection.rtl,
+        //  child: child!,
+        //);
+      //},
       home: Scaffold(
         body: isAdmin
             ? const AdminMainPageScreen() // Show admin screen for admin devices

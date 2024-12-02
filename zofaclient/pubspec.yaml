@@ -78,6 +78,8 @@ flutter:
     - assets/background2.jpg
     - assets/noimage.jpg
     - assets/drawer.jpeg
+    - assets/icons/hat.png
+    - assets/icons/christmas-lights.png
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

@@ -86,14 +86,14 @@ class _AddNewBreadState extends State<AddNewBread> {
       appBar: AppBar(
         title: const Text('הוספת סוג לחם חדש'),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(18),
-        child: Column(
-          children: [
-            const SizedBox(height: 5),
-            Directionality(
-              textDirection: TextDirection.rtl,
-              child: TextField(
+      body: Directionality(
+        textDirection: TextDirection.rtl,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(18),
+          child: Column(
+            children: [
+              const SizedBox(height: 5),
+              TextField(
                 controller: _breadNameController,
                 maxLength: 100,
                 decoration: const InputDecoration(
@@ -102,11 +102,8 @@ class _AddNewBreadState extends State<AddNewBread> {
                 autocorrect: false,
                 textCapitalization: TextCapitalization.none,
               ),
-            ),
-            const SizedBox(height: 5),
-            Directionality(
-              textDirection: TextDirection.rtl,
-              child: TextField(
+              const SizedBox(height: 5),
+              TextField(
                 keyboardType: TextInputType.number,
                 controller: _breadQuantityController,
                 maxLength: 100,
@@ -114,11 +111,8 @@ class _AddNewBreadState extends State<AddNewBread> {
                   labelText: 'כמות',
                 ),
               ),
-            ),
-            const SizedBox(height: 5),
-            Directionality(
-              textDirection: TextDirection.rtl,
-              child: TextField(
+              const SizedBox(height: 5),
+              TextField(
                 keyboardType: TextInputType.number,
                 controller: _breadPriceController,
                 maxLength: 100,
@@ -126,12 +120,12 @@ class _AddNewBreadState extends State<AddNewBread> {
                   labelText: 'מחיר',
                 ),
               ),
-            ),
-            ElevatedButton(
-              onPressed: _saveNewBread,
-              child: const Text('הוספה לחם'),
-            ),
-          ],
+              ElevatedButton(
+                onPressed: _saveNewBread,
+                child: const Text('הוספה לחם'),
+              ),
+            ],
+          ),
         ),
       ),
     );

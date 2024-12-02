@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 class ShareAppScreen extends StatelessWidget {
@@ -7,7 +6,12 @@ class ShareAppScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Settings')),
-      body: const Center(child: Text('Settings Page')),
+      body: const Directionality(
+        textDirection: TextDirection.rtl,
+        child: Center(
+          child: Text('Settings Page'),
+        ),
+      ),
     );
   }
 }
