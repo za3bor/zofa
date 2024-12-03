@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 ThemeData buildThemeData() {
   const Color primaryColor = Color(0xFF7A6244);
@@ -16,45 +17,42 @@ ThemeData buildThemeData() {
     ).copyWith(
       secondary: accentColor,
     ),
-    fontFamily: 'Assistant',
 
     // Text Theme
-    textTheme: const TextTheme(
-      displayLarge: TextStyle(
+    textTheme: TextTheme(
+      displayLarge: GoogleFonts.rubik(
         fontSize: 32.0,
         fontWeight: FontWeight.bold,
         color: primaryColor,
       ),
-      titleLarge: TextStyle(
+      titleLarge: GoogleFonts.rubik(
         fontSize: 20.0,
         fontWeight: FontWeight.w600,
         color: primaryColor,
       ),
-      bodyLarge: TextStyle(
-        fontSize: 16.0,
+      bodyLarge: GoogleFonts.rubik(
+        fontSize: 22.0,
         fontWeight: FontWeight.normal,
         color: textColor,
       ),
-      bodyMedium: TextStyle(
-        fontSize: 14.0,
+      bodyMedium: GoogleFonts.rubik(
+        fontSize: 15.0,
         fontWeight: FontWeight.normal,
         color: textColor,
       ),
     ),
 
     // AppBar Theme
-    appBarTheme: const AppBarTheme(
+    appBarTheme: AppBarTheme(
       backgroundColor: primaryColor,
       elevation: 4.0,
-      titleTextStyle: TextStyle(
+      titleTextStyle: GoogleFonts.rubik(
         fontSize: 20.0,
         fontWeight: FontWeight.bold,
         color: Colors.white,
-        fontFamily: 'Assistant',
       ),
       centerTitle: true,
-      iconTheme: IconThemeData(color: Colors.white),
-      
+      iconTheme: const IconThemeData(color: Colors.white),
     ),
 
     // Button Theme
@@ -62,10 +60,9 @@ ThemeData buildThemeData() {
       style: ElevatedButton.styleFrom(
         backgroundColor: primaryColor,
         foregroundColor: Colors.white,
-        textStyle: const TextStyle(
+        textStyle: GoogleFonts.rubik(
           fontSize: 16.0,
           fontWeight: FontWeight.w600,
-          fontFamily: 'Assistant',
         ),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12.0),
@@ -76,9 +73,8 @@ ThemeData buildThemeData() {
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(
         foregroundColor: primaryColor,
-        textStyle: const TextStyle(
+        textStyle: GoogleFonts.rubik(
           fontSize: 16.0,
-          fontFamily: 'Assistant',
         ),
       ),
     ),
@@ -105,25 +101,16 @@ ThemeData buildThemeData() {
       backgroundColor: primaryColor,
       selectedItemColor: accentColor,
       unselectedItemColor: Colors.white.withOpacity(0.7),
-      selectedLabelStyle: const TextStyle(
+      selectedLabelStyle: GoogleFonts.rubik(
         fontSize: 14.0,
         fontWeight: FontWeight.bold,
-        fontFamily: 'Assistant',
       ),
-      unselectedLabelStyle: const TextStyle(
+      unselectedLabelStyle: GoogleFonts.rubik(
         fontSize: 12.0,
-        fontFamily: 'Assistant',
       ),
-    ),
-    
-    // Switch Theme for SwitchListTile
-    switchTheme: SwitchThemeData(
-      thumbColor: WidgetStateProperty.all(primaryColor), // Color of the thumb (the circular part)
-      trackColor: WidgetStateProperty.all(Colors.grey), // Color of the track (background of the switch)
-      overlayColor: WidgetStateProperty.all(primaryColor.withOpacity(0.2)), // Color of the thumb's hover/press state
     ),
 
-    // Input Decoration Theme for TextField and TextFormField
+    // Input Decoration Theme
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
       fillColor: const Color.fromARGB(255, 222, 210, 206),
@@ -132,7 +119,9 @@ ThemeData buildThemeData() {
         borderSide: BorderSide.none,
       ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-      hintStyle: const TextStyle(color: Colors.black),
+      hintStyle: GoogleFonts.rubik(
+        color: Colors.black,
+      ),
       prefixIconColor: primaryColor,
       suffixIconColor: primaryColor,
     ),

@@ -284,6 +284,13 @@ class _ProductsScreenState extends State<ProductsScreen>
     }
   }
 
+  int calculateCrossAxisCount(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+    if (width > 800) return 4;
+    if (width > 600) return 3;
+    return 2;
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_categoriesError) {
@@ -311,7 +318,6 @@ class _ProductsScreenState extends State<ProductsScreen>
             decoration: InputDecoration(
               prefixIcon: const Icon(Icons.search),
               hintText: '...חיפוש מוצר',
-              hintStyle: const TextStyle(color: Colors.black),
               filled: true,
               fillColor: const Color.fromARGB(255, 222, 210, 206),
               border: OutlineInputBorder(
@@ -337,14 +343,19 @@ class _ProductsScreenState extends State<ProductsScreen>
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 6.0),
                 child: FilterChip(
-                  label: const Row(
+                  label: Row(
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.all_inclusive,
                         color: Colors.white,
                       ),
-                      SizedBox(width: 5),
-                      Text('הכל'),
+                      const SizedBox(width: 5),
+                      Text(
+                        'הכל',
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyMedium, // Explicitly use a theme style
+                      ),
                     ],
                   ),
                   selected: _selectAll,
@@ -386,7 +397,10 @@ class _ProductsScreenState extends State<ProductsScreen>
                           color: Colors.white,
                         ), // Category icon
                         const SizedBox(width: 5),
-                        Text(category.name), // Category name
+                        Text(
+                          category.name,
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ), // Category name
                       ],
                     ),
                     selected: _categorySelections[category.id] ?? false,
@@ -449,9 +463,7 @@ class _ProductsScreenState extends State<ProductsScreen>
                     padding: const EdgeInsets.all(8.0),
                     child: GridView.builder(
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: MediaQuery.of(context).size.width > 600
-                            ? 3
-                            : 2, // Responsive grid
+                        crossAxisCount: calculateCrossAxisCount(context),
                         crossAxisSpacing: 10,
                         mainAxisSpacing: 10,
                         childAspectRatio:
@@ -560,7 +572,7 @@ class _ProductsScreenState extends State<ProductsScreen>
                                     children: [
                                       // Product Name (Right to Left alignment)
                                       Align(
-                                        alignment: Alignment.centerRight,
+                                        alignment: Alignment.topRight,
                                         child: Text(
                                           product.name,
                                           overflow: TextOverflow.ellipsis,

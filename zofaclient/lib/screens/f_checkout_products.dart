@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:zofa_client/constant.dart';
 import 'package:hive/hive.dart';
 import 'package:zofa_client/global.dart'; // Adjust the path accordingly
+import 'package:zofa_client/widgets/snow_layer.dart';
 
 class ProductCheckoutPage extends StatefulWidget {
   final double totalPrice;
@@ -192,6 +193,7 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        flexibleSpace: const SnowLayer(),
         title: const Text('Checkout'),
       ),
       body: Directionality(

@@ -55,7 +55,7 @@ class _SnowLayerState extends State<SnowLayer> with TickerProviderStateMixin {
         });
 
         _snowSizes = List.generate(50, (index) {
-          return Random().nextDouble() * 4.0 +
+          return Random().nextDouble() * 6.0 +
               3.0; // Random size between 3 and 7
         });
 

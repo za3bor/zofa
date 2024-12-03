@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:zofa_client/constant.dart';
+import 'package:zofa_client/widgets/snow_layer.dart';
 
 class ProductDetailsScreen extends StatefulWidget {
   final int productId;
@@ -37,6 +38,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        flexibleSpace: const SnowLayer(),
         title: const Text('פרטי המוצר'),
       ),
       body: Directionality(
@@ -333,6 +335,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                               color: Colors.black,
                               fontWeight: FontWeight.bold),
                         ),
+                        const SizedBox(height: 12,)
                       ],
                     ),
                   ),

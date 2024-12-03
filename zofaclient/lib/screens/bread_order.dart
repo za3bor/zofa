@@ -155,70 +155,82 @@ class _BreadOrderScreenState extends State<BreadOrderScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: isLoading
-          ? const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircularProgressIndicator(), // Spinner
-                  SizedBox(height: 16),
-                  Text(
-                    'טוען נתונים, אנא המתן...', // "Loading data, please wait..."
+      body: Stack(
+        children: [
+          // Background image
+          Positioned.fill(
+            child: Image.asset(
+              'assets/background.jpg', // Path to your background image
+              fit: BoxFit.cover, // Makes sure the image covers the whole screen
+            ),
+          ),
+          isLoading
+              ? const Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircularProgressIndicator(), // Spinner
+                      SizedBox(height: 16),
+                      Text(
+                        'טוען נתונים, אנא המתן...', // "Loading data, please wait..."
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            )
-          : Directionality(
-              textDirection: TextDirection.rtl,
-              child: Column(
-                children: [
-                  Expanded(
-                    child: SingleChildScrollView(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        children: [
-                          Text(
-                            'הזמנת לחם ליום $day', // "Bread order for $day"
-                          ),
-                          const SizedBox(height: 16.0),
-                          // Display the bread list with quantity rows
-                          ...breadList.map((bread) {
-                            return Column(
-                              children: [
-                                BreadQuantityRow(
-                                  name: bread.name,
-                                  price: bread.price,
-                                  onQuantitySelected: (int quantity) {
-                                    onQuantitySelected(bread, quantity);
-                                  },
-                                  quantity: bread.quantity,
-                                ),
-                                const SizedBox(height: 16.0),
-                              ],
-                            );
-                          }),
-                          Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: SizedBox(
-                              child: ElevatedButton(
-                                onPressed: isButtonEnabled
-                                    ? () {
-                                        addToCart(context);
-                                      }
-                                    : null,
-                                child: Text(
-                                  buttonText, // Button text based on the time restriction
+                )
+              : Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: SingleChildScrollView(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            children: [
+                              Text(
+                                'הזמנת לחם ליום $day', // "Bread order for $day"
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+                              const SizedBox(height: 16.0),
+                              // Display the bread list with quantity rows
+                              ...breadList.map((bread) {
+                                return Column(
+                                  children: [
+                                    BreadQuantityRow(
+                                      name: bread.name,
+                                      price: bread.price,
+                                      onQuantitySelected: (int quantity) {
+                                        onQuantitySelected(bread, quantity);
+                                      },
+                                      quantity: bread.quantity,
+                                    ),
+                                    const SizedBox(height: 16.0),
+                                  ],
+                                );
+                              }),
+                              Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: SizedBox(
+                                  child: ElevatedButton(
+                                    onPressed: isButtonEnabled
+                                        ? () {
+                                            addToCart(context);
+                                          }
+                                        : null,
+                                    child: Text(
+                                      buttonText, // Button text based on the time restriction
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
-                    ),
+                    ],
                   ),
-                ],
-              ),
-            ),
+                ),
+        ],
+      ),
     );
   }
 }

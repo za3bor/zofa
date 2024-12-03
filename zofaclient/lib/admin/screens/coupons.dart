@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:zofa_client/models/coupon.dart'; // Ensure your Coupon model is defined correctly
 import 'package:zofa_client/constant.dart';
+import 'package:zofa_client/widgets/snow_layer.dart';
 
 class CouponsScreen extends StatefulWidget {
   const CouponsScreen({super.key});
@@ -186,6 +187,8 @@ class _CouponsScreenState extends State<CouponsScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        flexibleSpace:
+            const SnowLayer(), // Directly use SnowLayer without Container
         title: const Text('קופונים'),
       ),
       body: Directionality(
@@ -205,7 +208,8 @@ class _CouponsScreenState extends State<CouponsScreen> {
               padding: const EdgeInsets.all(8.0),
               child: TextField(
                 controller: _percentageController,
-                keyboardType: TextInputType.number, // Set keyboard type to number
+                keyboardType:
+                    TextInputType.number, // Set keyboard type to number
                 decoration: InputDecoration(
                   hintText: 'הנחה באחוזים...',
                   suffixIcon: IconButton(

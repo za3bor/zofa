@@ -202,61 +202,62 @@ class TabsScreenState extends State<TabsScreen>
         ],
       ),
       endDrawer: Drawer(
-        child: Directionality(
-          textDirection: TextDirection.rtl,
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: <Widget>[
-              const DrawerHeader(
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image:
-                        AssetImage('assets/drawer.jpeg'), // Use your image path
-                    fit: BoxFit
-                        .cover, // Ensures the image fills the DrawerHeader
-                  ),
-                ),
-                child: Align(),
+  child: Directionality(
+    textDirection: TextDirection.rtl,
+    child: Container(
+      color: Theme.of(context).scaffoldBackgroundColor, // Set your desired background color here
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: <Widget>[
+          const DrawerHeader(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/drawer.jpeg'), // Use your image path
+                fit: BoxFit.cover, // Ensures the image fills the DrawerHeader
               ),
-              ListTile(
-                leading: const Icon(Icons.home),
-                title: const Text('צור קשר'),
-                onTap: () {
-                  _navigateToDrawerPage(ContactUsScreen());
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.person),
-                title: const Text('אודות האפליקציה'),
-                onTap: () {
-                  _navigateToDrawerPage(const AboutAppScreen());
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.settings),
-                title: const Text('הגדרות'),
-                onTap: () {
-                  _navigateToDrawerPage(const ShareAppScreen());
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.notifications),
-                title: const Text('הערות'),
-                onTap: () {
-                  _navigateToDrawerPage(const RateAppScreen());
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.info),
-                title: const Text('תנאי שימוש'),
-                onTap: () {
-                  _navigateToDrawerPage(const TermOfUseScreen());
-                },
-              ),
-            ],
+            ),
+            child: Align(),
           ),
-        ),
+          ListTile(
+            leading: const Icon(Icons.home),
+            title: const Text('צור קשר'),
+            onTap: () {
+              _navigateToDrawerPage(ContactUsScreen());
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.person),
+            title: const Text('אודות האפליקציה'),
+            onTap: () {
+              _navigateToDrawerPage(const AboutAppScreen());
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.settings),
+            title: const Text('הגדרות'),
+            onTap: () {
+              _navigateToDrawerPage(const ShareAppScreen());
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.notifications),
+            title: const Text('הערות'),
+            onTap: () {
+              _navigateToDrawerPage(const RateAppScreen());
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.info),
+            title: const Text('תנאי שימוש'),
+            onTap: () {
+              _navigateToDrawerPage(const TermOfUseScreen());
+            },
+          ),
+        ],
       ),
+    ),
+  ),
+),
     );
   }
 }

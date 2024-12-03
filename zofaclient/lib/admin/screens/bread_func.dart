@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:zofa_client/admin/screens/admin_bread_orders.dart';
 import 'package:zofa_client/admin/screens/add_new_bread.dart';
 import 'package:zofa_client/admin/widgets/custom_elevated_but.dart';
+import 'package:zofa_client/widgets/snow_layer.dart';
 
 class BreadFuncScreen extends StatelessWidget {
   const BreadFuncScreen({super.key});
@@ -10,6 +11,8 @@ class BreadFuncScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+                flexibleSpace: const SnowLayer(), // Directly use SnowLayer without Container
+
         title: const Text(
           'לוח בקרה ללחם',
         ),

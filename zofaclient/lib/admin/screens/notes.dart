@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:zofa_client/models/note.dart';
 import 'package:zofa_client/constant.dart';
+import 'package:zofa_client/widgets/snow_layer.dart';
 
 class NotesScreen extends StatefulWidget {
   const NotesScreen({super.key});
@@ -174,6 +175,9 @@ class _NotesScreenState extends State<NotesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        flexibleSpace:
+            const SnowLayer(), // Directly use SnowLayer without Container
+
         title: const Text('פתקים'),
       ),
       body: Directionality(
