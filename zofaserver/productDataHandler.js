@@ -26,6 +26,19 @@ async function searchProductsByName(name) {
   }
 }
 
+// Function to delete a Prodcut Order by ID
+async function deleteProdcutOrderById(id) {
+  try {
+    const [result] = await pool.query("DELETE FROM product_orders WHERE id = ?", [
+      id,
+    ]);
+    return result;
+  } catch (err) {
+    console.error("Error deleting Prodcut Order:", err.message);
+    throw err;
+  }
+}
+
 async function getProductDetails(productId) {
   try {
     // Query the database to get product details based on the productId
@@ -427,4 +440,5 @@ module.exports = {
   saveCategories,
   removeExistingCategories,
   getProductByBarcode,
+  deleteProdcutOrderById,
 };

@@ -571,6 +571,24 @@ io.on("connection", (socket) => {
   });
 });
 
+app.delete("/api/deleteProductOrder/:id", async (req, res) => {
+  const { id } = req.params;
+  
+  try {
+    const result = await productDataHandler.deleteProdcutOrderById(id);
+    if (result.affectedRows > 0) {
+      // Check if any rows were affected
+      res.status(200).json({ message: "Product Order deleted successfully" });
+    } else {
+      res.status(404).json({ error: "Product Order not found" });
+    }
+  } catch (err) {
+    console.error("Error deleting Product Order:", err.message);
+    res.status(500).json({ error: "Error deleting Product Order" });
+  }
+});
+
+
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).send("Something went wrong!");

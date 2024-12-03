@@ -97,6 +97,57 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
       }
     }
   }
+  // Function to delete bread order
+  Future<void> deleteOrder(int orderId) async {
+    try {
+      final response = await http.delete(
+        Uri.parse('http://$ipAddress:3000/api/deleteProductOrder/$orderId'),
+      );
+
+      if (response.statusCode == 200) {
+        _showSnackbar('ההזמנה נמחקה בהצלחה.');
+        Navigator.pop(context); // Go back to the previous screen after successful deletion
+      } else {
+        throw Exception('Failed to delete bread order.');
+      }
+    } catch (e) {
+      _showSnackbar('שגיאה במחיקת ההזמנה.');
+    }
+  }
+
+  void _showSnackbar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+  }
+
+  // Function to show a confirmation dialog before deletion
+  void _confirmDeleteOrder(int orderId) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('האם אתה בטוח?'),
+          content: const Text('האם אתה בטוח שברצונך למחוק את ההזמנה הזו?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: const Text('לא'),
+            ),
+            TextButton(
+              onPressed: () {
+                deleteOrder(orderId); // Call the delete function
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: const Text('כן'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   void initState() {
@@ -115,7 +166,8 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start, // Align text to the right
+            crossAxisAlignment:
+                CrossAxisAlignment.start, // Align text to the right
             children: [
               Text(
                 'מספר הזמנה: ${widget.order.id}',
@@ -161,6 +213,13 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                         },
                       ),
                     ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  _confirmDeleteOrder(widget.order.id); // Show confirmation before delete
+                },
+                child: const Text('מחק הזמנה'),
+              ),
             ],
           ),
         ),

@@ -72,12 +72,6 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       title: 'Zofa',
       theme: buildThemeData(), // Use the custom ThemeData
-      //builder: (context, child) {
-      //  return Directionality(
-       //   textDirection: TextDirection.rtl,
-        //  child: child!,
-        //);
-      //},
       home: Scaffold(
         body: isAdmin
             ? const AdminMainPageScreen() // Show admin screen for admin devices
