@@ -5,11 +5,17 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:zofa_client/admin/screens/admin_main_page.dart';
+import 'package:zofa_client/screens/login.dart';
 import 'package:zofa_client/screens/tabs.dart';
 import 'package:zofa_client/theme_data.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+);
   // Initialize Hive
   final appDocumentDirectory = await getApplicationDocumentsDirectory();
   Hive.init(appDocumentDirectory.path); // Set the path where Hive stores data
@@ -74,8 +80,8 @@ class _MyAppState extends State<MyApp> {
       theme: buildThemeData(), // Use the custom ThemeData
       home: Scaffold(
         body: isAdmin
-            ? const AdminMainPageScreen() // Show admin screen for admin devices
-            : const AdminMainPageScreen(), // Show non-admin screen for non-admin devices
+            ? const LoginPage() // Show admin screen for admin devices
+            : const LoginPage(), // Show non-admin screen for non-admin devices
       ),
     );
   }

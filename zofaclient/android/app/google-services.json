@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1013991760042",
+    "project_id": "zofa-5c07c",
+    "storage_bucket": "zofa-5c07c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1013991760042:android:8068d65f0df6f05ffe70d3",
+        "android_client_info": {
+          "package_name": "com.example.zofa_client"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAxIvTOueEVVqgmHI6eX10w3OaZxUkYuDo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
