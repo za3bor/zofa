@@ -14,73 +14,90 @@ class OtpPage extends StatefulWidget {
 
 class _OtpPageState extends State<OtpPage> {
   final _otpController = TextEditingController();
-  String verificationId = '';  // Store the verification ID
+  String verificationId = ''; // Store the verification ID
+  bool _isSendingOtp = false; // Loading indicator for sending OTP
+  bool _isVerifyingOtp = false; // Loading indicator for verifying OTP
 
   // Function to send OTP
   Future<void> _sendOtp() async {
-    await FirebaseAuth.instance.verifyPhoneNumber(
-      phoneNumber: widget.phoneNumber,
-      verificationCompleted: (PhoneAuthCredential credential) async {
-        // If verification is successful, sign in directly
-        await FirebaseAuth.instance.signInWithCredential(credential);
-        print('Verified and signed in!');
-      },
-      verificationFailed: (FirebaseAuthException e) {
-        // Handle error if verification fails
-        print('Verification failed: ${e.message}');
-      },
-      codeSent: (String verId, int? resendToken) {
-        setState(() {
-          verificationId = verId;
-        });
-        print('OTP sent to ${widget.phoneNumber}');
-      },
-      codeAutoRetrievalTimeout: (String verId) {
-        setState(() {
-          verificationId = verId;
-        });
-        print('Auto retrieval timeout');
-      },
-    );
+    setState(() {
+      _isSendingOtp = true;
+    });
+
+    try {
+      await FirebaseAuth.instance.verifyPhoneNumber(
+        phoneNumber: widget.phoneNumber,
+        verificationCompleted: (PhoneAuthCredential credential) async {
+          await FirebaseAuth.instance.signInWithCredential(credential);
+          print('Verified and signed in automatically!');
+        },
+        verificationFailed: (FirebaseAuthException e) {
+          print('Verification failed: ${e.message}');
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to send OTP: ${e.message}')),
+          );
+        },
+        codeSent: (String verId, int? resendToken) {
+          setState(() {
+            verificationId = verId;
+          });
+          print('OTP sent to ${widget.phoneNumber}');
+        },
+        codeAutoRetrievalTimeout: (String verId) {
+          setState(() {
+            verificationId = verId;
+          });
+          print('Auto retrieval timeout');
+        },
+      );
+    } finally {
+      setState(() {
+        _isSendingOtp = false;
+      });
+    }
   }
 
   // Function to verify OTP
   Future<void> _verifyOtp() async {
-    String otp = _otpController.text;
-    if (otp.isNotEmpty) {
+    String otp = _otpController.text.trim();
+    if (otp.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter the OTP.')),
+      );
+      return;
+    }
+
+    setState(() {
+      _isVerifyingOtp = true;
+    });
+
+    try {
       PhoneAuthCredential credential = PhoneAuthProvider.credential(
         verificationId: verificationId,
         smsCode: otp,
       );
+      await FirebaseAuth.instance.signInWithCredential(credential);
+      print('OTP verified!');
 
-      try {
-        // Sign in with the OTP
-        await FirebaseAuth.instance.signInWithCredential(credential);
-        print('OTP verified!');
-
-        // Navigate to the HomePage after successful OTP verification
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const AdminMainPageScreen()),
-        );
-      } catch (e) {
-        // Handle error if OTP is invalid
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Invalid OTP. Please try again.')),
-        );
-        print('Error verifying OTP: $e');
-      }
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter the OTP.')),
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const AdminMainPageScreen()),
       );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Invalid OTP. Please try again.')),
+      );
+      print('Error verifying OTP: $e');
+    } finally {
+      setState(() {
+        _isVerifyingOtp = false;
+      });
     }
   }
 
   @override
   void initState() {
     super.initState();
-    // Send OTP when the page is loaded
     _sendOtp();
   }
 
@@ -112,10 +129,12 @@ class _OtpPageState extends State<OtpPage> {
               ),
             ),
             const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _verifyOtp,
-              child: const Text('Verify OTP'),
-            ),
+            _isVerifyingOtp
+                ? const Center(child: CircularProgressIndicator())
+                : ElevatedButton(
+                    onPressed: _verifyOtp,
+                    child: const Text('Verify OTP'),
+                  ),
           ],
         ),
       ),
