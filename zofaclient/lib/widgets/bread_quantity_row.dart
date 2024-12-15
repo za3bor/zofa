@@ -47,7 +47,7 @@ class _BreadQuantityRowState extends State<BreadQuantityRow> {
       decoration: BoxDecoration(
         color: const Color.fromARGB(255, 222, 210, 206), // Light background color
         borderRadius: BorderRadius.circular(12.0), // Rounded corners
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
             color: Colors.black26, // Shadow color
             offset: Offset(0, 2), // Shadow offset
@@ -71,7 +71,7 @@ class _BreadQuantityRowState extends State<BreadQuantityRow> {
             '(מעורבב עם קמח מלא בלי תוספת סוכר)',
             style: TextStyle(
               fontSize: 14.0,
-              color: Colors.grey,
+              color: Color.fromARGB(255, 98, 98, 98),
             ),
           ),
           const SizedBox(height: 8.0),
@@ -139,7 +139,6 @@ class _BreadQuantityRowState extends State<BreadQuantityRow> {
                     '${widget.quantity} יח',
                     style: const TextStyle(
                       fontSize: 14.0,
-                      color: Colors.grey,
                     ),
                   ),
                 ),

@@ -3,6 +3,7 @@ const fs = require("fs");
 const b2 = require("./b2Client");
 require("dotenv").config();
 const axios = require("axios"); // Add this line to import axios
+const sharp = require('sharp'); // For image manipulation
 
 // Configure database connection details (replace with your actual values)
 const pool = mysql.createPool({
@@ -177,6 +178,36 @@ async function getAllCategories() {
   }
 }
 
+async function addWhiteBackground(filePath, fileName) {
+  const outputPath = `uploads/updated_${fileName}.jpg`; // Output path for the modified image
+
+  try {
+    // Ensure the image is resized proportionally and surrounded by a white background
+    await sharp(filePath)
+      .resize({
+        width: 500,
+        height: 500,
+        fit: sharp.fit.contain, // Ensure the image fits within the dimensions
+        background: { r: 255, g: 255, b: 255 }, // White background
+      })
+      .extend({
+        top: 50, // Padding above
+        bottom: 50, // Padding below
+        left: 50, // Padding on the left
+        right: 50, // Padding on the right
+        background: { r: 255, g: 255, b: 255 }, // White background for the extended area
+      })
+      .toFile(outputPath); // Save the result to the output path
+
+    return outputPath; // Return the path of the updated image
+  } catch (error) {
+    console.error("Error adding white background:", error.message);
+    throw error;
+  }
+}
+
+
+
 async function uploadFileToB2(filePath, fileName) {
   try {
     await b2.authorize();
@@ -196,7 +227,8 @@ async function uploadFileToB2(filePath, fileName) {
       fileName,
       data: fileContent,
     });
-    console.log("B2 success");
+
+    console.log("B2 upload success");
     return uploadResponse.data.fileUrl;
   } catch (error) {
     console.error("Error uploading file to B2:", error);
@@ -272,5 +304,6 @@ module.exports = {
   validateCoupon,
   deleteCategoryById,
   removeExistingProductCategories,
+  addWhiteBackground,
   //deleteImageFromB2,
 };

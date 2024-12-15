@@ -31,7 +31,7 @@ ThemeData buildThemeData() {
         color: primaryColor,
       ),
       bodyLarge: GoogleFonts.rubik(
-        fontSize: 22.0,
+        fontSize: 20.0,
         fontWeight: FontWeight.normal,
         color: textColor,
       ),
@@ -47,7 +47,7 @@ ThemeData buildThemeData() {
       backgroundColor: primaryColor,
       elevation: 4.0,
       titleTextStyle: GoogleFonts.rubik(
-        fontSize: 20.0,
+        fontSize: 25.0,
         fontWeight: FontWeight.bold,
         color: Colors.white,
       ),
@@ -93,7 +93,7 @@ ThemeData buildThemeData() {
         borderRadius: BorderRadius.circular(12.0),
       ),
       shadowColor: Colors.black26,
-      margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+      margin: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 12.0),
     ),
 
     // BottomNavigationBar Theme

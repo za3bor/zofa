@@ -42,7 +42,6 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage });
-
 app.post("/api/uploadPicture", upload.single("file"), async (req, res) => {
   try {
     const file = req.file;
@@ -51,15 +50,21 @@ app.post("/api/uploadPicture", upload.single("file"), async (req, res) => {
     }
 
     const filePath = file.path;
-    const fileUrl = await dataHandler.uploadFileToB2(filePath, file.filename);
+    const fileName = file.filename;
+
+    // Add white background to the uploaded image
+    const updatedFilePath = await dataHandler.addWhiteBackground(filePath, fileName);
+
+    // Upload to Backblaze B2
+    const fileUrl = await dataHandler.uploadFileToB2(updatedFilePath, fileName);
 
     // Optionally delete local file after successful upload
-    //try {
-    //   fs.unlinkSync(filePath);
-    // } catch (unlinkError) {
+   // try {
+    //  fs.unlinkSync(updatedFilePath);
+    //  console.log("Temporary file deleted after upload");
+   // } catch (unlinkError) {
     //  console.error("Error deleting local file:", unlinkError.message);
-    //   // Handle the unlink error as needed, for example, log it or notify the user
-    // }
+   // }
 
     res.status(200).json({ message: "File uploaded successfully", fileUrl });
   } catch (error) {

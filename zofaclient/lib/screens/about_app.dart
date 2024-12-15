@@ -57,27 +57,23 @@ class AboutAppScreen extends StatelessWidget {
             children: [
               // App name
               const Text(
-                'שם האפליקציה: Zofa Shop', // App name in Hebrew
+                'שם האפליקציה: Zofa Health Shop', // App name in Hebrew
               ),
               const SizedBox(height: 20),
-
               const Text(
                 'גרסה: 3.02.4', // App name in Hebrew
               ),
               const SizedBox(height: 20),
-
               // Developer name
               const Text(
                 'מפתח: פאדי סרור', // Developer's name in Hebrew
               ),
               const SizedBox(height: 20),
-
               // Contact section title
               const Text(
                 'צור קשר:',
               ),
               const SizedBox(height: 10),
-
               // LinkedIn link
               Row(
                 mainAxisAlignment: MainAxisAlignment

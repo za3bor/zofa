@@ -203,21 +203,25 @@ class _BreadOrderScreenState extends State<BreadOrderScreen> {
                                       },
                                       quantity: bread.quantity,
                                     ),
-                                    const SizedBox(height: 16.0),
+                                    const SizedBox(height: 12.0),
                                   ],
                                 );
                               }),
                               Padding(
                                 padding: const EdgeInsets.all(16.0),
                                 child: SizedBox(
-                                  child: ElevatedButton(
-                                    onPressed: isButtonEnabled
-                                        ? () {
-                                            addToCart(context);
-                                          }
-                                        : null,
-                                    child: Text(
-                                      buttonText, // Button text based on the time restriction
+                                  child: SizedBox(
+                                    width: double
+                                        .infinity, // Makes the button full-width
+                                    child: ElevatedButton(
+                                      onPressed: isButtonEnabled
+                                          ? () {
+                                              addToCart(context);
+                                            }
+                                          : null,
+                                      child: Text(
+                                        buttonText, // Button text based on the time restriction
+                                      ),
                                     ),
                                   ),
                                 ),

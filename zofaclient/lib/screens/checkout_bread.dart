@@ -114,6 +114,13 @@ class _CheckoutBreadScreenState extends State<CheckoutBreadScreen> {
         textDirection: TextDirection.rtl,
         child: Stack(
           children: [
+            // Background Image
+            Positioned.fill(
+              child: Image.asset(
+                'assets/background.jpg', // Path to your background image
+                fit: BoxFit.cover, // Cover the entire screen
+              ),
+            ),
             // Foreground Content
             SingleChildScrollView(
               child: ConstrainedBox(
@@ -143,6 +150,8 @@ class _CheckoutBreadScreenState extends State<CheckoutBreadScreen> {
                                   double itemTotal =
                                       entry.key.price * entry.value;
                                   return Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Padding(
                                         padding: const EdgeInsets.symmetric(
@@ -193,7 +202,6 @@ class _CheckoutBreadScreenState extends State<CheckoutBreadScreen> {
                         controller: _nameController,
                         decoration: const InputDecoration(
                           labelText: 'שם',
-                          border: OutlineInputBorder(),
                         ),
                       ),
                       const SizedBox(height: 16.0),
@@ -202,7 +210,6 @@ class _CheckoutBreadScreenState extends State<CheckoutBreadScreen> {
                         keyboardType: TextInputType.phone,
                         decoration: const InputDecoration(
                           labelText: 'טלפון',
-                          border: OutlineInputBorder(),
                         ),
                       ),
                       const SizedBox(height: 16.0),

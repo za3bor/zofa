@@ -90,14 +90,6 @@ class _ProductsScreenState extends State<ProductsScreen>
           product.stock = newStock > 0;
         }
       });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Stock updated for product ID $productId!',
-          ),
-        ),
-      );
     });
 
     // Handle socket disconnection
@@ -114,7 +106,6 @@ class _ProductsScreenState extends State<ProductsScreen>
     _scrollController.dispose();
     _animationController.dispose();
     _controller.dispose();
-
     super.dispose();
   }
 
@@ -276,19 +267,12 @@ class _ProductsScreenState extends State<ProductsScreen>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              '${product.name} added to cart!',
+              '${product.name}המוצר הוסף לעגלה ',
             ),
           ),
         );
       }
     }
-  }
-
-  int calculateCrossAxisCount(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
-    if (width > 800) return 4;
-    if (width > 600) return 3;
-    return 2;
   }
 
   @override
@@ -474,17 +458,16 @@ class _ProductsScreenState extends State<ProductsScreen>
                         child: GridView.builder(
                           gridDelegate:
                               SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: calculateCrossAxisCount(context),
+                            crossAxisCount: 2,
                             crossAxisSpacing: 10,
                             mainAxisSpacing: 10,
-                            childAspectRatio:
-                                0.49, // Adjust item height/width ratio for better look
+                            childAspectRatio: 0.51,
                           ),
                           itemCount: _filteredProducts.length,
                           itemBuilder: (ctx, index) {
                             final product = _filteredProducts[index];
                             final imageUrl =
-                                'https://f003.backblazeb2.com/file/zofapic/${product.id}.jpeg';
+                                'https://f003.backblazeb2.com/file/zofapic/${product.id}.jpg';
 
                             return GestureDetector(
                               onTap: () {
@@ -498,131 +481,157 @@ class _ProductsScreenState extends State<ProductsScreen>
                                 );
                               },
                               child: Card(
-  shape: RoundedRectangleBorder(
-    borderRadius: BorderRadius.circular(15),
-  ),
-  child: Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      // Product Image - No spacing on top, right, and left
-      ClipRRect(
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(15),
-          topRight: Radius.circular(15),
-        ), // Rounded corners only on the top
-        child: imageUrl.isNotEmpty // Check if imageUrl is present
-            ? Hero(
-                tag: 'imageHero-${product.id}', // Unique tag for Hero animation
-                child: ColorFiltered(
-                  colorFilter: ColorFilter.mode(
-                    const Color.fromARGB(255, 121, 85, 72).withOpacity(0.25),
-                    BlendMode.darken,
-                  ),
-                  child: Image.network(
-                    imageUrl,
-                    fit: BoxFit.cover, // Ensure image fills the area
-                    height: 150, // Fixed height for consistency
-                    width: double.infinity, // Make image stretch to full width
-                    loadingBuilder: (BuildContext context, Widget child,
-                        ImageChunkEvent? loadingProgress) {
-                      if (loadingProgress == null) {
-                        return child;
-                      }
-                      return Center(
-                        child: CircularProgressIndicator(
-                          value: loadingProgress.expectedTotalBytes != null
-                              ? loadingProgress.cumulativeBytesLoaded /
-                                  (loadingProgress.expectedTotalBytes ?? 1)
-                              : null,
-                        ),
-                      );
-                    },
-                    errorBuilder: (BuildContext context, Object error,
-                        StackTrace? stackTrace) {
-                      return Image.asset(
-                        'assets/noimage.jpg', // Fallback image
-                        fit: BoxFit.cover,
-                        height: 150,
-                        width: double.infinity,
-                      );
-                    },
-                  ),
-                ),
-              )
-            : Image.asset(
-                'assets/noimage.jpg', // Fallback image
-                fit: BoxFit.cover,
-                height: 150,
-                width: double.infinity,
-              ),
-      ),
-      const SizedBox(height: 10),
-      // Product Details Padding
-      Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Product Name (Right to Left alignment)
-            Align(
-              alignment: Alignment.topRight,
-              child: Text(
-                product.name,
-                overflow: TextOverflow.ellipsis,
-                maxLines: 3,
-              ),
-            ),
-            const SizedBox(height: 5),
-            // Product Price
-            Center(
-              child: Text(
-                '₪ ${product.price.toStringAsFixed(1)}',
-              ),
-            ),
-          ],
-        ),
-      ),
-      const Spacer(), // Push buttons to the bottom
-      Column(
-        children: [
-          // Quantity Controls
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              IconButton(
-                icon: const Icon(Icons.add),
-                onPressed: () {
-                  _incrementQuantity(product.id);
-                },
-              ),
-              Text(
-                '${_productQuantities[product.id] ?? 0}',
-              ),
-              IconButton(
-                icon: const Icon(Icons.remove),
-                onPressed: () {
-                  _decrementQuantity(product.id);
-                },
-              ),
-            ],
-          ),
-          // Add to Cart Button (Hebrew)
-          ElevatedButton(
-            onPressed: product.stock ? () => _addToCart(product.id) : null,
-            style: ElevatedButton.styleFrom(
-              backgroundColor:
-                  product.stock ? Colors.brown : Colors.grey, // Adjust color
-            ),
-            child: Text(
-              product.stock ? 'הוסף לסל' : 'אזל מהמלאי', // Hebrew for "Add to Cart"
-            ),
-          ),
-          const SizedBox(height: 7),
-        ],
-      ),
-    ],
-  ),
-),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    // Product Image - No spacing on top, right, and left
+                                    ClipRRect(
+                                      borderRadius: const BorderRadius.only(
+                                        topLeft: Radius.circular(15),
+                                        topRight: Radius.circular(15),
+                                      ), // Rounded corners only on the top
+                                      child: imageUrl
+                                              .isNotEmpty // Check if imageUrl is present
+                                          ? Hero(
+                                              tag:
+                                                  'imageHero-${product.id}', // Unique tag for Hero animation
+                                              child: ColorFiltered(
+                                                colorFilter: ColorFilter.mode(
+                                                  const Color.fromARGB(
+                                                          255, 121, 85, 72)
+                                                      .withOpacity(0.25),
+                                                  BlendMode.darken,
+                                                ),
+                                                child: Image.network(
+                                                  imageUrl,
+                                                  fit: BoxFit
+                                                      .cover, // Ensure image fills the area
+                                                  height:
+                                                      150, // Fixed height for consistency
+                                                  width: double
+                                                      .infinity, // Make image stretch to full width
+                                                  loadingBuilder:
+                                                      (BuildContext context,
+                                                          Widget child,
+                                                          ImageChunkEvent?
+                                                              loadingProgress) {
+                                                    if (loadingProgress ==
+                                                        null) {
+                                                      return child;
+                                                    }
+                                                    return Center(
+                                                      child:
+                                                          CircularProgressIndicator(
+                                                        value: loadingProgress
+                                                                    .expectedTotalBytes !=
+                                                                null
+                                                            ? loadingProgress
+                                                                    .cumulativeBytesLoaded /
+                                                                (loadingProgress
+                                                                        .expectedTotalBytes ??
+                                                                    1)
+                                                            : null,
+                                                      ),
+                                                    );
+                                                  },
+                                                  errorBuilder: (BuildContext
+                                                          context,
+                                                      Object error,
+                                                      StackTrace? stackTrace) {
+                                                    return Image.asset(
+                                                      'assets/noimage.jpg', // Fallback image
+                                                      fit: BoxFit.cover,
+                                                      height: 150,
+                                                      width: double.infinity,
+                                                    );
+                                                  },
+                                                ),
+                                              ),
+                                            )
+                                          : Image.asset(
+                                              'assets/noimage.jpg', // Fallback image
+                                              fit: BoxFit.cover,
+                                              height: 150,
+                                              width: double.infinity,
+                                            ),
+                                    ),
+                                    const SizedBox(height: 10),
+                                    // Product Details Padding
+                                    Padding(
+                                      padding: const EdgeInsets.all(12.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          // Product Name (Right to Left alignment)
+                                          Align(
+                                            alignment: Alignment.topRight,
+                                            child: Text(
+                                              product.name,
+                                              overflow: TextOverflow.ellipsis,
+                                              maxLines: 2,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 5),
+                                          // Product Price
+                                          Center(
+                                            child: Text(
+                                              '₪ ${product.price.toStringAsFixed(1)}',
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const Spacer(), // Push buttons to the bottom
+                                    Column(
+                                      children: [
+                                        // Quantity Controls
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            IconButton(
+                                              icon: const Icon(Icons.add),
+                                              onPressed: () {
+                                                _incrementQuantity(product.id);
+                                              },
+                                            ),
+                                            Text(
+                                              '${_productQuantities[product.id] ?? 0}',
+                                            ),
+                                            IconButton(
+                                              icon: const Icon(Icons.remove),
+                                              onPressed: () {
+                                                _decrementQuantity(product.id);
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                        // Add to Cart Button (Hebrew)
+                                        ElevatedButton(
+                                          onPressed: product.stock
+                                              ? () => _addToCart(product.id)
+                                              : null,
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: product.stock
+                                                ? Colors.brown
+                                                : Colors.grey, // Adjust color
+                                          ),
+                                          child: Text(
+                                            product.stock
+                                                ? 'הוסף לסל'
+                                                : 'אזל מהמלאי', // Hebrew for "Add to Cart"
+                                          ),
+                                        ),
+                                        const SizedBox(height: 2),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
                             );
                           },
                         ),
