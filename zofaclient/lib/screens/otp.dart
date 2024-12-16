@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart'; // Import for FCM
+import 'package:http/http.dart' as http;
+import 'package:zofa_client/constant.dart';
+import 'dart:convert'; // For JSON encoding
 import 'package:zofa_client/admin/screens/admin_main_page.dart';
 
 class OtpPage extends StatefulWidget {
@@ -17,6 +21,31 @@ class _OtpPageState extends State<OtpPage> {
   String verificationId = ''; // Store the verification ID
   bool _isSendingOtp = false; // Loading indicator for sending OTP
   bool _isVerifyingOtp = false; // Loading indicator for verifying OTP
+
+  Future<void> _saveNewUser(String fcmToken) async {
+    try {
+      const String backendUrl = 'http://$ipAddress:3000/api/addNewUser'; // Replace with your backend endpoint
+      
+      final response = await http.post(
+        Uri.parse(backendUrl),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'name': widget.name,
+          'phoneNumber': widget.phoneNumber,
+          'FCMtoken': fcmToken,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        print('User data sent successfully!');
+      } else {
+        print('Failed to send user data: ${response.statusCode}');
+        print('Response: ${response.body}');
+      }
+    } catch (e) {
+      print('Error sending user data: $e');
+    }
+  }
 
   // Function to send OTP
   Future<void> _sendOtp() async {
@@ -78,6 +107,14 @@ class _OtpPageState extends State<OtpPage> {
       );
       await FirebaseAuth.instance.signInWithCredential(credential);
       print('OTP verified!');
+
+      // Get FCM token
+      String? fcmToken = await FirebaseMessaging.instance.getToken();
+      if (fcmToken != null) {
+        await _saveNewUser(fcmToken); // Send user data to the backend
+      } else {
+        print('Failed to retrieve FCM token');
+      }
 
       Navigator.pushReplacement(
         context,

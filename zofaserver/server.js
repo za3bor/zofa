@@ -13,6 +13,7 @@ const { Server } = require("socket.io"); // Import Socket.IO
 const port = process.env.PORT;
 const server = http.createServer(app); // Create HTTP server
 const io = new Server(server); // Initialize Socket.IO with the HTTP server
+const admin = require("firebase-admin");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -92,6 +93,43 @@ connection.connect((err) => {
     return;
   }
   console.log("Connected to the MySQL database.");
+});
+
+// Initialize Firebase Admin SDK
+const serviceAccount = require("./serviceAccountKey.json"); // Path to service account JSON
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount), // Authenticate using service account
+});
+
+// Route to send notification
+app.post('/api/sendNotification', async (req, res) => {
+  const { phoneNumber, title, body } = req.body;
+
+  if (!phoneNumber || !title || !body) {
+    return res.status(400).json({ error: 'Missing required fields (phoneNumber, title, body)' });
+  }
+
+  try {
+    // Get the FCM token for the given phone number
+    const fcmToken = await dataHandler.getFcmTokenFromPhoneNumber(phoneNumber);
+
+    if (!fcmToken) {
+      return res.status(404).json({ error: 'FCM token not found for this phone number' });
+    }
+
+    // Send the notification
+    const notificationResponse = await dataHandler.sendNotificationToToken(fcmToken, title, body);
+
+    // Return success response
+    res.status(200).json({
+      message: 'Notification sent successfully',
+      response: notificationResponse,
+    });
+  } catch (error) {
+    console.error('Error in sendNotification route:', error.message);
+    res.status(500).json({ error: 'Failed to send notification', details: error.message });
+  }
 });
 
 app.post("/api/addNewCategory", async (req, res) => {
@@ -590,6 +628,19 @@ app.delete("/api/deleteProductOrder/:id", async (req, res) => {
   } catch (err) {
     console.error("Error deleting Product Order:", err.message);
     res.status(500).json({ error: "Error deleting Product Order" });
+  }
+});
+
+app.post("/api/addNewUser", async (req, res) => {
+  try {
+    const result = await dataHandler.addNewUser(req.body);
+    if (result.success) {
+      res.status(201).json({ message: result.message });
+    } else {
+      res.status(409).json({ message: result.message });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
 

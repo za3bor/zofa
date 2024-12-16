@@ -97,6 +97,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
       }
     }
   }
+
   // Function to delete bread order
   Future<void> deleteOrder(int orderId) async {
     try {
@@ -106,7 +107,8 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
 
       if (response.statusCode == 200) {
         _showSnackbar('ההזמנה נמחקה בהצלחה.');
-        Navigator.pop(context); // Go back to the previous screen after successful deletion
+        Navigator.pop(
+            context); // Go back to the previous screen after successful deletion
       } else {
         throw Exception('Failed to delete bread order.');
       }
@@ -203,11 +205,28 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                         itemCount: productDetailsList.length,
                         itemBuilder: (context, index) {
                           final product = productDetailsList[index];
+                          final imageUrl =
+                              'https://f003.backblazeb2.com/file/zofapic/${product['id']}.jpg';
                           return Padding(
                             padding: const EdgeInsets.symmetric(vertical: 4.0),
-                            child: Text(
-                              'מזהה: ${product['id']} | שם: ${product['name']} | כמות: ${product['quantity']}',
-                              style: const TextStyle(fontSize: 16),
+                            child: ListTile(
+                              contentPadding: const EdgeInsets.all(8.0),
+                              leading: Image.network(
+                                imageUrl,
+                                width: 100, // Adjust the width as needed
+                                height: 100, // Adjust the height as needed
+                                fit: BoxFit
+                                    .cover, // To ensure the image fits within the box
+                                errorBuilder: (context, error, stackTrace) {
+                                  return const Icon(Icons.image_not_supported,
+                                      size:
+                                          50); // Placeholder if image fails to load
+                                },
+                              ),
+                              title: Text(
+                                'מזהה: ${product['id']} | שם: ${product['name']} | כמות: ${product['quantity']}',
+                                style: const TextStyle(fontSize: 16),
+                              ),
                             ),
                           );
                         },
@@ -216,7 +235,8 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
-                  _confirmDeleteOrder(widget.order.id); // Show confirmation before delete
+                  _confirmDeleteOrder(
+                      widget.order.id); // Show confirmation before delete
                 },
                 child: const Text('מחק הזמנה'),
               ),

@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:zofa_client/constant.dart';
@@ -20,7 +21,6 @@ class ProductCheckoutPage extends StatefulWidget {
 
 class _CheckoutPageState extends State<ProductCheckoutPage> {
   final _nameController = TextEditingController();
-  final _phoneController = TextEditingController();
   final _emailController = TextEditingController();
   final _couponController = TextEditingController();
 
@@ -111,10 +111,10 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
     String orderDetails = widget.cartItems
         .map((item) => '${item['id']}:${item['quantity']}\n')
         .join();
+    // Get the user's phone number from FirebaseAuth
+    String? userPhoneNumber = FirebaseAuth.instance.currentUser?.phoneNumber;
 
     if (_nameController.text.trim().isEmpty ||
-        _phoneController.text.trim().isEmpty ||
-        _phoneController.text.length != 10 ||
         _emailController.text.trim().isEmpty) {
       showDialog(
         context: context,
@@ -141,7 +141,7 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'username': _nameController.text,
-        'phoneNumber': _phoneController.text,
+        'phoneNumber': userPhoneNumber,
         'orderDetails': orderDetails,
         'totalPrice': _discountedPrice,
         'status': 'Received',
@@ -152,7 +152,6 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
 
     if (response.statusCode == 201) {
       _nameController.clear();
-      _phoneController.clear();
       _emailController.clear();
       _couponController.clear();
 
@@ -183,141 +182,133 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
   @override
   void dispose() {
     _emailController.dispose();
-    _phoneController.dispose();
     _nameController.dispose();
     _couponController.dispose();
     super.dispose();
   }
 
   @override
-Widget build(BuildContext context) {
-  return Scaffold(
-    appBar: AppBar(
-      flexibleSpace: const SnowLayer(),
-      title: const Text('Checkout'),
-    ),
-    body: Directionality(
-      textDirection: TextDirection.rtl,
-      child: Stack(
-        children: [
-          // Background Image
-          Positioned.fill(
-            child: Image.asset(
-              'assets/background.jpg', // Path to your background image
-              fit: BoxFit.cover, // Ensures the image covers the entire screen
-            ),
-          ),
-          // Foreground Content
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                const Text(
-                  'Enter your details',
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: _nameController,
-                  decoration: const InputDecoration(labelText: 'Name'),
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: _phoneController,
-                  decoration: const InputDecoration(labelText: 'Phone Number'),
-                  keyboardType: TextInputType.phone,
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: _emailController,
-                  decoration: const InputDecoration(labelText: 'Email'),
-                  keyboardType: TextInputType.emailAddress,
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _couponController,
-                        decoration: InputDecoration(
-                          labelText: 'Coupon Code',
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: _couponColor),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: _couponColor),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    ElevatedButton(
-                      onPressed: _applyCoupon,
-                      child: const Text('Apply'),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  _couponMessage,
-                  style: TextStyle(
-                    color: _couponColor,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                const Text(
-                  'Selected Products:',
-                ),
-                const SizedBox(height: 8),
-                Column(
-                  children: widget.cartItems.map((item) {
-                    return Text('${item['name']} x${item['quantity']}');
-                  }).toList(),
-                ),
-                const SizedBox(height: 16),
-                _isCouponApplied
-                    ? Row(
-                        children: [
-                          Text(
-                            'Total Price: \$${widget.totalPrice.toStringAsFixed(2)}',
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              decoration: TextDecoration.lineThrough,
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Text(
-                            'New Price: \$${_discountedPrice.toStringAsFixed(2)}',
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.green,
-                            ),
-                          ),
-                        ],
-                      )
-                    : Text(
-                        'Total Price: \$${widget.totalPrice.toStringAsFixed(2)}',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                const SizedBox(height: 16),
-                SizedBox(
-                  child: ElevatedButton(
-                    onPressed: _saveProductOrder,
-                    child: const Text('Pay'),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        flexibleSpace: const SnowLayer(),
+        title: const Text('Checkout'),
       ),
-    ),
-  );
-}
-
+      body: Directionality(
+        textDirection: TextDirection.rtl,
+        child: Stack(
+          children: [
+            // Background Image
+            Positioned.fill(
+              child: Image.asset(
+                'assets/background.jpg', // Path to your background image
+                fit: BoxFit.cover, // Ensures the image covers the entire screen
+              ),
+            ),
+            // Foreground Content
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  const Text(
+                    'Enter your details',
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: _nameController,
+                    decoration: const InputDecoration(labelText: 'Name'),
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: _emailController,
+                    decoration: const InputDecoration(labelText: 'Email'),
+                    keyboardType: TextInputType.emailAddress,
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: _couponController,
+                          decoration: InputDecoration(
+                            labelText: 'Coupon Code',
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: _couponColor),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: _couponColor),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      ElevatedButton(
+                        onPressed: _applyCoupon,
+                        child: const Text('Apply'),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    _couponMessage,
+                    style: TextStyle(
+                      color: _couponColor,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Selected Products:',
+                  ),
+                  const SizedBox(height: 8),
+                  Column(
+                    children: widget.cartItems.map((item) {
+                      return Text('${item['name']} x${item['quantity']}');
+                    }).toList(),
+                  ),
+                  const SizedBox(height: 16),
+                  _isCouponApplied
+                      ? Row(
+                          children: [
+                            Text(
+                              'Total Price: \$${widget.totalPrice.toStringAsFixed(2)}',
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                decoration: TextDecoration.lineThrough,
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Text(
+                              'New Price: \$${_discountedPrice.toStringAsFixed(2)}',
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.green,
+                              ),
+                            ),
+                          ],
+                        )
+                      : Text(
+                          'Total Price: \$${widget.totalPrice.toStringAsFixed(2)}',
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    child: ElevatedButton(
+                      onPressed: _saveProductOrder,
+                      child: const Text('Pay'),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

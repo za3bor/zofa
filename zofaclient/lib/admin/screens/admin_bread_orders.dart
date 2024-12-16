@@ -179,6 +179,30 @@ class _AdminBreadOrdersScreenState extends State<AdminBreadOrdersScreen> {
     }
   }
 
+  // Function to send notification to backend
+Future<void> sendNotification(String phoneNumber, String title, String body) async {
+  try {
+    final response = await http.post(
+      Uri.parse('http://$ipAddress:3000/api/sendNotification'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'phoneNumber': phoneNumber,
+        'title': title,
+        'body': body,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      _showSnackbar('ההודעה נשלחה בהצלחה');
+    } else {
+      throw Exception('Failed to send notification');
+    }
+  } catch (e) {
+    _showSnackbar('שגיאה בשליחת ההודעה: ${e.toString()}');
+  }
+}
+
+
   void _showSnackbar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message)),
@@ -282,8 +306,12 @@ class _AdminBreadOrdersScreenState extends State<AdminBreadOrdersScreen> {
                                                 : () {
                                                     changeStatus(
                                                         order.id, 'שלח');
-                                                    sendWhatsApp(
+                                                    sendNotification(
                                                         order.phoneNumber,
+                                                        'ההזמנה שלך יצאה למשלוח',
+                                                        'שלום ${order.userName}, ההזמנה שלך יצאה למשלוח');
+                                                    sendWhatsApp(
+                                                       order.phoneNumber,
                                                         'ההזמנה מוכנה');
                                                   },
                                             child: const Text('שלח'),

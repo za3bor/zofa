@@ -3,7 +3,8 @@ const fs = require("fs");
 const b2 = require("./b2Client");
 require("dotenv").config();
 const axios = require("axios"); // Add this line to import axios
-const sharp = require('sharp'); // For image manipulation
+const sharp = require("sharp"); // For image manipulation
+const admin = require("firebase-admin");
 
 // Configure database connection details (replace with your actual values)
 const pool = mysql.createPool({
@@ -42,10 +43,15 @@ async function deleteCategoryById(categoryId) {
   try {
     await removeExistingProductCategories(categoryId);
 
-    const [result] = await pool.query("DELETE FROM category WHERE id = ?", [categoryId]);
+    const [result] = await pool.query("DELETE FROM category WHERE id = ?", [
+      categoryId,
+    ]);
     return {
       success: result.affectedRows > 0,
-      message: result.affectedRows > 0 ? "Category deleted successfully" : "Category not found",
+      message:
+        result.affectedRows > 0
+          ? "Category deleted successfully"
+          : "Category not found",
     };
   } catch (err) {
     console.error("Error deleting category:", err.message);
@@ -66,7 +72,6 @@ async function removeExistingProductCategories(categoryId) {
     throw err;
   }
 }
-
 
 async function addNewNote(content) {
   try {
@@ -140,14 +145,12 @@ async function getAllCoupons() {
 
 async function deleteCouponById(id) {
   try {
-    const [result] = await pool.query(
-      "DELETE FROM coupons WHERE id = ?",
-      [id]
-    );
+    const [result] = await pool.query("DELETE FROM coupons WHERE id = ?", [id]);
     return result;
   } catch (err) {
     console.error("Error deleting coupon:", err.message);
-    throw err;e
+    throw err;
+    e;
   }
 }
 
@@ -206,8 +209,6 @@ async function addWhiteBackground(filePath, fileName) {
   }
 }
 
-
-
 async function uploadFileToB2(filePath, fileName) {
   try {
     await b2.authorize();
@@ -236,12 +237,55 @@ async function uploadFileToB2(filePath, fileName) {
   }
 }
 
+async function sendNotificationToToken(fcmToken, title, body) {
+  try {
+    // Prepare the notification payload
+    const message = {
+      notification: {
+        title: title,
+        body: body,
+      },
+      token: fcmToken, // Single FCM token
+    };
+
+    // Send the notification
+    const response = await admin.messaging().send(message);
+
+    console.log("Notification sent successfully:", response);
+    return response;
+  } catch (error) {
+    console.error("Error sending notification:", error);
+    throw error; // Re-throw the error to be caught by the calling function
+  }
+}
+
+
+async function getFcmTokenFromPhoneNumber(phoneNumber) {
+  try {
+    // Query the database for FCM token associated with the phone number
+    const [rows] = await pool.query(
+      "SELECT fcm_token FROM users WHERE phone_number = ?",
+      [phoneNumber]
+    );
+
+    if (!rows || rows.length === 0 || !rows[0].fcm_token) {
+      console.log("No FCM token found for this phone number.");
+      return null; // No FCM token found
+    }
+
+    return rows[0].fcm_token;
+  } catch (err) {
+    console.error("Error fetching FCM token:", err.message);
+    throw err; // Throw error to be handled in the route
+  }
+}
+
+
 async function deleteImageFromB2(barcode) {
   const fileName = `${barcode}.jpg`;
 
   const b2Url = "https://api.backblazeb2.com/b2api/v2";
-  const authResponse = await axios.post(`${b2Url}/b2_authorize_account`, {
-  });
+  const authResponse = await axios.post(`${b2Url}/b2_authorize_account`, {});
 
   const { authorizationToken, apiUrl } = authResponse.data;
 
@@ -290,6 +334,36 @@ async function getFileFromB2(fileName) {
   }
 }
 
+async function addNewUser(user) {
+  const { name, phoneNumber, FCMtoken } = user;
+  try {
+    const [existingUsers] = await pool.query(
+      "SELECT * FROM users WHERE name = ?",
+      [name]
+    );
+    if (existingUsers.length > 0) {
+      return {
+        success: false,
+        message: "User already exists",
+        status: 409,
+      };
+    }
+
+    const [results] = await pool.query(
+      "INSERT INTO users (name, phone_number, fcm_token) VALUES (?, ?, ?)",
+      [name, phoneNumber, FCMtoken]
+    );
+    return {
+      success: results.affectedRows > 0,
+      message: "User added successfully",
+      status: 201,
+    };
+  } catch (err) {
+    console.error("Error inserting User:", err.message);
+    throw err;
+  }
+}
+
 module.exports = {
   addNewCategory,
   uploadFileToB2,
@@ -305,5 +379,8 @@ module.exports = {
   deleteCategoryById,
   removeExistingProductCategories,
   addWhiteBackground,
+  addNewUser,
+  getFcmTokenFromPhoneNumber,
+  sendNotificationToToken,
   //deleteImageFromB2,
 };

@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:zofa_client/models/bread.dart';
 import 'package:http/http.dart' as http;
@@ -22,7 +23,6 @@ class CheckoutBreadScreen extends StatefulWidget {
 
 class _CheckoutBreadScreenState extends State<CheckoutBreadScreen> {
   final _nameController = TextEditingController();
-  final _phoneController = TextEditingController();
 
   double totalPrice() {
     return widget.selectedItems.fold(0.0, (sum, entry) {
@@ -36,9 +36,10 @@ class _CheckoutBreadScreenState extends State<CheckoutBreadScreen> {
         .join();
     double totalSum = totalPrice();
 
-    if (_nameController.text.trim().isEmpty ||
-        _phoneController.text.trim().isEmpty ||
-        _phoneController.text.length != 10) {
+    // Get the user's phone number from FirebaseAuth
+    String? userPhoneNumber = FirebaseAuth.instance.currentUser?.phoneNumber;
+
+    if (_nameController.text.trim().isEmpty) {
       showDialog(
         context: context,
         builder: (ctx) => AlertDialog(
@@ -64,7 +65,7 @@ class _CheckoutBreadScreenState extends State<CheckoutBreadScreen> {
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'username': _nameController.text,
-        'phoneNumber': _phoneController.text,
+        'phoneNumber': userPhoneNumber,
         'orderDetails': result,
         'totalPrice': totalSum,
         'status': 'התקבל',
@@ -74,7 +75,6 @@ class _CheckoutBreadScreenState extends State<CheckoutBreadScreen> {
 
     if (response.statusCode == 201) {
       _nameController.clear();
-      _phoneController.clear();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -97,7 +97,6 @@ class _CheckoutBreadScreenState extends State<CheckoutBreadScreen> {
   @override
   void dispose() {
     _nameController.dispose();
-    _phoneController.dispose();
     super.dispose();
   }
 
@@ -202,14 +201,6 @@ class _CheckoutBreadScreenState extends State<CheckoutBreadScreen> {
                         controller: _nameController,
                         decoration: const InputDecoration(
                           labelText: 'שם',
-                        ),
-                      ),
-                      const SizedBox(height: 16.0),
-                      TextField(
-                        controller: _phoneController,
-                        keyboardType: TextInputType.phone,
-                        decoration: const InputDecoration(
-                          labelText: 'טלפון',
                         ),
                       ),
                       const SizedBox(height: 16.0),

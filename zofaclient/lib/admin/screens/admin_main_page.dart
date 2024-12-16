@@ -14,7 +14,8 @@ class AdminMainPageScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        flexibleSpace: const SnowLayer(), // Directly use SnowLayer without Container
+        flexibleSpace:
+            const SnowLayer(), // Directly use SnowLayer without Container
         title: const Text(
           'לוח בקרה למנהל',
         ),
