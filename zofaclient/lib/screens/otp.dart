@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart'; // Import for FCM
 import 'package:http/http.dart' as http;
 import 'package:zofa_client/constant.dart';
-import 'dart:convert'; // For JSON encoding
 import 'package:zofa_client/admin/screens/admin_main_page.dart';
 
 class OtpPage extends StatefulWidget {
