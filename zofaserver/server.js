@@ -96,7 +96,7 @@ connection.connect((err) => {
 });
 
 // Initialize Firebase Admin SDK
-const serviceAccount = require("./serviceAccount/serviceAccountKey.json"); // Path to service account JSON
+const serviceAccount = require("./serviceAccountKey.json"); // Path to service account JSON
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount), // Authenticate using service account
