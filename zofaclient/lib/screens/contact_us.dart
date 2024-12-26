@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ContactUsScreen extends StatelessWidget {
   ContactUsScreen({super.key});
@@ -47,14 +48,14 @@ class ContactUsScreen extends StatelessWidget {
         title: const Text("צור קשר"),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16.0.w),
         child: SingleChildScrollView(
           // Ensures the screen is scrollable
           child: Column(
             children: [
               // Phone Number Section
               _buildSectionTitle("מספר טלפון"),
-              const SizedBox(height: 8),
+              SizedBox(height: 8.h),
               _buildCard(
                 child: GestureDetector(
                   onTap: () => _launchUrl(context, Uri.parse("tel:+123456789"),
@@ -64,11 +65,11 @@ class ContactUsScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24.h),
 
               // Follow Us Section
               _buildSectionTitle("עקוב אחרינו"),
-              const SizedBox(height: 8),
+              SizedBox(height: 8.h),
               _buildCard(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -88,11 +89,11 @@ class ContactUsScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24.h),
 
               // Location Section
               _buildSectionTitle("המיקום שלנו"),
-              const SizedBox(height: 8),
+              SizedBox(height: 8.h),
               _buildCard(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -112,11 +113,11 @@ class ContactUsScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24.h),
 
               // Opening Hours Section
               _buildSectionTitle("שעות פתיחה"),
-              const SizedBox(height: 4),
+              SizedBox(height: 4.h),
               Directionality(
                 textDirection: TextDirection.rtl,
                 child: _buildCard(
@@ -146,10 +147,10 @@ class ContactUsScreen extends StatelessWidget {
   Widget _buildCard({required Widget child}) {
     return Card(
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12.r),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16.0.w),
         child: child,
       ),
     );
@@ -159,7 +160,7 @@ class ContactUsScreen extends StatelessWidget {
       {required String iconUrl, required VoidCallback onPressed}) {
     return IconButton(
       icon: Image.network(iconUrl),
-      iconSize: 40,
+      iconSize: 40.h,
       onPressed: onPressed,
     );
   }

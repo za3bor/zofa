@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class BreadQuantityRow extends StatefulWidget {
   const BreadQuantityRow({
@@ -43,10 +44,10 @@ class _BreadQuantityRowState extends State<BreadQuantityRow> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16.0),
+      padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
         color: const Color.fromARGB(255, 222, 210, 206), // Light background color
-        borderRadius: BorderRadius.circular(12.0), // Rounded corners
+        borderRadius: BorderRadius.circular(12.r), // Rounded corners
         boxShadow: const [
           BoxShadow(
             color: Colors.black26, // Shadow color
@@ -55,26 +56,24 @@ class _BreadQuantityRowState extends State<BreadQuantityRow> {
           ),
         ],
       ),
-      margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0), // Margin
+      margin: EdgeInsets.symmetric(vertical: 8.h, horizontal: 12.w), // Margin
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             widget.name,
             style: const TextStyle(
-              fontSize: 16.0,
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 8.0),
+          SizedBox(height: 8.h),
           const Text(
             '(מעורבב עם קמח מלא בלי תוספת סוכר)',
             style: TextStyle(
-              fontSize: 14.0,
               color: Color.fromARGB(255, 98, 98, 98),
             ),
           ),
-          const SizedBox(height: 8.0),
+          SizedBox(height: 8.h),
           Row(
             children: [
               // Price section
@@ -83,7 +82,6 @@ class _BreadQuantityRowState extends State<BreadQuantityRow> {
                 child: Text(
                   '₪ ${widget.price.toStringAsFixed(2)}',
                   style: const TextStyle(
-                    fontSize: 14.0,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -98,32 +96,31 @@ class _BreadQuantityRowState extends State<BreadQuantityRow> {
                       onTap: increaseQuantity,
                       child: Container(
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(4.0),
+                          borderRadius: BorderRadius.circular(4.r),
                         ),
-                        child: const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Icon(Icons.add, color: Colors.brown),
+                        child: Padding(
+                          padding: EdgeInsets.all(8.w),
+                          child: const Icon(Icons.add, color: Colors.brown),
                         ),
                       ),
                     ),
-                    const SizedBox(width: 8.0),
+                    SizedBox(width: 8.w),
                     Text(
                       quantity.toString(),
                       style: const TextStyle(
-                        fontSize: 16.0,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(width: 8.0),
+                    SizedBox(width: 8.w),
                     InkWell(
                       onTap: decreaseQuantity,
                       child: Container(
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(4.0),
+                          borderRadius: BorderRadius.circular(4.r),
                         ),
-                        child: const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Icon(Icons.remove, color: Colors.brown),
+                        child: Padding(
+                          padding: EdgeInsets.all(8.w),
+                          child: const Icon(Icons.remove, color: Colors.brown),
                         ),
                       ),
                     ),
@@ -137,9 +134,6 @@ class _BreadQuantityRowState extends State<BreadQuantityRow> {
                   alignment: Alignment.centerRight,
                   child: Text(
                     '${widget.quantity} יח',
-                    style: const TextStyle(
-                      fontSize: 14.0,
-                    ),
                   ),
                 ),
               ),

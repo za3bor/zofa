@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:zofa_client/constant.dart';
 import 'package:zofa_client/models/category.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class EditExistingProductScreen extends StatefulWidget {
   const EditExistingProductScreen({super.key});
@@ -243,7 +244,7 @@ class _TextFieldDropdownPageState extends State<EditExistingProductScreen> {
         textDirection: TextDirection.rtl,
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: EdgeInsets.all(16.0.w),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -259,14 +260,14 @@ class _TextFieldDropdownPageState extends State<EditExistingProductScreen> {
                     labelText: 'ברקוד',
                   ),
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: 20.h),
         
                 // Button to check and set categories
                 ElevatedButton(
                   onPressed: _fetchProductCategories,
                   child: const Text('הפעל'),
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: 20.h),
                 // New Word TextField
                 const Text(
                   'הכנס את הערך החדש:',
@@ -278,7 +279,7 @@ class _TextFieldDropdownPageState extends State<EditExistingProductScreen> {
                     labelText: 'ערך חדש',
                   ),
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: 20.h),
         
                 // DropdownButton for field selection
                 const Text(
@@ -300,20 +301,20 @@ class _TextFieldDropdownPageState extends State<EditExistingProductScreen> {
                     });
                   },
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: 20.h),
         
                 // Change Field Button (Moved above categories)
                 ElevatedButton(
                   onPressed: _updateProduct,
                   child: const Text('תשנה'),
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: 20.h),
         
                 // Display Categories as Checkboxes
                 const Text(
                   'בחר קטגוריה/ות:',
                 ),
-                const SizedBox(height: 10),
+                SizedBox(height: 10.h),
                 Wrap(
                   children: _categories.map((category) {
                     return CheckboxListTile(
@@ -327,7 +328,7 @@ class _TextFieldDropdownPageState extends State<EditExistingProductScreen> {
                     );
                   }).toList(),
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: 20.h),
         
                 // Save Categories Button
                 ElevatedButton(

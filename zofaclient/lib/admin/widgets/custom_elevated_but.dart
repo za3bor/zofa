@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CustomElevatedButton extends StatelessWidget {
   final String label;
@@ -14,9 +15,9 @@ class CustomElevatedButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+        padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 12.w),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12), // Rounded corners for a modern look
+          borderRadius: BorderRadius.circular(12.r), // Rounded corners for a modern look
         ),
       ),
       onPressed: () {

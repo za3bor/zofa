@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:zofa_client/models/bread_orders.dart';
 import 'package:zofa_client/constant.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AdminBreadOrdersScreen extends StatefulWidget {
   final String day;
@@ -235,31 +236,31 @@ Future<void> sendNotification(String phoneNumber, String title, String body) asy
                   : Directionality(
                       textDirection: TextDirection.rtl,
                       child: ListView(
-                        padding: const EdgeInsets.all(16.0),
+                        padding: EdgeInsets.all(16.0.w),
                         children: [
-                          const Padding(
-                            padding: EdgeInsets.only(bottom: 20.0),
-                            child: Text(
+                          Padding(
+                            padding: EdgeInsets.only(bottom: 20.0.h),
+                            child: const Text(
                               'סיכום כמות לחמים להיום:',
                             ),
                           ),
                           ...breadQuantityMap.entries.map((entry) {
                             return Card(
-                              margin: const EdgeInsets.symmetric(vertical: 5.0),
+                              margin: EdgeInsets.symmetric(vertical: 8.0.w),
                               child: ListTile(
                                 title: Text(
                                   '${entry.key}: ${entry.value} יחידות',
                                 ),
-                                contentPadding: const EdgeInsets.symmetric(
-                                    vertical: 10, horizontal: 16),
+                                contentPadding: EdgeInsets.symmetric(
+                                    vertical: 10.h, horizontal: 16.w),
                               ),
                             );
                           }),
-                          const SizedBox(height: 20),
+                          SizedBox(height: 20.h),
                           const Text(
                             'הזמנות לחם:',
                           ),
-                          const SizedBox(height: 10),
+                          SizedBox(height: 10.h),
                           ListView.builder(
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
@@ -272,9 +273,9 @@ Future<void> sendNotification(String phoneNumber, String title, String body) asy
 
                               return Card(
                                 margin:
-                                    const EdgeInsets.symmetric(vertical: 10.0),
+                                    EdgeInsets.symmetric(vertical: 10.0.h),
                                 child: Padding(
-                                  padding: const EdgeInsets.all(16.0),
+                                  padding: EdgeInsets.all(16.0.w),
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
@@ -285,7 +286,7 @@ Future<void> sendNotification(String phoneNumber, String title, String body) asy
                                       Text(
                                           'סכום סופי: ₪${order.totalPrice.toStringAsFixed(2)}'),
                                       Text('סטטוס: ${order.status}'),
-                                      const SizedBox(height: 10),
+                                      SizedBox(height: 10.h),
                                       Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.end,
@@ -299,7 +300,7 @@ Future<void> sendNotification(String phoneNumber, String title, String body) asy
                                                   },
                                             child: const Text('מוכן'),
                                           ),
-                                          const SizedBox(width: 8.0),
+                                          SizedBox(width: 10.0.w),
                                           ElevatedButton(
                                             onPressed: isShipped
                                                 ? null
@@ -316,7 +317,7 @@ Future<void> sendNotification(String phoneNumber, String title, String body) asy
                                                   },
                                             child: const Text('שלח'),
                                           ),
-                                          const SizedBox(width: 8.0),
+                                          SizedBox(width: 10.0.w),
                                           ElevatedButton(
                                             onPressed: () {
                                               deleteOrder(

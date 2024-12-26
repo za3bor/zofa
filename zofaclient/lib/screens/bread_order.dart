@@ -5,6 +5,7 @@ import 'package:zofa_client/screens/checkout_bread.dart';
 import 'package:zofa_client/widgets/bread_quantity_row.dart';
 import 'package:http/http.dart' as http;
 import 'package:zofa_client/constant.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class BreadOrderScreen extends StatefulWidget {
   const BreadOrderScreen({super.key});
@@ -165,13 +166,13 @@ class _BreadOrderScreenState extends State<BreadOrderScreen> {
             ),
           ),
           isLoading
-              ? const Center(
+              ? Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      CircularProgressIndicator(), // Spinner
-                      SizedBox(height: 16),
-                      Text(
+                      const CircularProgressIndicator(), // Spinner
+                      SizedBox(height: 16.h),
+                      const Text(
                         'טוען נתונים, אנא המתן...', // "Loading data, please wait..."
                       ),
                     ],
@@ -183,14 +184,13 @@ class _BreadOrderScreenState extends State<BreadOrderScreen> {
                     children: [
                       Expanded(
                         child: SingleChildScrollView(
-                          padding: const EdgeInsets.all(16.0),
+                          padding: EdgeInsets.all(16.0.w),
                           child: Column(
                             children: [
                               Text(
                                 'הזמנת לחם ליום $day', // "Bread order for $day"
-                                style: Theme.of(context).textTheme.bodyLarge,
                               ),
-                              const SizedBox(height: 16.0),
+                              SizedBox(height: 16.h),
                               // Display the bread list with quantity rows
                               ...breadList.map((bread) {
                                 return Column(
@@ -203,12 +203,12 @@ class _BreadOrderScreenState extends State<BreadOrderScreen> {
                                       },
                                       quantity: bread.quantity,
                                     ),
-                                    const SizedBox(height: 12.0),
+                                    SizedBox(height: 7.h),
                                   ],
                                 );
                               }),
                               Padding(
-                                padding: const EdgeInsets.all(16.0),
+                                padding: EdgeInsets.all(16.0.w),
                                 child: SizedBox(
                                   child: SizedBox(
                                     width: double

@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zofa_client/screens/about_app.dart';
@@ -8,10 +9,14 @@ import 'package:zofa_client/screens/login.dart';
 import 'package:zofa_client/screens/products.dart';
 import 'package:zofa_client/screens/rate_app.dart';
 import 'package:zofa_client/screens/share_app.dart';
+import 'package:zofa_client/screens/signup.dart';
 import 'package:zofa_client/screens/term_of_use.dart';
 import 'package:hive/hive.dart';
 import 'package:zofa_client/global.dart';
 import 'package:zofa_client/widgets/snow_layer.dart'; // Adjust the path accordingly
+import 'package:http/http.dart' as http;
+import 'package:zofa_client/constant.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class TabsScreen extends StatefulWidget {
   const TabsScreen({super.key});
@@ -81,6 +86,59 @@ class TabsScreenState extends State<TabsScreen>
     );
   }
 
+  // Log out the user
+  Future<void> _logout() async {
+    await FirebaseAuth.instance.signOut();
+    // Redirect to login screen after logging out
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginScreen()),
+    );
+  }
+
+  // Delete the user's account
+  Future<void> _deleteAccount() async {
+    try {
+      try {
+        final phoneNumber = FirebaseAuth.instance.currentUser?.phoneNumber;
+        final response = await http.delete(
+          Uri.parse('http://$ipAddress:3000/api/deleteUser/$phoneNumber'),
+        );
+        if (response.statusCode == 200) {
+          // Only update UI and show snack bar if the widget is still mounted
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('User deleted successfully')),
+            );
+          }
+        } else {
+          final message =
+              jsonDecode(response.body)['message'] ?? 'Failed to delete User';
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(message)),
+            );
+          }
+        }
+      } catch (er) {
+        print('Error deleting user: $er');
+      }
+
+      await FirebaseAuth.instance.currentUser?.delete();
+      // Navigate to login screen after account deletion
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const SignupScreen()),
+      );
+    } catch (e) {
+      print(e.toString());
+      // Handle errors (e.g., re-authentication required)
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: ${e.toString()}")),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     Widget activePage = const ProductsScreen();
@@ -126,9 +184,9 @@ class TabsScreenState extends State<TabsScreen>
                               backgroundColor: Colors.red,
                               child: Text(
                                 '$cartCount',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   color: Colors.white,
-                                  fontSize: 12,
+                                  fontSize: 12.sp,
                                 ),
                               ),
                             ),
@@ -150,8 +208,8 @@ class TabsScreenState extends State<TabsScreen>
         actions: [
           // Stack to overlay the hat image on the drawer icon
           Padding(
-            padding: const EdgeInsets.only(
-                right: 8.0), // Adjust the padding as needed
+            padding: EdgeInsets.only(
+                right: 8.0.w), // Adjust the padding as needed
             child: Stack(
               children: [
                 IconButton(
@@ -260,9 +318,12 @@ class TabsScreenState extends State<TabsScreen>
                 ListTile(
                   leading: const Icon(Icons.logout),
                   title: const Text('יציאה'),
-                  onTap: () {
-                    _navigateToDrawerPage(const LoginPage());
-                  },
+                  onTap: _logout, // Call the logout method
+                ),
+                ListTile(
+                  leading: const Icon(Icons.delete),
+                  title: const Text('מחק חשבון'),
+                  onTap: _deleteAccount, // Call the delete account method
                 ),
               ],
             ),

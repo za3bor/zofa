@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:zofa_client/constant.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class DeleteProductScreen extends StatefulWidget {
   const DeleteProductScreen({super.key});
@@ -37,6 +38,7 @@ class _DeleteProductScreenState extends State<DeleteProductScreen> {
               backgroundColor: Colors.green,
             ),
           );
+          _productIdController.clear();
         }
       } else if (response.statusCode == 404) {
         // Product not found
@@ -88,7 +90,7 @@ class _DeleteProductScreenState extends State<DeleteProductScreen> {
       body: Directionality(
         textDirection: TextDirection.rtl,
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(16.0.w),
           child: Column(
             children: [
               TextField(
@@ -99,7 +101,7 @@ class _DeleteProductScreenState extends State<DeleteProductScreen> {
                 ),
                 keyboardType: TextInputType.number,
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20.h),
               ElevatedButton(
                 onPressed: () {
                   final productId = _productIdController.text.trim();
@@ -109,7 +111,7 @@ class _DeleteProductScreenState extends State<DeleteProductScreen> {
                 },
                 child: const Text('מחיקה'),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20.h),
               if (_message.isNotEmpty)
                 Text(
                   _message,

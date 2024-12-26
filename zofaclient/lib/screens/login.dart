@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:zofa_client/screens/otp.dart';
+import 'package:zofa_client/screens/otp_login.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginScreenState extends State<LoginScreen> {
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
   bool _isLoading = false; // Loading indicator for sending OTP
@@ -33,15 +34,16 @@ class _LoginPageState extends State<LoginPage> {
         setState(() {
           _isLoading = false;
         });
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => OtpPage(
-              phoneNumber: phone,
-              name: name,
+        if (mounted) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => OtpLoginScreen(
+                phoneNumber: phone,
+              ),
             ),
-          ),
-        );
+          );
+        }
       });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -59,12 +61,12 @@ class _LoginPageState extends State<LoginPage> {
         title: const Text('Login'),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16.0.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text('Enter your name and phone number:'),
-            const SizedBox(height: 10),
+            SizedBox(height: 10.h),
             TextField(
               controller: _nameController,
               decoration: const InputDecoration(
@@ -72,7 +74,7 @@ class _LoginPageState extends State<LoginPage> {
                 border: OutlineInputBorder(),
               ),
             ),
-            const SizedBox(height: 10),
+            SizedBox(height: 10.h),
             TextField(
               controller: _phoneController,
               keyboardType: TextInputType.phone,
@@ -81,7 +83,7 @@ class _LoginPageState extends State<LoginPage> {
                 border: OutlineInputBorder(),
               ),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20.h),
             _isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : ElevatedButton(

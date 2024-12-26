@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:zofa_client/models/coupon.dart'; // Ensure your Coupon model is defined correctly
 import 'package:zofa_client/constant.dart';
 import 'package:zofa_client/widgets/snow_layer.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CouponsScreen extends StatefulWidget {
   const CouponsScreen({super.key});
@@ -196,7 +197,7 @@ class _CouponsScreenState extends State<CouponsScreen> {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: EdgeInsets.all(8.0.w),
               child: TextField(
                 controller: _codeController,
                 decoration: const InputDecoration(
@@ -205,7 +206,7 @@ class _CouponsScreenState extends State<CouponsScreen> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: EdgeInsets.all(8.0.w),
               child: TextField(
                 controller: _percentageController,
                 keyboardType:
@@ -236,9 +237,9 @@ class _CouponsScreenState extends State<CouponsScreen> {
                           background: Container(
                             color: Colors.red,
                             alignment: Alignment.centerRight,
-                            child: const Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 20.0),
-                              child: Icon(Icons.delete),
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 20.0.w),
+                              child: const Icon(Icons.delete),
                             ),
                           ),
                           onDismissed: (direction) {

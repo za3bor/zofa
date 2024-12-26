@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:zofa_client/models/product.dart';
 import 'package:zofa_client/constant.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class EditProductStockScreen extends StatefulWidget {
   const EditProductStockScreen({super.key});
@@ -113,6 +114,26 @@ class _EditProductStockScreenState extends State<EditProductStockScreen> {
     });
   }
 
+    double calculateAspectRatio(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    // Adjust the multiplier (0.6) to fine-tune the aspect ratio
+    return screenWidth / (screenHeight * 0.6);
+  }
+
+  bool isFoldableDevice(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
+    final screenWidth = mediaQuery.size.width;
+    final screenHeight = mediaQuery.size.height;
+
+    // Foldable devices tend to have a very wide aspect ratio when unfolded
+    final aspectRatio = screenWidth / screenHeight;
+
+    // Define a threshold for foldable device detection
+    print('Aspect ratio: $aspectRatio' + 'Screen width: $screenWidth');
+    return aspectRatio > 2.0 || screenWidth > 500;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -134,14 +155,14 @@ class _EditProductStockScreenState extends State<EditProductStockScreen> {
                     children: [
                       // Search bar
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: EdgeInsets.all(8.0.w),
                         child: TextField(
                           controller: _searchController,
                           decoration: InputDecoration(
                             prefixIcon: const Icon(Icons.search),
                             hintText: '...חיפוש מוצר',
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(30),
+                              borderRadius: BorderRadius.circular(30.r),
                             ),
                           ),
                         ),
@@ -150,33 +171,35 @@ class _EditProductStockScreenState extends State<EditProductStockScreen> {
                       // GridView to display products
                       Expanded(
                         child: Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: EdgeInsets.all(8.0.w),
                           child: GridView.builder(
                             gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 2,
-                              crossAxisSpacing: 10,
-                              mainAxisSpacing: 10,
-                              childAspectRatio: 0.54,
+                              crossAxisSpacing: 10.w,
+                              mainAxisSpacing: 10.h,
+                              childAspectRatio: isFoldableDevice(context)
+                                ? calculateAspectRatio(context) * 0.44.h
+                                : calculateAspectRatio(context) * 0.47.h,
                             ),
                             itemCount: _filteredProducts.length,
                             itemBuilder: (ctx, index) {
                               final product = _filteredProducts[index];
                               final imageUrl =
-                                  'https://f003.backblazeb2.com/file/zofapic/${product.id}.jpeg';
+                                  'https://f003.backblazeb2.com/file/zofapic/${product.id}.jpg';
 
                               return Card(
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(15),
+                                  borderRadius: BorderRadius.circular(15.r),
                                 ),
                                 elevation: 5,
                                 child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
+                                  padding: EdgeInsets.all(8.0.w),
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      const SizedBox(height: 10),
+                                      SizedBox(height: 10.h),
 
                                       // Product Image
                                       ClipRRect(
@@ -217,17 +240,18 @@ class _EditProductStockScreenState extends State<EditProductStockScreen> {
                                           },
                                         ),
                                       ),
-                                      const SizedBox(height: 10),
+                                      SizedBox(height: 10.h),
 
                                       // Product Name
                                       Align(
                                         alignment: Alignment.centerRight,
                                         child: Text(
                                           product.name,
-                                          overflow: TextOverflow.clip,
+                                          maxLines: 3,
+                                          overflow: TextOverflow.ellipsis,
                                         ),
                                       ),
-                                      const SizedBox(height: 5),
+                                      SizedBox(height: 5.h),
 
                                       // Product Price
                                       Center(
@@ -235,7 +259,7 @@ class _EditProductStockScreenState extends State<EditProductStockScreen> {
                                           '₪${product.price.toStringAsFixed(1)}',
                                         ),
                                       ),
-                                      const SizedBox(height: 5),
+                                      SizedBox(height: 5.h),
 
                                       // Stock status button
                                       Center(

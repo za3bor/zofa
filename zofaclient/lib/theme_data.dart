@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 ThemeData buildThemeData() {
   const Color primaryColor = Color(0xFF7A6244);
@@ -21,22 +22,22 @@ ThemeData buildThemeData() {
     // Text Theme
     textTheme: TextTheme(
       displayLarge: GoogleFonts.rubik(
-        fontSize: 32.0,
+        fontSize: 32.0.sp,
         fontWeight: FontWeight.bold,
         color: primaryColor,
       ),
       titleLarge: GoogleFonts.rubik(
-        fontSize: 20.0,
+        fontSize: 20.0.sp,
         fontWeight: FontWeight.w600,
         color: primaryColor,
       ),
       bodyLarge: GoogleFonts.rubik(
-        fontSize: 20.0,
+        fontSize: 20.0.sp,
         fontWeight: FontWeight.normal,
         color: textColor,
       ),
       bodyMedium: GoogleFonts.rubik(
-        fontSize: 15.0,
+        fontSize: 15.0.sp,
         fontWeight: FontWeight.normal,
         color: textColor,
       ),
@@ -47,7 +48,7 @@ ThemeData buildThemeData() {
       backgroundColor: primaryColor,
       elevation: 4.0,
       titleTextStyle: GoogleFonts.rubik(
-        fontSize: 25.0,
+        fontSize: 25.0.sp,
         fontWeight: FontWeight.bold,
         color: Colors.white,
       ),
@@ -61,11 +62,11 @@ ThemeData buildThemeData() {
         backgroundColor: primaryColor,
         foregroundColor: Colors.white,
         textStyle: GoogleFonts.rubik(
-          fontSize: 16.0,
+          fontSize: 16.0.sp,
           fontWeight: FontWeight.w600,
         ),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12.0),
+          borderRadius: BorderRadius.circular(12.0.r),
         ),
       ),
     ),
@@ -74,15 +75,15 @@ ThemeData buildThemeData() {
       style: TextButton.styleFrom(
         foregroundColor: primaryColor,
         textStyle: GoogleFonts.rubik(
-          fontSize: 16.0,
+          fontSize: 16.0.sp,
         ),
       ),
     ),
 
     // Icon Theme
-    iconTheme: const IconThemeData(
+    iconTheme: IconThemeData(
       color: iconColor,
-      size: 24.0,
+      size: 24.sp,
     ),
 
     // Card Theme
@@ -90,10 +91,10 @@ ThemeData buildThemeData() {
       elevation: 4.0,
       color: const Color.fromARGB(255, 222, 210, 206),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12.0),
+        borderRadius: BorderRadius.circular(12.0.r),
       ),
       shadowColor: Colors.black26,
-      margin: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 12.0),
+      margin: EdgeInsets.symmetric(vertical: 12.h, horizontal: 12.w),
     ),
 
     // BottomNavigationBar Theme
@@ -102,11 +103,11 @@ ThemeData buildThemeData() {
       selectedItemColor: accentColor,
       unselectedItemColor: Colors.white.withOpacity(0.7),
       selectedLabelStyle: GoogleFonts.rubik(
-        fontSize: 14.0,
+        fontSize: 14.sp,
         fontWeight: FontWeight.bold,
       ),
       unselectedLabelStyle: GoogleFonts.rubik(
-        fontSize: 12.0,
+        fontSize: 12.sp,
       ),
     ),
 
@@ -115,15 +116,32 @@ ThemeData buildThemeData() {
       filled: true,
       fillColor: const Color.fromARGB(255, 222, 210, 206),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(30),
+        borderRadius: BorderRadius.circular(30.r),
         borderSide: BorderSide.none,
       ),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+      contentPadding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 9.h),
       hintStyle: GoogleFonts.rubik(
         color: Colors.black,
+        fontSize: 14.sp,
       ),
       prefixIconColor: primaryColor,
       suffixIconColor: primaryColor,
+    ),
+
+// Switch Theme
+    switchTheme: SwitchThemeData(
+      thumbColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
+          return primaryColor; // Color for selected state
+        }
+        return Colors.grey; // Color for unselected state
+      }),
+      trackColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
+          return accentColor; // Track color for selected state
+        }
+        return Colors.grey.withOpacity(0.5); // Track color for unselected state
+      }),
     ),
   );
 }

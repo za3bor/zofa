@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AboutAppScreen extends StatelessWidget {
   const AboutAppScreen({super.key});
@@ -31,8 +32,8 @@ class AboutAppScreen extends StatelessWidget {
       onTap: onPressed,
       child: Image.network(
         iconUrl,
-        width: 30,
-        height: 30,
+        width: 30.w,
+        height: 30.h,
       ),
     );
   }
@@ -50,7 +51,7 @@ class AboutAppScreen extends StatelessWidget {
       body: Directionality(
         textDirection: TextDirection.rtl,
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(16.0.w),
           child: Column(
             crossAxisAlignment:
                 CrossAxisAlignment.start, // Align content to the right
@@ -59,21 +60,21 @@ class AboutAppScreen extends StatelessWidget {
               const Text(
                 'שם האפליקציה: Zofa Health Shop', // App name in Hebrew
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20.h),
               const Text(
                 'גרסה: 3.02.4', // App name in Hebrew
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20.h),
               // Developer name
               const Text(
                 'מפתח: פאדי סרור', // Developer's name in Hebrew
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20.h),
               // Contact section title
               const Text(
                 'צור קשר:',
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: 20.h),
               // LinkedIn link
               Row(
                 mainAxisAlignment: MainAxisAlignment
@@ -84,7 +85,7 @@ class AboutAppScreen extends StatelessWidget {
                         "https://img.icons8.com/ios-glyphs/60/000000/linkedin.png", // LinkedIn icon
                     onPressed: () => _launchURL(linkedinUrl),
                   ),
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8.w),
                   GestureDetector(
                     onTap: () => _launchURL(linkedinUrl),
                     child: const Text(
@@ -93,7 +94,7 @@ class AboutAppScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20.h),
 
               // Email link
               Row(
@@ -105,7 +106,7 @@ class AboutAppScreen extends StatelessWidget {
                         "https://img.icons8.com/ios-glyphs/60/000000/email.png", // Email icon
                     onPressed: () => _launchURL(emailUrl),
                   ),
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8.w),
                   GestureDetector(
                     onTap: () => _launchURL(emailUrl),
                     child: const Text(

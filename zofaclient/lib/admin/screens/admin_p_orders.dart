@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:zofa_client/admin/screens/admin_p_order_detail.dart'; // Import your details screen
 import 'package:zofa_client/constant.dart';
 import 'package:zofa_client/models/product_orders.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ProductOrdersScreen extends StatefulWidget {
   const ProductOrdersScreen({super.key});
@@ -71,19 +72,24 @@ class _ProductOrdersScreenState extends State<ProductOrdersScreen> {
       body: Directionality(
         textDirection: TextDirection.rtl,
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(16.0.w),
           child: _productOrders.isEmpty
               ? Center(
-                  child: Text('אין הזמנות זמינות.',
-                      style: TextStyle(fontSize: 18, color: Colors.grey[600])))
+                  child: Text(
+                    'אין הזמנות זמינות.',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                )
               : ListView.builder(
                   itemCount: _productOrders.length,
                   itemBuilder: (context, index) {
                     final order = _productOrders[index];
                     return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      padding: EdgeInsets.symmetric(vertical: 8.0.h),
                       child: ElevatedButton(
-        
                         onPressed: () {
                           Navigator.push(
                             context,

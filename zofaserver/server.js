@@ -96,7 +96,7 @@ connection.connect((err) => {
 });
 
 // Initialize Firebase Admin SDK
-const serviceAccount = require("./serviceAccountKey.json"); // Path to service account JSON
+const serviceAccount = require("./serviceAccount/serviceAccountKey.json"); // Path to service account JSON
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount), // Authenticate using service account
@@ -598,6 +598,21 @@ app.delete("/api/deleteBreadOrder/:id", async (req, res) => {
   } catch (err) {
     console.error("Error deleting Bread Order:", err.message);
     res.status(500).json({ error: "Error deleting Bread Order" });
+  }
+});
+
+app.delete("/api/deleteUser/:phoneNumber", async (req, res) => {
+  const { phoneNumber } = req.params;
+  try {
+    const result = await dataHandler.deleteUser(phoneNumber);
+    if (result.message === "User deleted successfully!") {
+      res.status(200).json({ message: result.message });
+    } else {
+      res.status(404).json({ error: "User not found." });
+    }
+  } catch (err) {
+    console.error("Error deleting User:", err.message);
+    res.status(500).json({ error: "Error deleting User" });
   }
 });
 

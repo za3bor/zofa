@@ -5,6 +5,7 @@ import 'package:zofa_client/constant.dart';
 import 'package:zofa_client/screens/f_checkout_products.dart';
 import 'package:zofa_client/global.dart'; // Adjust the path accordingly
 import 'package:zofa_client/widgets/snow_layer.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CheckoutPageScreen extends StatefulWidget {
   const CheckoutPageScreen({super.key});
@@ -43,7 +44,7 @@ class _CheckoutPageScreenState extends State<CheckoutPageScreen> {
             'name': product['name'],
             'quantity': parsedQty,
             'price': product['price'],
-            'imageUrl': 'https://f003.backblazeb2.com/file/zofapic/$id.jpeg',
+            'imageUrl': 'https://f003.backblazeb2.com/file/zofapic/$id.jpg',
           });
         }
       } catch (e) {
@@ -118,6 +119,19 @@ class _CheckoutPageScreenState extends State<CheckoutPageScreen> {
     cartItemCountNotifier.value = totalQuantity;
   }
 
+  bool isFoldableDevice(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
+    final screenWidth = mediaQuery.size.width;
+    final screenHeight = mediaQuery.size.height;
+
+    // Foldable devices tend to have a very wide aspect ratio when unfolded
+    final aspectRatio = screenWidth / screenHeight;
+
+    // Define a threshold for foldable device detection
+    print('Aspect ratio: $aspectRatio' + 'Screen width: $screenWidth');
+    return aspectRatio > 2.0 || screenWidth > 500;
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -134,15 +148,15 @@ class _CheckoutPageScreenState extends State<CheckoutPageScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.shopping_cart_outlined, // Icon for an empty cart
-                      size: 150, // Adjust the size to your preference
+                      size: 150.h, // Adjust the size to your preference
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20.h),
                     const Text(
                       'העגלה שלך ריקה!',
                     ),
-                    const SizedBox(height: 10),
+                    SizedBox(height: 10.h),
                     ElevatedButton(
                       onPressed: () {
                         Navigator.pop(context);
@@ -171,7 +185,7 @@ class _CheckoutPageScreenState extends State<CheckoutPageScreen> {
                     children: [
                       Expanded(
                         child: ListView.builder(
-                          padding: const EdgeInsets.all(10.0),
+                          padding: EdgeInsets.all(10.0.w),
                           itemCount: cartItems.length,
                           shrinkWrap: true,
                           itemBuilder: (context, index) {
@@ -181,14 +195,14 @@ class _CheckoutPageScreenState extends State<CheckoutPageScreen> {
 
                             return Card(
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(15),
+                                borderRadius: BorderRadius.circular(15.r),
                               ),
                               elevation: 5,
-                              margin: const EdgeInsets.symmetric(vertical: 8.0),
+                              margin: EdgeInsets.symmetric(vertical: 8.0.h),
                               child: Row(
                                 children: [
                                   ClipRRect(
-                                    borderRadius: BorderRadius.circular(10),
+                                    borderRadius: BorderRadius.circular(10.r),
                                     child: ColorFiltered(
                                       colorFilter: ColorFilter.mode(
                                         const Color.fromARGB(255, 121, 85, 72)
@@ -198,48 +212,52 @@ class _CheckoutPageScreenState extends State<CheckoutPageScreen> {
                                       ),
                                       child: Image.network(
                                         item['imageUrl'],
-                                        width: screenWidth * 0.25,
-                                        height: screenWidth * 0.25,
+                                        width: isFoldableDevice(context)
+                                            ? screenWidth * 0.24.w
+                                            : screenWidth * 0.30.w,
+                                        height: isFoldableDevice(context)
+                                            ? screenWidth * 0.24.w
+                                            : screenWidth * 0.30.w,
                                         fit: BoxFit.cover,
                                         errorBuilder:
                                             (context, error, stackTrace) {
-                                          return const Icon(
+                                          return Icon(
                                             Icons.broken_image,
-                                            size: 50,
+                                            size: 50.h,
                                             color: Colors.black,
                                           );
                                         },
                                       ),
                                     ),
                                   ),
-                                  const SizedBox(width: 15),
+                                  SizedBox(width: 2.w),
                                   Expanded(
                                     child: Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        const SizedBox(height: 5),
+                                        SizedBox(height: 5.h),
                                         Text(
                                           item['name'],
-                                          maxLines: 2,
-                                          overflow: TextOverflow.visible,
+                                          maxLines: 3,
+                                          overflow: TextOverflow.ellipsis,
                                         ),
-                                        const SizedBox(height: 8),
+                                        SizedBox(height: 8.h),
                                         Text(
                                           'כמות: ${item['quantity']}',
                                         ),
-                                        const SizedBox(height: 5),
+                                        SizedBox(height: 5.h),
                                         Directionality(
                                           textDirection: TextDirection.ltr,
                                           child: Text(
                                             '${item['quantity']} X ${item['price'].toStringAsFixed(2)} = ${totalPrice.toStringAsFixed(2)}₪',
                                           ),
                                         ),
-                                        const SizedBox(height: 5),
+                                        SizedBox(height: 5.h),
                                       ],
                                     ),
                                   ),
-                                  const SizedBox(width: 15),
+                                  SizedBox(width: 15.w),
                                   IconButton(
                                     icon: const Icon(
                                       Icons.delete,
@@ -254,12 +272,12 @@ class _CheckoutPageScreenState extends State<CheckoutPageScreen> {
                           },
                         ),
                       ),
-                      const Divider(
-                        color: Color.fromRGBO(109, 76, 65, 1),
-                        thickness: 1.5,
+                      Divider(
+                        color: const Color.fromRGBO(109, 76, 65, 1),
+                        thickness: 1.5.h,
                       ),
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        padding: EdgeInsets.symmetric(horizontal: 16.0.w),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -273,8 +291,8 @@ class _CheckoutPageScreenState extends State<CheckoutPageScreen> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 16.0, horizontal: 16.0),
+                        padding: EdgeInsets.symmetric(
+                            vertical: 16.0.h, horizontal: 16.0.w),
                         child: SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(

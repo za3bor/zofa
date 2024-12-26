@@ -364,6 +364,19 @@ async function addNewUser(user) {
   }
 }
 
+async function deleteUser(phoneNumber) {
+  try {
+    const [result] = await pool.query("DELETE FROM users WHERE phone_number = ?", [phoneNumber]);
+    if (result.affectedRows === 0) {
+      return { message: "User not found" };
+    }
+    return { message: "User deleted successfully!" };
+  } catch (err) {
+    console.error("Error deleting User:", err.message);
+    throw new Error("Error deleting User");
+  }
+}
+
 module.exports = {
   addNewCategory,
   uploadFileToB2,
@@ -382,5 +395,6 @@ module.exports = {
   addNewUser,
   getFcmTokenFromPhoneNumber,
   sendNotificationToToken,
+  deleteUser,
   //deleteImageFromB2,
 };

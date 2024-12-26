@@ -20,7 +20,7 @@ class NotificationService {
       // Permission denied, prompt user to open settings
       print('Permission denied');
       _showSnackbar(context, 'לא ניתן היתר להודעות');
-      //_askUserToEnableNotifications(context);
+      _askUserToEnableNotifications(context);
     }
   }
 

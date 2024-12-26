@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
 import 'package:zofa_client/models/product_orders.dart'; // Import your model
 import 'package:zofa_client/constant.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class OrderDetailsScreen extends StatefulWidget {
   final ProductOrders order;
@@ -98,6 +100,47 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     }
   }
 
+  void sendWhatsApp(String phoneNumber, String message) async {
+    final uri = Uri.parse(
+        'https://wa.me/$phoneNumber?text=${Uri.encodeComponent(message)}');
+
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    } else {
+      throw 'Could not send WhatsApp message';
+    }
+  }
+
+  // Function to send notification to backend
+  Future<void> sendNotification(
+      String phoneNumber, String title, String body) async {
+    try {
+      final response = await http.post(
+        Uri.parse('http://$ipAddress:3000/api/sendNotification'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'phoneNumber': phoneNumber,
+          'title': title,
+          'body': body,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        _showSnackbar('ההודעה נשלחה בהצלחה');
+      } else {
+        throw Exception('Failed to send notification');
+      }
+    } catch (e) {
+      _showSnackbar('שגיאה בשליחת ההודעה: ${e.toString()}');
+    }
+  }
+
+  void _showSnackbar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+  }
+
   // Function to delete bread order
   Future<void> deleteOrder(int orderId) async {
     try {
@@ -115,12 +158,6 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     } catch (e) {
       _showSnackbar('שגיאה במחיקת ההזמנה.');
     }
-  }
-
-  void _showSnackbar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
   }
 
   // Function to show a confirmation dialog before deletion
@@ -166,7 +203,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
       body: Directionality(
         textDirection: TextDirection.rtl,
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(16.0.w),
           child: Column(
             crossAxisAlignment:
                 CrossAxisAlignment.start, // Align text to the right
@@ -174,71 +211,131 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
               Text(
                 'מספר הזמנה: ${widget.order.id}',
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: 10.h),
               Text(
                 'שם הלקוח: ${widget.order.userName}',
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: 10.h),
               Text(
                 'טלפון: ${widget.order.phoneNumber}',
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: 10.h),
               Text(
                 'סטטוס: ${widget.order.status}',
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: 10.h),
               Text(
                 'סך הכל: ₪${widget.order.totalPrice.toStringAsFixed(2)}',
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20.h),
               const Text(
                 'פרטי ההזמנה:',
-                style: TextStyle(fontSize: 16),
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: 10.h),
               productDetailsList.isEmpty
                   ? const Center(
                       child: CircularProgressIndicator(),
                     ) // Show loading until data is fetched
                   : Expanded(
-                      child: ListView.builder(
-                        itemCount: productDetailsList.length,
-                        itemBuilder: (context, index) {
-                          final product = productDetailsList[index];
-                          final imageUrl =
-                              'https://f003.backblazeb2.com/file/zofapic/${product['id']}.jpg';
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 4.0),
-                            child: ListTile(
-                              contentPadding: const EdgeInsets.all(8.0),
-                              leading: Image.network(
-                                imageUrl,
-                                width: 100, // Adjust the width as needed
-                                height: 100, // Adjust the height as needed
-                                fit: BoxFit
-                                    .cover, // To ensure the image fits within the box
-                                errorBuilder: (context, error, stackTrace) {
-                                  return const Icon(Icons.image_not_supported,
-                                      size:
-                                          50); // Placeholder if image fails to load
-                                },
+                      child: Expanded(
+                        child: ListView.builder(
+                          padding: EdgeInsets.all(10.0.w),
+                          itemCount: productDetailsList.length,
+                          shrinkWrap: true,
+                          itemBuilder: (context, index) {
+                            var product = productDetailsList[index];
+                            final imageUrl =
+                                'https://f003.backblazeb2.com/file/zofapic/${product['id']}.jpg';
+
+                            return Card(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15.r),
                               ),
-                              title: Text(
-                                'מזהה: ${product['id']} | שם: ${product['name']} | כמות: ${product['quantity']}',
-                                style: const TextStyle(fontSize: 16),
+                              elevation: 5,
+                              margin: EdgeInsets.symmetric(vertical: 8.0.h),
+                              child: Row(
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(10.r),
+                                    child: ColorFiltered(
+                                      colorFilter: ColorFilter.mode(
+                                        const Color.fromARGB(255, 121, 85, 72)
+                                            .withOpacity(0.25),
+                                        BlendMode.darken,
+                                      ),
+                                      child: Image.network(
+                                        imageUrl,
+                                        width: 100.w,
+                                        height: 100.h,
+                                        fit: BoxFit.cover,
+                                        errorBuilder:
+                                            (context, error, stackTrace) {
+                                          return Icon(
+                                            Icons.broken_image,
+                                            size: 50.h,
+                                            color: Colors.black,
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(width: 10.w),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        SizedBox(height: 5.h),
+                                        Text(
+                                          product['name'],
+                                          maxLines: 3,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        SizedBox(height: 8.h),
+                                        Text(
+                                          'כמות: ${product['quantity']}',
+                                        ),
+                                        Text(
+                                          'ברקוד: ${product['id']}',
+                                        ),
+                                        SizedBox(height: 5.h),
+                                      ],
+                                    ),
+                                  ),
+                                  SizedBox(width: 15.w),
+                                ],
                               ),
-                            ),
-                          );
-                        },
+                            );
+                          },
+                        ),
                       ),
                     ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  _confirmDeleteOrder(
-                      widget.order.id); // Show confirmation before delete
-                },
-                child: const Text('מחק הזמנה'),
+              SizedBox(height: 20.h),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      sendNotification(
+                          widget.order.phoneNumber,
+                          'ההזמנה שלך יצאה למשלוח',
+                          'שלום ${widget.order.userName}, ההזמנה שלך יצאה למשלוח');
+                      sendWhatsApp(widget.order.phoneNumber, 'ההזמנה מוכנה');
+                    },
+                    child: const Text('שלח'),
+                  ),
+                  SizedBox(width: 8.0.w),
+                  ElevatedButton(
+                    onPressed: () {
+                      _confirmDeleteOrder(
+                          widget.order.id); // Show confirmation before delete
+                    },
+                    child: const Text('מחק הזמנה'),
+                  ),
+                ],
               ),
             ],
           ),

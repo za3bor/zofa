@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:zofa_client/constant.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AddNewCategory extends StatefulWidget {
   const AddNewCategory({super.key});
@@ -74,10 +75,10 @@ class _AddNewCategoryState extends State<AddNewCategory> {
       body: Directionality(
         textDirection: TextDirection.rtl,
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(18),
+          padding: EdgeInsets.all(18.w),
           child: Column(
             children: [
-              const SizedBox(height: 5),
+              SizedBox(height: 5.h),
               TextField(
                 controller: _categoryController,
                 maxLength: 100,

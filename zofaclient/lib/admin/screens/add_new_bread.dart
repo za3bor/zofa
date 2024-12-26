@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:zofa_client/constant.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AddNewBread extends StatefulWidget {
   const AddNewBread({super.key});
@@ -89,10 +90,10 @@ class _AddNewBreadState extends State<AddNewBread> {
       body: Directionality(
         textDirection: TextDirection.rtl,
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(18),
+          padding: EdgeInsets.all(18.w),
           child: Column(
             children: [
-              const SizedBox(height: 5),
+              SizedBox(height: 5.h),
               TextField(
                 controller: _breadNameController,
                 maxLength: 100,
@@ -102,7 +103,7 @@ class _AddNewBreadState extends State<AddNewBread> {
                 autocorrect: false,
                 textCapitalization: TextCapitalization.none,
               ),
-              const SizedBox(height: 5),
+              SizedBox(height: 5.h),
               TextField(
                 keyboardType: TextInputType.number,
                 controller: _breadQuantityController,
@@ -111,7 +112,7 @@ class _AddNewBreadState extends State<AddNewBread> {
                   labelText: 'כמות',
                 ),
               ),
-              const SizedBox(height: 5),
+              SizedBox(height: 5.h),
               TextField(
                 keyboardType: TextInputType.number,
                 controller: _breadPriceController,

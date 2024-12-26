@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:zofa_client/constant.dart';
 import 'package:zofa_client/models/category.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class DeleteCategory extends StatefulWidget {
   const DeleteCategory({super.key});
@@ -107,10 +108,10 @@ class _DeleteCategoryState extends State<DeleteCategory> {
       body: Directionality(
         textDirection: TextDirection.rtl,
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(18),
+          padding: EdgeInsets.all(18.w),
           child: Column(
             children: [
-              const SizedBox(height: 5),
+              SizedBox(height: 5.h),
               // Dropdown to select category
               DropdownButton<int>(
                 hint: const Text('בחר קטגוריה'),
@@ -127,7 +128,7 @@ class _DeleteCategoryState extends State<DeleteCategory> {
                   );
                 }).toList(),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20.h),
               ElevatedButton(
                 onPressed: _deleteCategory, // Call delete directly
                 child: const Text('הסרת קטגוריה'),

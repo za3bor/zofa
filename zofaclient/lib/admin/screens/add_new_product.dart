@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:zofa_client/constant.dart';
 import 'package:zofa_client/models/category.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AddNewProductScreen extends StatefulWidget {
   const AddNewProductScreen({super.key});
@@ -274,7 +275,7 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
       body: Directionality(
         textDirection: TextDirection.rtl,
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(16.0.w),
           child: Form(
             key: _formKey,
             child: ListView(
@@ -290,6 +291,7 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
                     height: 150,
                     width: 150,
                   ),
+                SizedBox(height: 10.h),
                 // Text Fields for general product details
                 TextFormField(
                   controller: _barcodeController,
@@ -299,42 +301,59 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
                       ? 'יש להזין ברקוד'
                       : null, // "Enter barcode" in Hebrew
                 ),
+                SizedBox(height: 10.h),
+
                 TextFormField(
                   controller: _nameController,
                   decoration: const InputDecoration(labelText: 'שם המוצר'),
                   validator: (value) =>
                       value!.isEmpty ? 'Enter product name' : null,
                 ),
+                SizedBox(height: 10.h),
                 TextFormField(
                   controller: _dataController,
                   decoration: const InputDecoration(labelText: 'מידע'),
                 ),
+                SizedBox(height: 10.h),
+
                 TextFormField(
                   controller: _ingredientsController,
                   decoration: const InputDecoration(labelText: 'מרכיבים'),
                 ),
+                SizedBox(height: 10.h),
+
                 TextFormField(
                   controller: _additionalFeaturesController,
-                  decoration: const InputDecoration(labelText: 'מאפיינים נוספים'),
+                  decoration:
+                      const InputDecoration(labelText: 'מאפיינים נוספים'),
                 ),
+                SizedBox(height: 10.h),
+
                 TextFormField(
                   controller: _containsController,
                   decoration: const InputDecoration(labelText: 'מכיל'),
                 ),
+                SizedBox(height: 10.h),
+
                 TextFormField(
                   controller: _mayContainController,
                   decoration: const InputDecoration(labelText: 'עלול להכיל'),
                 ),
+                SizedBox(height: 10.h),
+
                 TextFormField(
                   controller: _allergiesController,
                   decoration: const InputDecoration(labelText: 'אלרגיות'),
                 ),
+                SizedBox(height: 10.h),
+
                 TextFormField(
                   controller: _priceController,
                   decoration: const InputDecoration(labelText: 'מחיר'),
                   keyboardType: TextInputType.number,
                 ),
-        
+                SizedBox(height: 10.h),
+
                 // Switches for product status
                 SwitchListTile(
                   title: const Text(
@@ -343,6 +362,8 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
                   value: _inStock,
                   onChanged: (value) => setState(() => _inStock = value),
                 ),
+                SizedBox(height: 10.h),
+
                 SwitchListTile(
                   title: const Text(
                     'משקה',
@@ -350,6 +371,8 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
                   value: _isDrink,
                   onChanged: (value) => setState(() => _isDrink = value),
                 ),
+                SizedBox(height: 10.h),
+
                 SwitchListTile(
                   title: const Text(
                     'בזוראת',
@@ -357,7 +380,8 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
                   value: _isSeeds,
                   onChanged: (value) => setState(() => _isSeeds = value),
                 ),
-        
+                SizedBox(height: 10.h),
+
                 // Categories as SwitchListTiles
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 10.0),
@@ -365,6 +389,8 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
                     'קטגוריות',
                   ),
                 ),
+                SizedBox(height: 10.h),
+
                 ..._categories.map((category) {
                   return SwitchListTile(
                     title: Text(
@@ -382,6 +408,8 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
                 const Text(
                   'סימנים',
                 ),
+                SizedBox(height: 10.h),
+
                 SwitchListTile(
                   title: const Text(
                     'נתרו',
@@ -389,6 +417,8 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
                   value: _containsSodium,
                   onChanged: (value) => setState(() => _containsSodium = value),
                 ),
+                SizedBox(height: 10.h),
+
                 SwitchListTile(
                   title: const Text(
                     'סוכר',
@@ -396,6 +426,8 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
                   value: _containsSugar,
                   onChanged: (value) => setState(() => _containsSugar = value),
                 ),
+                SizedBox(height: 10.h),
+
                 SwitchListTile(
                   title: const Text(
                     'שומן',
@@ -403,6 +435,8 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
                   value: _containsFat,
                   onChanged: (value) => setState(() => _containsFat = value),
                 ),
+                SizedBox(height: 10.h),
+
                 SwitchListTile(
                   title: const Text(
                     'ירוק',
@@ -410,15 +444,21 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
                   value: _isGreen,
                   onChanged: (value) => setState(() => _isGreen = value),
                 ),
+                SizedBox(height: 10.h),
+
                 // Nutrition Fields
                 TextFormField(
                   controller: _caloriesController,
                   decoration: const InputDecoration(labelText: 'קלוריות'),
                 ),
+                SizedBox(height: 10.h),
+
                 TextFormField(
                   controller: _totalFatController,
                   decoration: const InputDecoration(labelText: 'סה"כ שומן'),
                 ),
+                SizedBox(height: 10.h),
+
                 SwitchListTile(
                   title: const Text(
                     'מתוכם',
@@ -426,26 +466,38 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
                   value: _ofWhichF,
                   onChanged: (value) => setState(() => _ofWhichF = value),
                 ),
+                SizedBox(height: 10.h),
+
                 TextFormField(
                   controller: _saturatedFatController,
                   decoration: const InputDecoration(labelText: 'שומן רווי'),
                 ),
+                SizedBox(height: 10.h),
+
                 TextFormField(
                   controller: _transFatController,
                   decoration: const InputDecoration(labelText: 'שומן טרנס'),
                 ),
+                SizedBox(height: 10.h),
+
                 TextFormField(
                   controller: _cholesterolController,
                   decoration: const InputDecoration(labelText: 'כולסטרול'),
                 ),
+                SizedBox(height: 10.h),
+
                 TextFormField(
                   controller: _sodiumController,
                   decoration: const InputDecoration(labelText: 'נתרן'),
                 ),
+                SizedBox(height: 10.h),
+
                 TextFormField(
                   controller: _carbohydratesController,
                   decoration: const InputDecoration(labelText: 'פחמימות'),
                 ),
+                SizedBox(height: 10.h),
+
                 SwitchListTile(
                   title: const Text(
                     'מתוכם',
@@ -453,35 +505,51 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
                   value: _ofWhichC,
                   onChanged: (value) => setState(() => _ofWhichC = value),
                 ),
+                SizedBox(height: 10.h),
+
                 TextFormField(
                   controller: _sugarsController,
                   decoration: const InputDecoration(labelText: 'סוכרים'),
                 ),
+                SizedBox(height: 10.h),
+
                 TextFormField(
                   controller: _sugarTeaspoonsController,
                   decoration: const InputDecoration(labelText: 'כפיות סוכר'),
                 ),
+                SizedBox(height: 10.h),
+
                 TextFormField(
                   controller: _sugarAlcoholsController,
                   decoration: const InputDecoration(labelText: 'אלכוהול סוכר'),
                 ),
+                SizedBox(height: 10.h),
+
                 TextFormField(
                   controller: _dietaryFiberController,
-                  decoration: const InputDecoration(labelText: 'סיבים תזונתיים'),
+                  decoration:
+                      const InputDecoration(labelText: 'סיבים תזונתיים'),
                 ),
+                SizedBox(height: 10.h),
+
                 TextFormField(
                   controller: _proteinsController,
                   decoration: const InputDecoration(labelText: 'חלבונים'),
                 ),
+                SizedBox(height: 10.h),
+
                 TextFormField(
                   controller: _calciumController,
                   decoration: const InputDecoration(labelText: 'סידן'),
                 ),
+                SizedBox(height: 10.h),
+
                 TextFormField(
                   controller: _ironController,
                   decoration: const InputDecoration(labelText: 'ברזל'),
                 ),
-        
+                SizedBox(height: 15.h),
+
                 // Submit Button
                 ElevatedButton(
                   onPressed: _addProduct,

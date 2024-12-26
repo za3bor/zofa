@@ -4,7 +4,9 @@ import 'package:http/http.dart' as http;
 import 'package:zofa_client/constant.dart';
 import 'package:hive/hive.dart';
 import 'package:zofa_client/global.dart'; // Adjust the path accordingly
+import 'package:zofa_client/screens/tabs.dart';
 import 'package:zofa_client/widgets/snow_layer.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ProductCheckoutPage extends StatefulWidget {
   final double totalPrice;
@@ -165,6 +167,10 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
                 Text('ההזמנה נשלחה בהצלחה', textDirection: TextDirection.rtl),
           ),
         );
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const TabsScreen()),
+        );
       }
     } else {
       if (mounted) {
@@ -190,6 +196,9 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset:
+          true, // Resizes the body when the keyboard appears
+
       appBar: AppBar(
         flexibleSpace: const SnowLayer(),
         title: const Text('Checkout'),
@@ -207,24 +216,24 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
             ),
             // Foreground Content
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: EdgeInsets.all(16.0.w),
               child: Column(
                 children: [
                   const Text(
                     'Enter your details',
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16.h),
                   TextField(
                     controller: _nameController,
                     decoration: const InputDecoration(labelText: 'Name'),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16.h),
                   TextField(
                     controller: _emailController,
                     decoration: const InputDecoration(labelText: 'Email'),
                     keyboardType: TextInputType.emailAddress,
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16.h),
                   Row(
                     children: [
                       Expanded(
@@ -241,14 +250,14 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
                           ),
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      SizedBox(width: 8.w),
                       ElevatedButton(
                         onPressed: _applyCoupon,
                         child: const Text('Apply'),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8.h),
                   Text(
                     _couponMessage,
                     style: TextStyle(
@@ -256,24 +265,23 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16.h),
                   const Text(
                     'Selected Products:',
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8.h),
                   Column(
                     children: widget.cartItems.map((item) {
                       return Text('${item['name']} x${item['quantity']}');
                     }).toList(),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16.h),
                   _isCouponApplied
                       ? Row(
                           children: [
                             Text(
                               'Total Price: \$${widget.totalPrice.toStringAsFixed(2)}',
                               style: const TextStyle(
-                                fontSize: 18,
                                 fontWeight: FontWeight.bold,
                                 decoration: TextDecoration.lineThrough,
                               ),
@@ -282,7 +290,6 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
                             Text(
                               'New Price: \$${_discountedPrice.toStringAsFixed(2)}',
                               style: const TextStyle(
-                                fontSize: 18,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.green,
                               ),
@@ -292,12 +299,12 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
                       : Text(
                           'Total Price: \$${widget.totalPrice.toStringAsFixed(2)}',
                           style: const TextStyle(
-                            fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16.h),
                   SizedBox(
+                    width: double.infinity,
                     child: ElevatedButton(
                       onPressed: _saveProductOrder,
                       child: const Text('Pay'),

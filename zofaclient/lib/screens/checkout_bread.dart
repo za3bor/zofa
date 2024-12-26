@@ -4,6 +4,7 @@ import 'package:zofa_client/models/bread.dart';
 import 'package:http/http.dart' as http;
 import 'package:zofa_client/constant.dart';
 import 'package:zofa_client/widgets/snow_layer.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CheckoutBreadScreen extends StatefulWidget {
   final List<MapEntry<Bread, int>> selectedItems;
@@ -129,20 +130,20 @@ class _CheckoutBreadScreenState extends State<CheckoutBreadScreen> {
                       .height, // Ensure it fills the screen
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: EdgeInsets.all(16.w),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Card(
-                        margin: const EdgeInsets.only(bottom: 16.0),
+                        margin: EdgeInsets.only(bottom: 16.h),
                         child: Padding(
-                          padding: const EdgeInsets.all(16.0),
+                          padding: EdgeInsets.all(16.w),
                           child: Column(
                             children: [
                               const Text(
                                 'פריטים שנבחרו:',
                               ),
-                              const SizedBox(height: 8.0),
+                              SizedBox(height: 8.h),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: widget.selectedItems.map((entry) {
@@ -153,8 +154,8 @@ class _CheckoutBreadScreenState extends State<CheckoutBreadScreen> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 8.0),
+                                        padding: EdgeInsets.symmetric(
+                                            vertical: 8.w),
                                         child: Text(
                                           entry.key
                                               .name, // Directly using the variable
@@ -170,24 +171,23 @@ class _CheckoutBreadScreenState extends State<CheckoutBreadScreen> {
                                           ),
                                         ],
                                       ),
-                                      const Divider(
+                                      Divider(
                                         color: Colors.grey,
-                                        thickness: 1,
-                                        height: 20,
+                                        thickness: 1.h,
+                                        height: 20.h,
                                       ),
                                     ],
                                   );
                                 }).toList(),
                               ),
-                              const SizedBox(height: 10.0),
+                              SizedBox(height: 10.h),
                               Text(
                                 'סה"כ: ₪ ${totalPrice().toStringAsFixed(2)}',
                               ),
-                              const SizedBox(height: 5.0),
+                              SizedBox(height: 5.h),
                               const Text(
                                 'תשלום וקבלה רק בחנות',
                                 style: TextStyle(
-                                  fontSize: 16.0,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.redAccent,
                                 ),
@@ -196,14 +196,14 @@ class _CheckoutBreadScreenState extends State<CheckoutBreadScreen> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 16.0),
+                      SizedBox(height: 16.h),
                       TextField(
                         controller: _nameController,
                         decoration: const InputDecoration(
                           labelText: 'שם',
                         ),
                       ),
-                      const SizedBox(height: 16.0),
+                      SizedBox(height: 16.h),
                       ElevatedButton(
                         onPressed: _saveBreadOrder,
                         child: const Text(

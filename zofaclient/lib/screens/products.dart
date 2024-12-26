@@ -8,6 +8,7 @@ import 'package:hive/hive.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:zofa_client/global.dart';
 import 'package:zofa_client/screens/tabs.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ProductsScreen extends StatefulWidget {
   const ProductsScreen({
@@ -275,15 +276,35 @@ class _ProductsScreenState extends State<ProductsScreen>
     }
   }
 
+  double calculateAspectRatio(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    // Adjust the multiplier (0.6) to fine-tune the aspect ratio
+    return screenWidth / (screenHeight * 0.6);
+  }
+
+  bool isFoldableDevice(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
+    final screenWidth = mediaQuery.size.width;
+    final screenHeight = mediaQuery.size.height;
+
+    // Foldable devices tend to have a very wide aspect ratio when unfolded
+    final aspectRatio = screenWidth / screenHeight;
+
+    // Define a threshold for foldable device detection
+    print('Aspect ratio: $aspectRatio' + 'Screen width: $screenWidth');
+    return aspectRatio > 2.0 || screenWidth > 500;
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_categoriesError) {
       // Display error message if categories failed to load
-      return const Center(
+      return Center(
         child: Text(
           'שגיאה בטעינת הקטגוריות, נסה שוב מאוחר יותר',
           style: TextStyle(
-            fontSize: 18,
+            fontSize: 18.sp,
             fontWeight: FontWeight.bold,
             color: Colors.redAccent,
           ),
@@ -304,7 +325,7 @@ class _ProductsScreenState extends State<ProductsScreen>
           children: [
             // Search bar
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: EdgeInsets.all(16.w),
               child: TextField(
                 controller: _searchController,
                 textAlign: TextAlign.right, // Right to left text alignment
@@ -314,11 +335,11 @@ class _ProductsScreenState extends State<ProductsScreen>
                   filled: true,
                   fillColor: const Color.fromARGB(255, 222, 210, 206),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(30),
+                    borderRadius: BorderRadius.circular(30.r),
                     borderSide: BorderSide.none,
                   ),
                   contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                      EdgeInsets.symmetric(horizontal: 20.w, vertical: 9.h),
                 ),
               ),
             ),
@@ -334,20 +355,19 @@ class _ProductsScreenState extends State<ProductsScreen>
                 children: [
                   // 'All' Filter Chip with Icon and Gradient Background
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                    padding: EdgeInsets.symmetric(horizontal: 6.w),
                     child: FilterChip(
                       label: Row(
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.all_inclusive,
                             color: Colors.white,
+                            size: 20.sp, // Adjust icon size
                           ),
-                          const SizedBox(width: 5),
+                          SizedBox(width: 5.w),
                           Text(
                             'הכל',
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium, // Explicitly use a theme style
+                            style: Theme.of(context).textTheme.bodyMedium,
                           ),
                         ],
                       ),
@@ -365,38 +385,39 @@ class _ProductsScreenState extends State<ProductsScreen>
                         }
                       },
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
+                        borderRadius: BorderRadius.circular(15.r),
                       ),
                       backgroundColor: _selectAll
                           ? Colors
                               .transparent // Keep transparent if not selected
-                          : const Color(
-                              0xFFC8A36D), // Light gray for non-selected
-                      selectedColor:
-                          const Color(0xFF7A6244), // Brown color for selected
+                          : const Color(0xFFC8A36D),
+                      selectedColor: const Color(0xFF7A6244),
                       labelStyle: TextStyle(
                         color: _selectAll ? Colors.white : Colors.black,
                       ),
                       side: const BorderSide(
-                          color: Color(0xFF7A6244), width: 1.5),
+                        color: Color(0xFF7A6244),
+                        width: 1.5,
+                      ),
                     ),
                   ),
-                  // Other category Filter Chips with Icon, Text, and Gradient Background
+                  // Other category Filter Chips
                   ..._categories.map((category) {
                     return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                      padding: EdgeInsets.symmetric(horizontal: 6.w),
                       child: FilterChip(
                         label: Row(
                           children: [
-                            const Icon(
+                            Icon(
                               Icons.category,
                               color: Colors.white,
-                            ), // Category icon
-                            const SizedBox(width: 5),
+                              size: 20.sp, // Adjust icon size
+                            ),
+                            SizedBox(width: 5.w),
                             Text(
                               category.name,
                               style: Theme.of(context).textTheme.bodyMedium,
-                            ), // Category name
+                            ),
                           ],
                         ),
                         selected: _categorySelections[category.id] ?? false,
@@ -416,25 +437,25 @@ class _ProductsScreenState extends State<ProductsScreen>
                           }
                         },
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
+                          borderRadius: BorderRadius.circular(15.r),
                         ),
-                        backgroundColor: _categorySelections[category.id] ==
-                                true
-                            ? Colors.transparent // Keep transparent if selected
-                            : const Color(
-                                0xFFC8A36D), // Light gray for non-selected
-                        selectedColor:
-                            const Color(0xFF7A6244), // Brown color for selected
+                        backgroundColor:
+                            _categorySelections[category.id] == true
+                                ? Colors.transparent
+                                : const Color(0xFFC8A36D),
+                        selectedColor: const Color(0xFF7A6244),
                         labelStyle: TextStyle(
                           color: _categorySelections[category.id] == true
                               ? Colors.white
                               : Colors.black,
                         ),
                         side: const BorderSide(
-                            color: Color(0xFF7A6244), width: 1.5),
+                          color: Color(0xFF7A6244),
+                          width: 1.5,
+                        ),
                       ),
                     );
-                  })
+                  }),
                 ],
               ),
             ),
@@ -447,21 +468,23 @@ class _ProductsScreenState extends State<ProductsScreen>
                     ? Center(
                         child: Text(
                           _searchController.text.isNotEmpty
-                              ? 'אין מוצרים להצגה' // No products match the search
+                              ? 'אין מוצרים להצגה'
                               : _products.isEmpty
-                                  ? 'אין מוצרים להצגה' // No products available
-                                  : 'שגיאה בטעינת המוצרים, נסה שוב מאוחר יותר', // Error loading products
+                                  ? 'אין מוצרים להצגה'
+                                  : 'שגיאה בטעינת המוצרים, נסה שוב מאוחר יותר',
                         ),
                       )
                     : Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: EdgeInsets.all(8.0.w),
                         child: GridView.builder(
                           gridDelegate:
                               SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 2,
-                            crossAxisSpacing: 10,
-                            mainAxisSpacing: 10,
-                            childAspectRatio: 0.51,
+                            crossAxisSpacing: 10.w,
+                            mainAxisSpacing: 10.h,
+                            childAspectRatio: isFoldableDevice(context)
+                                ? calculateAspectRatio(context) * 0.4.h
+                                : calculateAspectRatio(context) * 0.46.h,
                           ),
                           itemCount: _filteredProducts.length,
                           itemBuilder: (ctx, index) {
@@ -482,153 +505,104 @@ class _ProductsScreenState extends State<ProductsScreen>
                               },
                               child: Card(
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(15),
+                                  borderRadius: BorderRadius.circular(15.r),
                                 ),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    // Product Image - No spacing on top, right, and left
                                     ClipRRect(
-                                      borderRadius: const BorderRadius.only(
-                                        topLeft: Radius.circular(15),
-                                        topRight: Radius.circular(15),
-                                      ), // Rounded corners only on the top
-                                      child: imageUrl
-                                              .isNotEmpty // Check if imageUrl is present
-                                          ? Hero(
-                                              tag:
-                                                  'imageHero-${product.id}', // Unique tag for Hero animation
-                                              child: ColorFiltered(
-                                                colorFilter: ColorFilter.mode(
-                                                  const Color.fromARGB(
-                                                          255, 121, 85, 72)
-                                                      .withOpacity(0.25),
-                                                  BlendMode.darken,
-                                                ),
-                                                child: Image.network(
-                                                  imageUrl,
-                                                  fit: BoxFit
-                                                      .cover, // Ensure image fills the area
-                                                  height:
-                                                      150, // Fixed height for consistency
-                                                  width: double
-                                                      .infinity, // Make image stretch to full width
-                                                  loadingBuilder:
-                                                      (BuildContext context,
-                                                          Widget child,
-                                                          ImageChunkEvent?
-                                                              loadingProgress) {
-                                                    if (loadingProgress ==
-                                                        null) {
-                                                      return child;
-                                                    }
-                                                    return Center(
-                                                      child:
-                                                          CircularProgressIndicator(
-                                                        value: loadingProgress
-                                                                    .expectedTotalBytes !=
-                                                                null
-                                                            ? loadingProgress
-                                                                    .cumulativeBytesLoaded /
-                                                                (loadingProgress
-                                                                        .expectedTotalBytes ??
-                                                                    1)
-                                                            : null,
-                                                      ),
-                                                    );
-                                                  },
-                                                  errorBuilder: (BuildContext
-                                                          context,
-                                                      Object error,
-                                                      StackTrace? stackTrace) {
-                                                    return Image.asset(
-                                                      'assets/noimage.jpg', // Fallback image
-                                                      fit: BoxFit.cover,
-                                                      height: 150,
-                                                      width: double.infinity,
-                                                    );
-                                                  },
-                                                ),
-                                              ),
-                                            )
-                                          : Image.asset(
-                                              'assets/noimage.jpg', // Fallback image
-                                              fit: BoxFit.cover,
-                                              height: 150,
-                                              width: double.infinity,
-                                            ),
-                                    ),
-                                    const SizedBox(height: 10),
-                                    // Product Details Padding
-                                    Padding(
-                                      padding: const EdgeInsets.all(12.0),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          // Product Name (Right to Left alignment)
-                                          Align(
-                                            alignment: Alignment.topRight,
-                                            child: Text(
-                                              product.name,
-                                              overflow: TextOverflow.ellipsis,
-                                              maxLines: 2,
-                                            ),
+                                      borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(15.r),
+                                        topRight: Radius.circular(15.r),
+                                      ),
+                                      child: Hero(
+                                        tag: 'imageHero-${product.id}', 
+                                        child: ColorFiltered(
+                                          colorFilter: ColorFilter.mode(
+                                            const Color.fromARGB(255, 121, 85, 72)
+                                                .withOpacity(0.25),
+                                            BlendMode.darken,
                                           ),
-                                          const SizedBox(height: 5),
-                                          // Product Price
-                                          Center(
-                                            child: Text(
-                                              '₪ ${product.price.toStringAsFixed(1)}',
-                                            ),
+                                          child: Image.network(
+                                            imageUrl,
+                                            fit: BoxFit.cover,
+                                            height: 150.w,
+                                            width: double.infinity,
+                                            errorBuilder:
+                                                (context, error, stackTrace) {
+                                              return Image.asset(
+                                                'assets/noimage.jpg',
+                                                fit: BoxFit.cover,
+                                                height: 150.w,
+                                                width: double.infinity,
+                                              );
+                                            },
                                           ),
-                                        ],
+                                        ),
                                       ),
                                     ),
-                                    const Spacer(), // Push buttons to the bottom
-                                    Column(
+                                    SizedBox(height: 10.h),
+                                    Padding(
+                                      padding: EdgeInsets.only(
+                                          left: 12.0.w,
+                                          right: 12.0.w,
+                                          bottom: 8.0.h,
+                                          top: 4.0.h),
+                                      child: Text(
+                                        product.name,
+                                        style: TextStyle(fontSize: 14.sp),
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 2,
+                                      ),
+                                    ),
+                                    SizedBox(height: 2.h),
+                                    Center(
+                                      child: Text(
+                                        '₪ ${product.price.toStringAsFixed(1)}',
+                                        style: TextStyle(fontSize: 14.sp),
+                                      ),
+                                    ),
+                                    const Spacer(),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
-                                        // Quantity Controls
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            IconButton(
-                                              icon: const Icon(Icons.add),
-                                              onPressed: () {
-                                                _incrementQuantity(product.id);
-                                              },
-                                            ),
-                                            Text(
-                                              '${_productQuantities[product.id] ?? 0}',
-                                            ),
-                                            IconButton(
-                                              icon: const Icon(Icons.remove),
-                                              onPressed: () {
-                                                _decrementQuantity(product.id);
-                                              },
-                                            ),
-                                          ],
+                                        IconButton(
+                                          icon: Icon(Icons.add, size: 18.sp),
+                                          onPressed: () =>
+                                              _incrementQuantity(product.id),
                                         ),
-                                        // Add to Cart Button (Hebrew)
-                                        ElevatedButton(
-                                          onPressed: product.stock
-                                              ? () => _addToCart(product.id)
-                                              : null,
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: product.stock
-                                                ? Colors.brown
-                                                : Colors.grey, // Adjust color
-                                          ),
-                                          child: Text(
-                                            product.stock
-                                                ? 'הוסף לסל'
-                                                : 'אזל מהמלאי', // Hebrew for "Add to Cart"
-                                          ),
+                                        Text(
+                                          '${_productQuantities[product.id] ?? 0}',
+                                          style: TextStyle(fontSize: 14.sp),
                                         ),
-                                        const SizedBox(height: 2),
+                                        IconButton(
+                                          icon: Icon(Icons.remove, size: 18.sp),
+                                          onPressed: () =>
+                                              _decrementQuantity(product.id),
+                                        ),
                                       ],
                                     ),
+                                    SizedBox(height: 5.h),
+                                    Center(
+                                      child: ElevatedButton(
+                                        onPressed: product.stock
+                                            ? () => _addToCart(product.id)
+                                            : null,
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: product.stock
+                                              ? Colors.brown
+                                              : Colors.grey,
+                                        ),
+                                        child: Text(
+                                          product.stock
+                                              ? 'הוסף לסל'
+                                              : 'אזל מהמלאי',
+                                          style: TextStyle(fontSize: 14.sp),
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(height: 5.h),
                                   ],
                                 ),
                               ),
