@@ -29,7 +29,7 @@ const connection = mysql.createConnection({
 });
 
 // Initialize Firebase Admin SDK
-const serviceAccount = require("./serviceAccountKey.json"); // Path to service account JSON
+const serviceAccount = require("./serviceAccountKey.js"); // Path to service account JSON
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount), // Authenticate using service account
