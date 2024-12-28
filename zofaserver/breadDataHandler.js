@@ -1,6 +1,4 @@
 const mysql = require("mysql2/promise");
-const fs = require("fs");
-const b2 = require("./b2Client");
 require("dotenv").config();
 const axios = require("axios");
 

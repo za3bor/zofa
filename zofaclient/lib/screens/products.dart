@@ -490,7 +490,7 @@ class _ProductsScreenState extends State<ProductsScreen>
                           itemBuilder: (ctx, index) {
                             final product = _filteredProducts[index];
                             final imageUrl =
-                                'https://f003.backblazeb2.com/file/zofapic/${product.id}.jpg';
+                                'https://zofa-pictures.s3.il-central-1.amazonaws.com/images/${product.id}.jpeg';
 
                             return GestureDetector(
                               onTap: () {

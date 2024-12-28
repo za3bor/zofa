@@ -1,10 +1,9 @@
 const mysql = require("mysql2/promise");
-const fs = require("fs");
-const b2 = require("./b2Client");
 require("dotenv").config();
 const axios = require("axios"); // Add this line to import axios
 const sharp = require("sharp"); // For image manipulation
 const admin = require("firebase-admin");
+const s3 = require('./aws'); // Adjust the path based on your project structure
 
 // Configure database connection details (replace with your actual values)
 const pool = mysql.createPool({
@@ -209,33 +208,6 @@ async function addWhiteBackground(filePath, fileName) {
   }
 }
 
-async function uploadFileToB2(filePath, fileName) {
-  try {
-    await b2.authorize();
-
-    const response = await b2.getUploadUrl({
-      bucketId: process.env.bucketId,
-    });
-
-    const uploadUrl = response.data.uploadUrl;
-    const uploadAuthToken = response.data.authorizationToken;
-
-    const fileContent = fs.readFileSync(filePath);
-
-    const uploadResponse = await b2.uploadFile({
-      uploadUrl,
-      uploadAuthToken,
-      fileName,
-      data: fileContent,
-    });
-
-    console.log("B2 upload success");
-    return uploadResponse.data.fileUrl;
-  } catch (error) {
-    console.error("Error uploading file to B2:", error);
-    throw error;
-  }
-}
 
 async function sendNotificationToToken(fcmToken, title, body) {
   try {
@@ -277,60 +249,6 @@ async function getFcmTokenFromPhoneNumber(phoneNumber) {
   } catch (err) {
     console.error("Error fetching FCM token:", err.message);
     throw err; // Throw error to be handled in the route
-  }
-}
-
-
-async function deleteImageFromB2(barcode) {
-  const fileName = `${barcode}.jpg`;
-
-  const b2Url = "https://api.backblazeb2.com/b2api/v2";
-  const authResponse = await axios.post(`${b2Url}/b2_authorize_account`, {});
-
-  const { authorizationToken, apiUrl } = authResponse.data;
-
-  const deleteResponse = await axios.delete(
-    `${apiUrl}/b2_delete_file_version`,
-    {
-      headers: {
-        Authorization: authorizationToken,
-      },
-      data: {
-        fileName: fileName,
-        fileId: barcode,
-      },
-    }
-  );
-
-  if (deleteResponse.status !== 204) {
-    throw new Error("Failed to delete image from Backblaze");
-  }
-}
-
-async function getFileFromB2(fileName) {
-  try {
-    const authResponse = await b2.authorize();
-    const authorizationToken = authResponse.data.authorizationToken;
-
-    const downloadUrl = `https://f003.backblazeb2.com/file/zofapic/${fileName}`;
-
-    console.log("Attempting to download file from URL:", downloadUrl);
-
-    const response = await axios.get(downloadUrl, {
-      headers: {
-        Authorization: authorizationToken,
-      },
-      responseType: "arraybuffer",
-    });
-
-    console.log("File downloaded successfully");
-    return response.data;
-  } catch (error) {
-    console.error(
-      "Error downloading file from B2:",
-      error.response?.data || error.message
-    );
-    throw error;
   }
 }
 
@@ -379,9 +297,7 @@ async function deleteUser(phoneNumber) {
 
 module.exports = {
   addNewCategory,
-  uploadFileToB2,
   getAllCategories,
-  getFileFromB2,
   addNewNote,
   getAllNotes,
   deleteNoteById,
@@ -396,5 +312,4 @@ module.exports = {
   getFcmTokenFromPhoneNumber,
   sendNotificationToToken,
   deleteUser,
-  //deleteImageFromB2,
 };

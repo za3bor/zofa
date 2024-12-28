@@ -96,7 +96,7 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
     request.files.add(await http.MultipartFile.fromPath(
       'file',
       _image!.path,
-      filename: '$barcode.jpg',
+      filename: '$barcode.jpeg',
     ));
 
     try {

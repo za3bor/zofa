@@ -1,8 +1,6 @@
 const mysql = require("mysql2/promise");
-const fs = require("fs");
-const b2 = require("./b2Client");
 require("dotenv").config();
-const axios = require("axios"); // Add this line to import axios
+const { s3, DeleteObjectCommand } = require('./aws'); // Import from the updated aws.js
 
 // Configure database connection details (replace with your actual values)
 const pool = mysql.createPool({
@@ -11,6 +9,30 @@ const pool = mysql.createPool({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
 });
+
+async function deleteImageFromS3(id) {
+  try {
+    // Construct the image filename using the barcode (id)
+    const fileName = `https://zofa-pictures.s3.il-central-1.amazonaws.com/images/${id}.jpeg`; // Adjust if the extension or structure is different
+    
+    // Prepare the parameters for deleting the object from S3
+    const s3Params = {
+      Bucket: 'zofa-pictures', // Your S3 bucket name
+      Key: `${fileName}`, // Path to the file in the bucket
+    };
+
+    // Create a delete command for S3
+    const command = new DeleteObjectCommand(s3Params);
+
+    // Send the command to S3 to delete the file
+    await s3.send(command);
+
+    console.log(`Image ${fileName} deleted from S3.`);
+  } catch (error) {
+    console.error("Error deleting image from S3:", error.message);
+    throw error;
+  }
+}
 
 // Function to search for products by name
 async function searchProductsByName(name) {
@@ -441,4 +463,5 @@ module.exports = {
   removeExistingCategories,
   getProductByBarcode,
   deleteProdcutOrderById,
+  deleteImageFromS3,
 };

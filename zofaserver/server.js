@@ -5,7 +5,6 @@ const productDataHandler = require("./productDataHandler"); // Import the produc
 const breadDataHandler = require("./breadDataHandler"); // Import the breadDataHandler module
 const mysql = require("mysql2");
 const app = express();
-const multer = require("multer"); // For handling file uploads
 const fs = require("fs"); // Import fs to handle file system operations
 const path = require("path");
 const http = require("http"); // Required to create the HTTP server
@@ -14,85 +13,19 @@ const port = process.env.PORT;
 const server = http.createServer(app); // Create HTTP server
 const io = new Server(server); // Initialize Socket.IO with the HTTP server
 const admin = require("firebase-admin");
-
+const { s3, PutObjectCommand } = require("./aws"); // Import from the updated aws.js
+const multer = require("multer");
+const upload = multer({ dest: "uploads/" }); // Temporary local storage for uploaded files
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
+const mime = require("mime-types"); // Import mime-types package
 
 const connection = mysql.createConnection({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-});
-
-const uploadsDir = "uploads";
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir);
-}
-
-// Multer setup
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadsDir); // Use the uploads directory
-  },
-  filename: (req, file, cb) => {
-    const filename = req.body.filename || Date.now(); // Use provided filename or fallback to timestamp
-    cb(null, `${filename}${path.extname(file.originalname)}`); // Append extension
-  },
-});
-
-const upload = multer({ storage });
-app.post("/api/uploadPicture", upload.single("file"), async (req, res) => {
-  try {
-    const file = req.file;
-    if (!file) {
-      return res.status(400).json({ message: "No file uploaded" });
-    }
-
-    const filePath = file.path;
-    const fileName = file.filename;
-
-    // Add white background to the uploaded image
-    const updatedFilePath = await dataHandler.addWhiteBackground(filePath, fileName);
-
-    // Upload to Backblaze B2
-    const fileUrl = await dataHandler.uploadFileToB2(updatedFilePath, fileName);
-
-    // Optionally delete local file after successful upload
-   // try {
-    //  fs.unlinkSync(updatedFilePath);
-    //  console.log("Temporary file deleted after upload");
-   // } catch (unlinkError) {
-    //  console.error("Error deleting local file:", unlinkError.message);
-   // }
-
-    res.status(200).json({ message: "File uploaded successfully", fileUrl });
-  } catch (error) {
-    console.error("Error uploading file:", error.message);
-    res.status(500).json({ message: "Internal Server Error" });
-  }
-});
-
-app.get("/api/getProductImage/:productId", async (req, res) => {
-  try {
-    const productId = req.params.productId;
-
-    // Construct the image URL (this depends on your storage setup)
-    const fileUrl = await dataHandler.getFileFromB2(`${productId}.jpg`);
-    res.status(200).json({ imageUrl: fileUrl });
-  } catch (error) {
-    console.error("Error retrieving image:", error.message);
-    res.status(500).json({ message: "Error retrieving image" });
-  }
-});
-
-connection.connect((err) => {
-  if (err) {
-    console.error("Error connecting to the database:", err);
-    return;
-  }
-  console.log("Connected to the MySQL database.");
 });
 
 // Initialize Firebase Admin SDK
@@ -102,12 +35,94 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount), // Authenticate using service account
 });
 
+app.post("/api/uploadPicture", upload.single("file"), async (req, res) => {
+  try {
+    const file = req.file;
+    const fileName = req.body.filename; // Get the filename with the barcode from the request body
+
+    if (!file || !fileName) {
+      return res.status(400).json({ message: "No file or filename provided" });
+    }
+
+    const filePath = file.path; // Path of the uploaded file
+
+    // Add white background to the uploaded image
+    const updatedFilePath = await dataHandler.addWhiteBackground(
+      filePath,
+      fileName
+    );
+
+    // Read the updated file as a buffer
+    const fileBuffer = fs.readFileSync(updatedFilePath);
+
+    // Use mime-types to get the correct Content-Type
+    const contentType = mime.lookup(fileName) || "image/jpeg"; // Default to image/jpeg if unknown type
+
+    // Prepare parameters for the upload
+    const s3Params = {
+      Bucket: "zofa-pictures", // Replace with your S3 bucket name
+      Key: `images/${fileName}.jpeg`, // Folder structure in S3 with the filename as per frontend input
+      Body: fileBuffer, // File buffer to upload
+      ContentType: contentType, // Set the correct content type
+    };
+
+    // Create a command and send it to S3
+    const command = new PutObjectCommand(s3Params);
+    const uploadResult = await s3.send(command);
+
+    // Generate the file URL with the correct filename
+    const fileUrl = `https://${s3Params.Bucket}.s3.${process.env.AWS_REGION}.amazonaws.com/images/${fileName}`;
+
+    // Optionally delete local files after successful upload
+    try {
+      fs.unlinkSync(updatedFilePath); // Remove the modified file
+      fs.unlinkSync(filePath); // Remove the original file
+      console.log("Temporary files deleted after upload");
+    } catch (unlinkError) {
+      console.error("Error deleting local files:", unlinkError.message);
+    }
+
+    res.status(200).json({ message: "File uploaded successfully", fileUrl });
+  } catch (error) {
+    console.error("Error uploading file:", error.message);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+app.delete("/api/deletePicture", async (req, res) => {
+  try {
+    const { fileName } = req.body; // Filename sent from the frontend
+
+    if (!fileName) {
+      return res.status(400).json({ message: "No file name provided" });
+    }
+
+    const s3Params = {
+      Bucket: "zofa-pictures", // Replace with your S3 bucket name
+      Key: `images/${fileName}`, // Path to the file in the bucket
+    };
+
+    // Create a delete command
+    const command = new DeleteObjectCommand(s3Params);
+
+    // Send the command to S3 to delete the file
+    await s3.send(command);
+
+    res.status(200).json({ message: "File deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting file:", error.message);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
 // Route to send notification
-app.post('/api/sendNotification', async (req, res) => {
+app.post("/api/sendNotification", async (req, res) => {
   const { phoneNumber, title, body } = req.body;
 
   if (!phoneNumber || !title || !body) {
-    return res.status(400).json({ error: 'Missing required fields (phoneNumber, title, body)' });
+    return res
+      .status(400)
+      .json({ error: "Missing required fields (phoneNumber, title, body)" });
   }
 
   try {
@@ -115,20 +130,28 @@ app.post('/api/sendNotification', async (req, res) => {
     const fcmToken = await dataHandler.getFcmTokenFromPhoneNumber(phoneNumber);
 
     if (!fcmToken) {
-      return res.status(404).json({ error: 'FCM token not found for this phone number' });
+      return res
+        .status(404)
+        .json({ error: "FCM token not found for this phone number" });
     }
 
     // Send the notification
-    const notificationResponse = await dataHandler.sendNotificationToToken(fcmToken, title, body);
+    const notificationResponse = await dataHandler.sendNotificationToToken(
+      fcmToken,
+      title,
+      body
+    );
 
     // Return success response
     res.status(200).json({
-      message: 'Notification sent successfully',
+      message: "Notification sent successfully",
       response: notificationResponse,
     });
   } catch (error) {
-    console.error('Error in sendNotification route:', error.message);
-    res.status(500).json({ error: 'Failed to send notification', details: error.message });
+    console.error("Error in sendNotification route:", error.message);
+    res
+      .status(500)
+      .json({ error: "Failed to send notification", details: error.message });
   }
 });
 
@@ -207,14 +230,17 @@ app.post("/api/addNewProduct", async (req, res) => {
 app.delete("/api/deleteProduct/:id", async (req, res) => {
   const { id } = req.params;
   try {
+    // Step 1: Delete the product and related data from the database
     const result = await productDataHandler.deleteProductById(id);
     if (result.affectedRows > 0) {
+      // Step 2: Delete the product image from S3
+      await productDataHandler.deleteImageFromS3(id);
       res.status(200).json({ message: "המוצר נמחק בהצלחה." });
     } else {
       res.status(404).json({ error: "המוצר לא נמצא." });
     }
   } catch (err) {
-    console.error("Error deleting product:", err.message);
+    console.error("Error deleting product and/or image:", err.message);
     res.status(500).json({ error: "שגיאה במחיקת המוצר" });
   }
 });
@@ -294,7 +320,7 @@ app.post("/api/addNewNote", async (req, res) => {
 app.get("/api/getAllNotes", async (req, res) => {
   try {
     const notes = await dataHandler.getAllNotes();
-    res.status(200).json(notes); 
+    res.status(200).json(notes);
   } catch (err) {
     console.error("Error fetching notes:", err.message);
     res.status(500).json({ error: "Error fetching notes" });
@@ -468,7 +494,7 @@ app.get("/api/getProductCategories/:id", async (req, res) => {
         .json({ error: "No categories found for this product" });
     }
 
-    res.status(200).json(productCategories); 
+    res.status(200).json(productCategories);
   } catch (err) {
     console.error("Error fetching product categories:", err.message);
     res.status(500).json({ error: "Error fetching product categories" });
@@ -476,7 +502,7 @@ app.get("/api/getProductCategories/:id", async (req, res) => {
 });
 
 app.get("/api/getProductDetails/:id", async (req, res) => {
-  const productId = req.params.id; 
+  const productId = req.params.id;
   try {
     const productDetails = await productDataHandler.getProductDetails(
       productId
@@ -586,7 +612,7 @@ app.post("/api/saveProductCategories", async (req, res) => {
 
 app.delete("/api/deleteBreadOrder/:id", async (req, res) => {
   const { id } = req.params;
-  
+
   try {
     const result = await breadDataHandler.deleteBreadOrderById(id);
     if (result.affectedRows > 0) {
@@ -631,7 +657,7 @@ io.on("connection", (socket) => {
 
 app.delete("/api/deleteProductOrder/:id", async (req, res) => {
   const { id } = req.params;
-  
+
   try {
     const result = await productDataHandler.deleteProdcutOrderById(id);
     if (result.affectedRows > 0) {
@@ -659,6 +685,13 @@ app.post("/api/addNewUser", async (req, res) => {
   }
 });
 
+connection.connect((err) => {
+  if (err) {
+    console.error("Error connecting to the database:", err);
+    return;
+  }
+  console.log("Connected to the MySQL database.");
+});
 
 app.use((err, req, res, next) => {
   console.error(err.stack);

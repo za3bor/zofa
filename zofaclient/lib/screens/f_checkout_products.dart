@@ -196,12 +196,17 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset:
-          true, // Resizes the body when the keyboard appears
-
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         flexibleSpace: const SnowLayer(),
-        title: const Text('Checkout'),
+        title: const Text(
+          'Checkout',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 24,
+          ),
+        ),
+        centerTitle: true,
       ),
       body: Directionality(
         textDirection: TextDirection.rtl,
@@ -210,110 +215,254 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
             // Background Image
             Positioned.fill(
               child: Image.asset(
-                'assets/background.jpg', // Path to your background image
-                fit: BoxFit.cover, // Ensures the image covers the entire screen
+                'assets/background.jpg',
+                fit: BoxFit.cover,
               ),
             ),
             // Foreground Content
             Padding(
-              padding: EdgeInsets.all(16.0.w),
-              child: Column(
-                children: [
-                  const Text(
-                    'Enter your details',
-                  ),
-                  SizedBox(height: 16.h),
-                  TextField(
-                    controller: _nameController,
-                    decoration: const InputDecoration(labelText: 'Name'),
-                  ),
-                  SizedBox(height: 16.h),
-                  TextField(
-                    controller: _emailController,
-                    decoration: const InputDecoration(labelText: 'Email'),
-                    keyboardType: TextInputType.emailAddress,
-                  ),
-                  SizedBox(height: 16.h),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: _couponController,
-                          decoration: InputDecoration(
-                            labelText: 'Coupon Code',
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: _couponColor),
+              padding:
+                  EdgeInsets.symmetric(horizontal: 16.0.w, vertical: 20.0.h),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Title Section
+                    const Center(
+                      child: Text(
+                        'הזן את פרטיך',
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 24.h),
+
+                    // Name Input
+                    _buildInputField(
+                      controller: _nameController,
+                      label: 'שם',
+                      icon: Icons.person,
+                    ),
+                    SizedBox(height: 16.h),
+
+                    // Email Input
+                    _buildInputField(
+                      controller: _emailController,
+                      label: 'אימייל',
+                      icon: Icons.email,
+                      inputType: TextInputType.emailAddress,
+                    ),
+                    SizedBox(height: 16.h),
+
+                    // Coupon Section
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildInputField(
+                            controller: _couponController,
+                            label: 'קוד קופון',
+                            borderColor: _couponColor,
+                          ),
+                        ),
+                        SizedBox(width: 12.w),
+                        ElevatedButton.icon(
+                          onPressed: _applyCoupon,
+                          icon: const Icon(Icons.discount),
+                          label: const Text('החל'),
+                          style: ElevatedButton.styleFrom(
+                            padding: EdgeInsets.symmetric(
+                              vertical: 10.h,
+                              horizontal: 16.w,
                             ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: _couponColor),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
                             ),
                           ),
                         ),
-                      ),
-                      SizedBox(width: 8.w),
-                      ElevatedButton(
-                        onPressed: _applyCoupon,
-                        child: const Text('Apply'),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 8.h),
-                  Text(
-                    _couponMessage,
-                    style: TextStyle(
-                      color: _couponColor,
-                      fontWeight: FontWeight.bold,
+                      ],
                     ),
-                  ),
-                  SizedBox(height: 16.h),
-                  const Text(
-                    'Selected Products:',
-                  ),
-                  SizedBox(height: 8.h),
-                  Column(
-                    children: widget.cartItems.map((item) {
-                      return Text('${item['name']} x${item['quantity']}');
-                    }).toList(),
-                  ),
-                  SizedBox(height: 16.h),
-                  _isCouponApplied
-                      ? Row(
+                    SizedBox(height: 8.h),
+                    Text(
+                      _couponMessage,
+                      style: TextStyle(
+                        color: _couponColor,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 24.h),
+
+                    // Product Section
+                    Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 4,
+                      child: Padding(
+                        padding: EdgeInsets.all(12.0.w),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              'Total Price: \$${widget.totalPrice.toStringAsFixed(2)}',
-                              style: const TextStyle(
+                            // Header Text
+                            const Text(
+                              'מוצרים נבחרים:',
+                              style: TextStyle(
+                                fontSize: 18,
                                 fontWeight: FontWeight.bold,
-                                decoration: TextDecoration.lineThrough,
                               ),
                             ),
-                            const SizedBox(width: 16),
-                            Text(
-                              'New Price: \$${_discountedPrice.toStringAsFixed(2)}',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.green,
-                              ),
+                            const Divider(
+                              thickness: 1.5,
+                              color: Colors.black,
                             ),
+                            SizedBox(height: 12.h),
+
+                            // List of Products with Dividers
+                            ...widget.cartItems.asMap().entries.map((entry) {
+                              int index = entry.key;
+                              var item = entry.value;
+
+                              return Column(
+                                children: [
+                                  // Product Row
+                                  Row(
+                                    children: [
+                                      // Product Icon
+                                      const Icon(
+                                        Icons.shopping_cart,
+                                        color: Color(0xFF7A6244),
+                                        size: 24,
+                                      ),
+                                      SizedBox(width: 12.w),
+
+                                      // Product Name and Quantity
+                                      Expanded(
+                                        child: Text(
+                                          item['name'],
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ),
+
+                                      // Quantity Badge
+                                      Container(
+                                        padding: EdgeInsets.symmetric(
+                                            vertical: 4.h, horizontal: 8.w),
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFF7A6244),
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                        ),
+                                        child: Text(
+                                          'x${item['quantity']}',
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+
+                                  // Add Divider Below Except for Last Item
+                                  if (index < widget.cartItems.length - 1) ...[
+                                    SizedBox(height: 8.h),
+                                    const Divider(
+                                      thickness: 1,
+                                      color: Colors.black,
+                                    ),
+                                    SizedBox(height: 8.h),
+                                  ],
+                                ],
+                              );
+                            }).toList(),
                           ],
-                        )
-                      : Text(
-                          'Total Price: \$${widget.totalPrice.toStringAsFixed(2)}',
-                          style: const TextStyle(
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 24.h),
+
+                    // Price Section
+                    _isCouponApplied
+                        ? Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'סך הכל: ₪ ${widget.totalPrice.toStringAsFixed(2)}',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  decoration: TextDecoration.lineThrough,
+                                ),
+                              ),
+                              SizedBox(width: 16.w),
+                              Text(
+                                'מחיר לאחר הנחה: ₪ ${_discountedPrice.toStringAsFixed(2)}',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.green,
+                                ),
+                              ),
+                            ],
+                          )
+                        : Center(
+                            child: Text(
+                              'סך הכל: ₪ ${widget.totalPrice.toStringAsFixed(2)}',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                              ),
+                            ),
+                          ),
+                    SizedBox(height: 24.h),
+
+                    // Pay Button
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: _saveProductOrder,
+                        child: const Text(
+                          'תשלום',
+                          style: TextStyle(
+                            fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                  SizedBox(height: 16.h),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: _saveProductOrder,
-                      child: const Text('Pay'),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInputField({
+    required TextEditingController controller,
+    required String label,
+    TextInputType inputType = TextInputType.text,
+    IconData? icon,
+    Color borderColor = Colors.grey,
+  }) {
+    return TextField(
+      controller: controller,
+      keyboardType: inputType,
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: icon != null ? Icon(icon) : null,
+        filled: true,
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: borderColor, width: 2),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: borderColor),
+          borderRadius: BorderRadius.circular(12),
         ),
       ),
     );

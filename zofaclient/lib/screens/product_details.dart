@@ -108,7 +108,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                           BlendMode.darken,
                                         ),
                                         child: Image.network(
-                                          'https://f003.backblazeb2.com/file/zofapic/${widget.productId}.jpg',
+                                          'https://zofa-pictures.s3.il-central-1.amazonaws.com/images/${widget.productId}.jpeg',
                                           height: 300.h,
                                           width: 300.w,
                                           fit: BoxFit.cover,
