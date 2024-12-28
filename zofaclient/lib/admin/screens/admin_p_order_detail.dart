@@ -245,7 +245,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                           itemBuilder: (context, index) {
                             var product = productDetailsList[index];
                             final imageUrl =
-                                'https://f003.backblazeb2.com/file/zofapic/${product['id']}.jpg';
+                                'https://zofa-pictures.s3.il-central-1.amazonaws.com/images/${product['id']}.jpeg';
 
                             return Card(
                               shape: RoundedRectangleBorder(

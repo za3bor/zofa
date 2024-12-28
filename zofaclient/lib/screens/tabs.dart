@@ -86,56 +86,180 @@ class TabsScreenState extends State<TabsScreen>
     );
   }
 
-  // Log out the user
   Future<void> _logout() async {
-    await FirebaseAuth.instance.signOut();
-    // Redirect to login screen after logging out
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const LoginScreen()),
-    );
-  }
-
-  // Delete the user's account
-  Future<void> _deleteAccount() async {
     try {
-      try {
-        final phoneNumber = FirebaseAuth.instance.currentUser?.phoneNumber;
-        final response = await http.delete(
-          Uri.parse('http://$ipAddress:3000/api/deleteUser/$phoneNumber'),
-        );
-        if (response.statusCode == 200) {
-          // Only update UI and show snack bar if the widget is still mounted
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('User deleted successfully')),
-            );
-          }
-        } else {
-          final message =
-              jsonDecode(response.body)['message'] ?? 'Failed to delete User';
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(message)),
-            );
-          }
-        }
-      } catch (er) {
-        print('Error deleting user: $er');
-      }
-
-      await FirebaseAuth.instance.currentUser?.delete();
-      // Navigate to login screen after account deletion
+      await FirebaseAuth.instance.signOut();
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const SignupScreen()),
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
       );
     } catch (e) {
-      print(e.toString());
-      // Handle errors (e.g., re-authentication required)
+      print('Error logging out: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error logging out: ${e.toString()}")),
+      );
+    }
+  }
+
+  Future<void> _reauthenticateUser(BuildContext context) async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+
+      if (user == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No user is currently signed in.')),
+        );
+        return;
+      }
+
+      // Step 1: Start phone number verification
+      final PhoneVerificationCompleted verificationCompleted =
+          (PhoneAuthCredential phoneAuthCredential) async {
+        // Auto-retrieval or instant verification is done, we directly reauthenticate
+        await user.reauthenticateWithCredential(phoneAuthCredential);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('User reauthenticated successfully')),
+        );
+      };
+
+      final PhoneVerificationFailed verificationFailed =
+          (FirebaseAuthException error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text('Phone verification failed: ${error.message}')),
+        );
+      };
+
+      final PhoneCodeSent codeSent = (String verificationId, int? resendToken) {
+        // Ask the user to enter the SMS code
+        showDialog(
+          context: context,
+          builder: (context) {
+            final TextEditingController codeController =
+                TextEditingController();
+
+            return AlertDialog(
+              title: const Text('Enter SMS code'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: codeController,
+                    decoration: const InputDecoration(labelText: 'SMS Code'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      final smsCode = codeController.text.trim();
+                      if (smsCode.isNotEmpty) {
+                        final credential = PhoneAuthProvider.credential(
+                          verificationId: verificationId,
+                          smsCode: smsCode,
+                        );
+                        try {
+                          await user.reauthenticateWithCredential(credential);
+                          Navigator.pop(context); // Close the dialog
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text('Reauthentication successful')),
+                          );
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                                content: Text('Reauthentication failed: $e')),
+                          );
+                        }
+                      }
+                    },
+                    child: const Text('Submit'),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      };
+
+      // Step 2: Trigger phone number verification
+      await FirebaseAuth.instance.verifyPhoneNumber(
+        phoneNumber: user.phoneNumber!,
+        verificationCompleted: verificationCompleted,
+        verificationFailed: verificationFailed,
+        codeSent: codeSent,
+        codeAutoRetrievalTimeout: (String verificationId) {},
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error re-authenticating user: $e')),
+      );
+    }
+  }
+
+  Future<void> _deleteAccount(BuildContext context) async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+
+      if (user == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No user is currently signed in.')),
+        );
+        return;
+      }
+
+      // Re-authenticate the user first
+      await _reauthenticateUser(context);
+
+      // Proceed with account deletion after re-authentication
+      final response = await http.delete(
+        Uri.parse('http://$ipAddress:3000/api/deleteUser/${user.phoneNumber}'),
+      );
+
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('User deleted successfully')),
+        );
+      } else {
+        final message =
+            jsonDecode(response.body)['message'] ?? 'Failed to delete User';
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(message)),
+        );
+      }
+
+      // Clear Hive data for the user
+      await _deleteHiveData();
+
+      // Firebase account deletion
+      await user.delete();
+
+      // Navigate to the signup screen and clear the navigation stack
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const SignupScreen()),
+        (route) => false, // Removes all previous routes
+      );
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Error: ${e.toString()}")),
       );
+    }
+  }
+
+  Future<void> _deleteHiveData() async {
+    try {
+      // Get the user's box name or the specific boxes where their data is stored
+      // Example: If you have a box named 'userData' for the user's info
+      var box = await Hive.openBox('cart');
+      await box.clear(); // Clears all data inside the box
+
+      // If you want to delete the box completely, use:
+      await Hive.deleteBoxFromDisk('cart');
+
+      // Optionally, if you have multiple boxes, delete them similarly:
+      // await Hive.deleteBoxFromDisk('anotherBox');
+
+      print('Hive data deleted successfully.');
+    } catch (e) {
+      print('Error deleting Hive data: $e');
     }
   }
 
@@ -208,8 +332,8 @@ class TabsScreenState extends State<TabsScreen>
         actions: [
           // Stack to overlay the hat image on the drawer icon
           Padding(
-            padding: EdgeInsets.only(
-                right: 8.0.w), // Adjust the padding as needed
+            padding:
+                EdgeInsets.only(right: 8.0.w), // Adjust the padding as needed
             child: Stack(
               children: [
                 IconButton(
@@ -323,7 +447,9 @@ class TabsScreenState extends State<TabsScreen>
                 ListTile(
                   leading: const Icon(Icons.delete),
                   title: const Text('מחק חשבון'),
-                  onTap: _deleteAccount, // Call the delete account method
+                  onTap: () {
+                    _deleteAccount(context);
+                  },
                 ),
               ],
             ),

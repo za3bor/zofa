@@ -44,7 +44,8 @@ class _CheckoutPageScreenState extends State<CheckoutPageScreen> {
             'name': product['name'],
             'quantity': parsedQty,
             'price': product['price'],
-            'imageUrl': 'https://f003.backblazeb2.com/file/zofapic/$id.jpg',
+            'imageUrl':
+                'https://zofa-pictures.s3.il-central-1.amazonaws.com/images/$id.jpeg',
           });
         }
       } catch (e) {
