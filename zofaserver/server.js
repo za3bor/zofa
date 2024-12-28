@@ -29,7 +29,20 @@ const connection = mysql.createConnection({
 });
 
 // Initialize Firebase Admin SDK
-const serviceAccount = require("./serviceAccountKey.js"); // Path to service account JSON
+const serviceAccount = {
+  type: process.env.service_account_type,
+  project_id: process.env.service_account_project_id,
+  private_key_id: process.env.service_account_private_key_id,
+  private_key: process.env.service_account_private_key,
+  client_email: process.env.service_account_client_email,
+  client_id: process.env.service_account_client_id,
+  auth_uri: process.env.service_account_auth_uri,
+  token_uri: process.env.service_account_token_uri,
+  auth_provider_x509_cert_url:
+    process.env.service_account_auth_provider_x509_cert_url,
+  client_x509_cert_url: process.env.service_account_client_x509_cert_url,
+  universe_domain: process.env.service_account_universe_domain,
+};
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount), // Authenticate using service account
