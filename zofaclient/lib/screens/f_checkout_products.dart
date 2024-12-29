@@ -223,217 +223,214 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
             Padding(
               padding:
                   EdgeInsets.symmetric(horizontal: 16.0.w, vertical: 20.0.h),
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Title Section
-                    const Center(
-                      child: Text(
-                        'הזן את פרטיך',
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Title Section
+                  const Center(
+                    child: Text(
+                      'הזן את פרטיך',
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 24.h),
+
+                  // Name Input
+                  _buildInputField(
+                    controller: _nameController,
+                    label: 'שם',
+                    icon: Icons.person,
+                  ),
+                  SizedBox(height: 16.h),
+
+                  // Email Input
+                  _buildInputField(
+                    controller: _emailController,
+                    label: 'אימייל',
+                    icon: Icons.email,
+                    inputType: TextInputType.emailAddress,
+                  ),
+                  SizedBox(height: 16.h),
+
+                  // Coupon Section
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildInputField(
+                          controller: _couponController,
+                          label: 'קוד קופון',
+                          borderColor: _couponColor,
+                        ),
+                      ),
+                      SizedBox(width: 12.w),
+                      ElevatedButton.icon(
+                        onPressed: _applyCoupon,
+                        icon: const Icon(Icons.discount),
+                        label: const Text('החל'),
+                        style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(
+                            vertical: 10.h,
+                            horizontal: 16.w,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 8.h),
+                  Text(
+                    _couponMessage,
+                    style: TextStyle(
+                      color: _couponColor,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 24.h),
+
+                  // Product Section
+                  Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 4,
+                    child: Padding(
+                      padding: EdgeInsets.all(12.0.w),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Header Text
+                          const Text(
+                            'מוצרים נבחרים:',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const Divider(
+                            thickness: 1.5,
+                            color: Colors.black,
+                          ),
+                          SizedBox(height: 12.h),
+
+                          // List of Products with Dividers
+                          ...widget.cartItems.asMap().entries.map((entry) {
+                            int index = entry.key;
+                            var item = entry.value;
+
+                            return Column(
+                              children: [
+                                // Product Row
+                                Row(
+                                  children: [
+                                    // Product Icon
+                                    const Icon(
+                                      Icons.shopping_cart,
+                                      color: Color(0xFF7A6244),
+                                      size: 24,
+                                    ),
+                                    SizedBox(width: 12.w),
+
+                                    // Product Name and Quantity
+                                    Expanded(
+                                      child: Text(
+                                        item['name'],
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+
+                                    // Quantity Badge
+                                    Container(
+                                      padding: EdgeInsets.symmetric(
+                                          vertical: 4.h, horizontal: 8.w),
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFF7A6244),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Text(
+                                        'x${item['quantity']}',
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+
+                                // Add Divider Below Except for Last Item
+                                if (index < widget.cartItems.length - 1) ...[
+                                  SizedBox(height: 8.h),
+                                  const Divider(
+                                    thickness: 1,
+                                    color: Colors.black,
+                                  ),
+                                  SizedBox(height: 8.h),
+                                ],
+                              ],
+                            );
+                          }).toList(),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 24.h),
+
+                  // Price Section
+                  _isCouponApplied
+                      ? Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'סך הכל: ₪ ${widget.totalPrice.toStringAsFixed(2)}',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                decoration: TextDecoration.lineThrough,
+                              ),
+                            ),
+                            SizedBox(width: 16.w),
+                            Text(
+                              'מחיר לאחר הנחה: ₪ ${_discountedPrice.toStringAsFixed(2)}',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.green,
+                              ),
+                            ),
+                          ],
+                        )
+                      : Center(
+                          child: Text(
+                            'סך הכל: ₪ ${widget.totalPrice.toStringAsFixed(2)}',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                          ),
+                        ),
+                  SizedBox(height: 24.h),
+
+                  // Pay Button
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: _saveProductOrder,
+                      child: const Text(
+                        'תשלום',
                         style: TextStyle(
-                          fontSize: 22,
+                          fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
-                    SizedBox(height: 24.h),
-
-                    // Name Input
-                    _buildInputField(
-                      controller: _nameController,
-                      label: 'שם',
-                      icon: Icons.person,
-                    ),
-                    SizedBox(height: 16.h),
-
-                    // Email Input
-                    _buildInputField(
-                      controller: _emailController,
-                      label: 'אימייל',
-                      icon: Icons.email,
-                      inputType: TextInputType.emailAddress,
-                    ),
-                    SizedBox(height: 16.h),
-
-                    // Coupon Section
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _buildInputField(
-                            controller: _couponController,
-                            label: 'קוד קופון',
-                            borderColor: _couponColor,
-                          ),
-                        ),
-                        SizedBox(width: 12.w),
-                        ElevatedButton.icon(
-                          onPressed: _applyCoupon,
-                          icon: const Icon(Icons.discount),
-                          label: const Text('החל'),
-                          style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.symmetric(
-                              vertical: 10.h,
-                              horizontal: 16.w,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 8.h),
-                    Text(
-                      _couponMessage,
-                      style: TextStyle(
-                        color: _couponColor,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 24.h),
-
-                    // Product Section
-                    Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      elevation: 4,
-                      child: Padding(
-                        padding: EdgeInsets.all(12.0.w),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Header Text
-                            const Text(
-                              'מוצרים נבחרים:',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const Divider(
-                              thickness: 1.5,
-                              color: Colors.black,
-                            ),
-                            SizedBox(height: 12.h),
-
-                            // List of Products with Dividers
-                            ...widget.cartItems.asMap().entries.map((entry) {
-                              int index = entry.key;
-                              var item = entry.value;
-
-                              return Column(
-                                children: [
-                                  // Product Row
-                                  Row(
-                                    children: [
-                                      // Product Icon
-                                      const Icon(
-                                        Icons.shopping_cart,
-                                        color: Color(0xFF7A6244),
-                                        size: 24,
-                                      ),
-                                      SizedBox(width: 12.w),
-
-                                      // Product Name and Quantity
-                                      Expanded(
-                                        child: Text(
-                                          item['name'],
-                                          style: const TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                      ),
-
-                                      // Quantity Badge
-                                      Container(
-                                        padding: EdgeInsets.symmetric(
-                                            vertical: 4.h, horizontal: 8.w),
-                                        decoration: BoxDecoration(
-                                          color: const Color(0xFF7A6244),
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                        ),
-                                        child: Text(
-                                          'x${item['quantity']}',
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-
-                                  // Add Divider Below Except for Last Item
-                                  if (index < widget.cartItems.length - 1) ...[
-                                    SizedBox(height: 8.h),
-                                    const Divider(
-                                      thickness: 1,
-                                      color: Colors.black,
-                                    ),
-                                    SizedBox(height: 8.h),
-                                  ],
-                                ],
-                              );
-                            }).toList(),
-                          ],
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 24.h),
-
-                    // Price Section
-                    _isCouponApplied
-                        ? Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                'סך הכל: ₪ ${widget.totalPrice.toStringAsFixed(2)}',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  decoration: TextDecoration.lineThrough,
-                                ),
-                              ),
-                              SizedBox(width: 16.w),
-                              Text(
-                                'מחיר לאחר הנחה: ₪ ${_discountedPrice.toStringAsFixed(2)}',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.green,
-                                ),
-                              ),
-                            ],
-                          )
-                        : Center(
-                            child: Text(
-                              'סך הכל: ₪ ${widget.totalPrice.toStringAsFixed(2)}',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18,
-                              ),
-                            ),
-                          ),
-                    SizedBox(height: 24.h),
-
-                    // Pay Button
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: _saveProductOrder,
-                        child: const Text(
-                          'תשלום',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ],
