@@ -214,8 +214,8 @@ class _NotesScreenState extends State<NotesScreen> {
                                   color: Colors.red,
                                   alignment: Alignment.centerRight,
                                   child: Padding(
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 20.0.w),
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 20.0.w),
                                     child: const Icon(Icons.delete),
                                   ),
                                 ),
@@ -229,12 +229,15 @@ class _NotesScreenState extends State<NotesScreen> {
                                   try {
                                     await _deleteNote(noteId);
                                   } catch (e) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content:
-                                            Text('Failed to delete note: $e'),
-                                      ),
-                                    );
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                          content:
+                                              Text('Failed to delete note: $e'),
+                                        ),
+                                      );
+                                    }
                                   }
                                 },
                                 child: ListTile(

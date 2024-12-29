@@ -376,7 +376,7 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
                                 ],
                               ],
                             );
-                          }).toList(),
+                          }),
                         ],
                       ),
                     ),

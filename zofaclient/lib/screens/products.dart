@@ -260,9 +260,11 @@ class _ProductsScreenState extends State<ProductsScreen>
         _productQuantities[productId] = 0;
       });
       // Trigger the cart spin animation in TabsScreen
-      final tabsScreenState =
-          context.findAncestorStateOfType<TabsScreenState>();
-      tabsScreenState?.triggerCartSpin();
+      if (mounted) {
+        final tabsScreenState =
+            context.findAncestorStateOfType<TabsScreenState>();
+        tabsScreenState?.triggerCartSpin();
+      }
       // Show a snackbar with the product name
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -292,7 +294,7 @@ class _ProductsScreenState extends State<ProductsScreen>
     final aspectRatio = screenWidth / screenHeight;
 
     // Define a threshold for foldable device detection
-    print('Aspect ratio: $aspectRatio' + 'Screen width: $screenWidth');
+    print('Aspect ratio: $aspectRatio' 'Screen width: $screenWidth');
     return aspectRatio > 2.0 || screenWidth > 500;
   }
 
@@ -516,10 +518,11 @@ class _ProductsScreenState extends State<ProductsScreen>
                                         topRight: Radius.circular(15.r),
                                       ),
                                       child: Hero(
-                                        tag: 'imageHero-${product.id}', 
+                                        tag: 'imageHero-${product.id}',
                                         child: ColorFiltered(
                                           colorFilter: ColorFilter.mode(
-                                            const Color.fromARGB(255, 121, 85, 72)
+                                            const Color.fromARGB(
+                                                    255, 121, 85, 72)
                                                 .withOpacity(0.25),
                                             BlendMode.darken,
                                           ),

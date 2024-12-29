@@ -7,28 +7,29 @@ class StarPainter extends CustomPainter {
 
   StarPainter({required this.size, required this.color});
 
-  @override
-  void paint(Canvas canvas, Size canvasSize) {
-    Paint paint = Paint()
-      ..color = color
-      ..style = PaintingStyle.fill;
+@override
+void paint(Canvas canvas, Size size) {
+  Paint paint = Paint()
+    ..color = color
+    ..style = PaintingStyle.fill;
 
-    double centerX = canvasSize.width / 2;
-    double centerY = canvasSize.height / 2;
+  double centerX = size.width / 2;
+  double centerY = size.height / 2;
 
-    Path path = Path();
+  Path path = Path();
 
-    // Star shape coordinates (based on size)
-    path.moveTo(centerX, centerY - size / 2); // Top point
-    path.lineTo(centerX + size / 3, centerY + size / 3); // Bottom right
-    path.lineTo(centerX - size / 2, centerY - size / 6); // Left point
-    path.lineTo(centerX + size / 2, centerY - size / 6); // Right point
-    path.lineTo(centerX - size / 3, centerY + size / 3); // Bottom left
-    path.close();
+  // Star shape coordinates (based on size)
+  path.moveTo(centerX, centerY - size.height / 2); // Top point
+  path.lineTo(centerX + size.width / 3, centerY + size.height / 3); // Bottom right
+  path.lineTo(centerX - size.width / 2, centerY - size.height / 6); // Left point
+  path.lineTo(centerX + size.width / 2, centerY - size.height / 6); // Right point
+  path.lineTo(centerX - size.width / 3, centerY + size.height / 3); // Bottom left
+  path.close();
 
-    // Draw the star shape on the canvas
-    canvas.drawPath(path, paint);
-  }
+  // Draw the star shape on the canvas
+  canvas.drawPath(path, paint);
+}
+
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {

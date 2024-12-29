@@ -35,9 +35,11 @@ class ContactUsScreen extends StatelessWidget {
       }
     } catch (e) {
       // Show error message if something goes wrong
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("אירעה שגיאה: $e")),
-      );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("אירעה שגיאה: $e")),
+        );
+      }
     }
   }
 

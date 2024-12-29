@@ -150,8 +150,10 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
 
       if (response.statusCode == 200) {
         _showSnackbar('ההזמנה נמחקה בהצלחה.');
-        Navigator.pop(
-            context); // Go back to the previous screen after successful deletion
+        if (mounted) {
+          Navigator.pop(
+              context); // Go back to the previous screen after successful deletion
+        }
       } else {
         throw Exception('Failed to delete bread order.');
       }

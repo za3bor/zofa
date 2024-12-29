@@ -8,27 +8,37 @@ class NotificationService {
   // Function to check notification permission
   Future<void> checkNotificationPermission(BuildContext context) async {
     // Check the notification permission status
-    NotificationSettings settings = await _firebaseMessaging.requestPermission();
+    NotificationSettings settings =
+        await _firebaseMessaging.requestPermission();
 
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
       print('Permission granted');
-      _showSnackbar(context, 'ההיתר להודעות ניתן');
-    } else if (settings.authorizationStatus == AuthorizationStatus.provisional) {
+      if (context.mounted) {
+        _showSnackbar(context, 'ההיתר להודעות ניתן');
+      }
+    } else if (settings.authorizationStatus ==
+        AuthorizationStatus.provisional) {
       print('Provisional permission granted');
-      _showSnackbar(context, 'ההיתר הזמני להודעות ניתן');
+      if (context.mounted) {
+        _showSnackbar(context, 'ההיתר הזמני להודעות ניתן');
+      }
     } else {
       // Permission denied, prompt user to open settings
       print('Permission denied');
-      _showSnackbar(context, 'לא ניתן היתר להודעות');
-      _askUserToEnableNotifications(context);
+      if (context.mounted) {
+        _showSnackbar(context, 'לא ניתן היתר להודעות');
+        _askUserToEnableNotifications(context);
+      }
     }
   }
 
   // Method to show a Snackbar
   void _showSnackbar(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message)),
+      );
+    }
   }
 
   // Prompt user to enable notifications manually by opening app settings
@@ -36,9 +46,13 @@ class NotificationService {
     bool canOpenSettings = await openAppSettings();
 
     if (canOpenSettings) {
-      _showSnackbar(context, 'כדי לקבל הודעות, אנא הפעל את ההתראות בהגדרות');
+      if (context.mounted) {
+        _showSnackbar(context, 'כדי לקבל הודעות, אנא הפעל את ההתראות בהגדרות');
+      }
     } else {
-      _showSnackbar(context, 'לא ניתן לפתוח את ההגדרות');
+      if (context.mounted) {
+        _showSnackbar(context, 'לא ניתן לפתוח את ההגדרות');
+      }
     }
   }
 }

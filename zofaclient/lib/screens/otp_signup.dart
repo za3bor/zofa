@@ -10,7 +10,8 @@ class OtpSignupScreen extends StatefulWidget {
   final String phoneNumber;
   final String name;
 
-  const OtpSignupScreen({required this.phoneNumber, required this.name, super.key});
+  const OtpSignupScreen(
+      {required this.phoneNumber, required this.name, super.key});
 
   @override
   State<OtpSignupScreen> createState() => _OtpSignupScreenState();
@@ -24,8 +25,9 @@ class _OtpSignupScreenState extends State<OtpSignupScreen> {
 
   Future<void> _saveNewUser(String fcmToken) async {
     try {
-      const String backendUrl = 'http://$ipAddress:3000/api/addNewUser'; // Replace with your backend endpoint
-      
+      const String backendUrl =
+          'http://$ipAddress:3000/api/addNewUser'; // Replace with your backend endpoint
+
       final response = await http.post(
         Uri.parse(backendUrl),
         headers: {'Content-Type': 'application/json'},
@@ -116,14 +118,18 @@ class _OtpSignupScreenState extends State<OtpSignupScreen> {
         print('Failed to retrieve FCM token');
       }
 
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const AdminMainPageScreen()),
-      );
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const AdminMainPageScreen()),
+        );
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Invalid OTP. Please try again.')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Invalid OTP. Please try again.')),
+        );
+      }
       print('Error verifying OTP: $e');
     } finally {
       setState(() {

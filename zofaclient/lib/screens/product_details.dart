@@ -104,7 +104,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                       child: ColorFiltered(
                                         colorFilter: ColorFilter.mode(
                                           const Color.fromARGB(255, 121, 85, 72)
-                                              .withOpacity(0.25),
+                                              .withValues(alpha: 0.25),
                                           BlendMode.darken,
                                         ),
                                         child: Image.network(

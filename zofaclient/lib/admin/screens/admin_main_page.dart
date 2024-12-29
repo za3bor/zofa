@@ -20,7 +20,7 @@ class AdminMainPageScreen extends StatelessWidget {
     final aspectRatio = screenWidth / screenHeight;
 
     // Define a threshold for foldable device detection
-    print('Aspect ratio: $aspectRatio' + 'Screen width: $screenWidth');
+    print('Aspect ratio: $aspectRatio'  'Screen width: $screenWidth');
     return aspectRatio > 2.0 || screenWidth > 500;
   }
 

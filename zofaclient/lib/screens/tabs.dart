@@ -89,18 +89,106 @@ class TabsScreenState extends State<TabsScreen>
   Future<void> _logout() async {
     try {
       await FirebaseAuth.instance.signOut();
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const LoginScreen()),
-      );
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
+        );
+      }
     } catch (e) {
       print('Error logging out: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Error logging out: ${e.toString()}")),
+        );
+      }
+    }
+  }
+
+// Define the verificationCompleted function
+  Future<void> verificationCompleted(
+      PhoneAuthCredential phoneAuthCredential, BuildContext context) async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error logging out: ${e.toString()}")),
+        const SnackBar(content: Text('No user is currently signed in.')),
+      );
+      return;
+    }
+
+    // Auto-retrieval or instant verification is done
+    await user.reauthenticateWithCredential(phoneAuthCredential);
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('User reauthenticated successfully')),
       );
     }
   }
 
+// Define the verificationFailed function
+  void verificationFailed(FirebaseAuthException error, BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Phone verification failed: ${error.message}')),
+    );
+  }
+
+// Define the codeSent function
+  void codeSent(String verificationId, int? resendToken, BuildContext context,
+      User user) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        final TextEditingController codeController = TextEditingController();
+
+        return AlertDialog(
+          title: const Text('Enter SMS code'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: codeController,
+                decoration: const InputDecoration(labelText: 'SMS Code'),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  final smsCode = codeController.text.trim();
+                  if (smsCode.isNotEmpty) {
+                    final credential = PhoneAuthProvider.credential(
+                      verificationId: verificationId,
+                      smsCode: smsCode,
+                    );
+                    try {
+                      await user.reauthenticateWithCredential(credential);
+                      if (context.mounted) {
+                        Navigator.pop(context); // Close the dialog
+                      }
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text('Reauthentication successful')),
+                        );
+                      }
+                    } catch (e) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                              content: Text('Reauthentication failed: $e')),
+                        );
+                      }
+                    }
+                  }
+                },
+                child: const Text('Submit'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+// Refactored _reauthenticateUser
   Future<void> _reauthenticateUser(BuildContext context) async {
     try {
       final user = FirebaseAuth.instance.currentUser;
@@ -112,85 +200,23 @@ class TabsScreenState extends State<TabsScreen>
         return;
       }
 
-      // Step 1: Start phone number verification
-      final PhoneVerificationCompleted verificationCompleted =
-          (PhoneAuthCredential phoneAuthCredential) async {
-        // Auto-retrieval or instant verification is done, we directly reauthenticate
-        await user.reauthenticateWithCredential(phoneAuthCredential);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('User reauthenticated successfully')),
-        );
-      };
-
-      final PhoneVerificationFailed verificationFailed =
-          (FirebaseAuthException error) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text('Phone verification failed: ${error.message}')),
-        );
-      };
-
-      final PhoneCodeSent codeSent = (String verificationId, int? resendToken) {
-        // Ask the user to enter the SMS code
-        showDialog(
-          context: context,
-          builder: (context) {
-            final TextEditingController codeController =
-                TextEditingController();
-
-            return AlertDialog(
-              title: const Text('Enter SMS code'),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextField(
-                    controller: codeController,
-                    decoration: const InputDecoration(labelText: 'SMS Code'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () async {
-                      final smsCode = codeController.text.trim();
-                      if (smsCode.isNotEmpty) {
-                        final credential = PhoneAuthProvider.credential(
-                          verificationId: verificationId,
-                          smsCode: smsCode,
-                        );
-                        try {
-                          await user.reauthenticateWithCredential(credential);
-                          Navigator.pop(context); // Close the dialog
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text('Reauthentication successful')),
-                          );
-                        } catch (e) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                                content: Text('Reauthentication failed: $e')),
-                          );
-                        }
-                      }
-                    },
-                    child: const Text('Submit'),
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      };
-
       // Step 2: Trigger phone number verification
       await FirebaseAuth.instance.verifyPhoneNumber(
         phoneNumber: user.phoneNumber!,
-        verificationCompleted: verificationCompleted,
-        verificationFailed: verificationFailed,
-        codeSent: codeSent,
+        verificationCompleted: (PhoneAuthCredential credential) =>
+            verificationCompleted(credential, context),
+        verificationFailed: (FirebaseAuthException error) =>
+            verificationFailed(error, context),
+        codeSent: (String verificationId, int? resendToken) =>
+            codeSent(verificationId, resendToken, context, user),
         codeAutoRetrievalTimeout: (String verificationId) {},
       );
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error re-authenticating user: $e')),
-      );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error re-authenticating user: $e')),
+        );
+      }
     }
   }
 
@@ -214,15 +240,19 @@ class TabsScreenState extends State<TabsScreen>
       );
 
       if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('User deleted successfully')),
-        );
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('User deleted successfully')),
+          );
+        }
       } else {
         final message =
             jsonDecode(response.body)['message'] ?? 'Failed to delete User';
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(message)),
-        );
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(message)),
+          );
+        }
       }
 
       // Clear Hive data for the user
@@ -232,15 +262,19 @@ class TabsScreenState extends State<TabsScreen>
       await user.delete();
 
       // Navigate to the signup screen and clear the navigation stack
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => const SignupScreen()),
-        (route) => false, // Removes all previous routes
-      );
+      if (context.mounted) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const SignupScreen()),
+          (route) => false, // Removes all previous routes
+        );
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error: ${e.toString()}")),
-      );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Error: ${e.toString()}")),
+        );
+      }
     }
   }
 

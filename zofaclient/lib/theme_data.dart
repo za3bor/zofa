@@ -101,7 +101,7 @@ ThemeData buildThemeData() {
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
       backgroundColor: primaryColor,
       selectedItemColor: accentColor,
-      unselectedItemColor: Colors.white.withOpacity(0.7),
+      unselectedItemColor: Colors.white.withValues(alpha: 0.7),
       selectedLabelStyle: GoogleFonts.rubik(
         fontSize: 14.sp,
         fontWeight: FontWeight.bold,
@@ -140,7 +140,8 @@ ThemeData buildThemeData() {
         if (states.contains(WidgetState.selected)) {
           return accentColor; // Track color for selected state
         }
-        return Colors.grey.withOpacity(0.5); // Track color for unselected state
+        return Colors.grey
+            .withValues(alpha: 0.5); // Track color for unselected state
       }),
     ),
   );

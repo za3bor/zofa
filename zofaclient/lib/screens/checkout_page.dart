@@ -129,7 +129,7 @@ class _CheckoutPageScreenState extends State<CheckoutPageScreen> {
     final aspectRatio = screenWidth / screenHeight;
 
     // Define a threshold for foldable device detection
-    print('Aspect ratio: $aspectRatio' + 'Screen width: $screenWidth');
+    print('Aspect ratio: $aspectRatio' 'Screen width: $screenWidth');
     return aspectRatio > 2.0 || screenWidth > 500;
   }
 
@@ -207,8 +207,9 @@ class _CheckoutPageScreenState extends State<CheckoutPageScreen> {
                                     child: ColorFiltered(
                                       colorFilter: ColorFilter.mode(
                                         const Color.fromARGB(255, 121, 85, 72)
-                                            .withOpacity(
-                                                0.25), // Set the desired color with opacity
+                                            .withValues(
+                                                alpha:
+                                                    0.25), // Set the desired color with opacity
                                         BlendMode.darken,
                                       ),
                                       child: Image.network(

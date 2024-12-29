@@ -10,7 +10,6 @@ import 'package:zofa_client/screens/tabs.dart';
 import 'package:zofa_client/theme_data.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 void main() async {
