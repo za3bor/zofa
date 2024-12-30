@@ -81,10 +81,11 @@ app.post("/api/uploadPicture", upload.single("file"), async (req, res) => {
 
     // Create a command and send it to S3
     const command = new PutObjectCommand(s3Params);
-    const uploadResult = await s3.send(command);
+    await s3.send(command);
 
     // Generate the file URL with the correct filename
-    const fileUrl = `https://${s3Params.Bucket}.s3.${process.env.AWS_REGION}.amazonaws.com/images/${fileName}`;
+    const cloudFrontDomain = "https://d1qq705dywrog2.cloudfront.net"; // Replace with your CloudFront domain
+    const fileUrl = `${cloudFrontDomain}/images/${fileName}.jpeg`;
 
     // Optionally delete local files after successful upload
     try {
@@ -98,32 +99,6 @@ app.post("/api/uploadPicture", upload.single("file"), async (req, res) => {
     res.status(200).json({ message: "File uploaded successfully", fileUrl });
   } catch (error) {
     console.error("Error uploading file:", error.message);
-    res.status(500).json({ message: "Internal Server Error" });
-  }
-});
-
-app.delete("/api/deletePicture", async (req, res) => {
-  try {
-    const { fileName } = req.body; // Filename sent from the frontend
-
-    if (!fileName) {
-      return res.status(400).json({ message: "No file name provided" });
-    }
-
-    const s3Params = {
-      Bucket: "zofa-pictures", // Replace with your S3 bucket name
-      Key: `images/${fileName}`, // Path to the file in the bucket
-    };
-
-    // Create a delete command
-    const command = new DeleteObjectCommand(s3Params);
-
-    // Send the command to S3 to delete the file
-    await s3.send(command);
-
-    res.status(200).json({ message: "File deleted successfully" });
-  } catch (error) {
-    console.error("Error deleting file:", error.message);
     res.status(500).json({ message: "Internal Server Error" });
   }
 });

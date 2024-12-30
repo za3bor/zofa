@@ -492,7 +492,7 @@ class _ProductsScreenState extends State<ProductsScreen>
                           itemBuilder: (ctx, index) {
                             final product = _filteredProducts[index];
                             final imageUrl =
-                                'https://zofa-pictures.s3.il-central-1.amazonaws.com/images/${product.id}.jpeg';
+                                'https://d1qq705dywrog2.cloudfront.net/images/${product.id}.jpeg';
 
                             return GestureDetector(
                               onTap: () {
@@ -523,7 +523,7 @@ class _ProductsScreenState extends State<ProductsScreen>
                                           colorFilter: ColorFilter.mode(
                                             const Color.fromARGB(
                                                     255, 121, 85, 72)
-                                                .withOpacity(0.25),
+                                                .withValues(alpha: 0.25),
                                             BlendMode.darken,
                                           ),
                                           child: Image.network(

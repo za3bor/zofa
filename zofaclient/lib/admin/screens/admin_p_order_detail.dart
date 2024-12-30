@@ -247,7 +247,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                           itemBuilder: (context, index) {
                             var product = productDetailsList[index];
                             final imageUrl =
-                                'https://zofa-pictures.s3.il-central-1.amazonaws.com/images/${product['id']}.jpeg';
+                                'https://d1qq705dywrog2.cloudfront.net/images/${product['id']}.jpeg';
 
                             return Card(
                               shape: RoundedRectangleBorder(
@@ -262,7 +262,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                     child: ColorFiltered(
                                       colorFilter: ColorFilter.mode(
                                         const Color.fromARGB(255, 121, 85, 72)
-                                            .withOpacity(0.25),
+                                            .withValues(alpha: 0.25),
                                         BlendMode.darken,
                                       ),
                                       child: Image.network(

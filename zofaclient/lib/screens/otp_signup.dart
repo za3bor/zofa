@@ -119,9 +119,11 @@ class _OtpSignupScreenState extends State<OtpSignupScreen> {
       }
 
       if (mounted) {
-        Navigator.pushReplacement(
+        Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => const AdminMainPageScreen()),
+          (Route<dynamic> route) =>
+              false, // This ensures all previous routes are removed
         );
       }
     } catch (e) {

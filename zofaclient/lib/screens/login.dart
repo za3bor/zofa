@@ -30,6 +30,8 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() {
         _isLoading = true;
       });
+      // Format the phone number
+      phone = _formatPhoneNumber(phone);
       Future.delayed(const Duration(seconds: 1), () {
         setState(() {
           _isLoading = false;
@@ -52,6 +54,28 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       );
     }
+  }
+
+  String _formatPhoneNumber(String phone) {
+    // Remove any non-digit characters
+    phone = phone.replaceAll(RegExp(r'\D'), '');
+
+    // Check if phone starts with '0' (local format)
+    if (phone.startsWith('0')) {
+      return '+972${phone.substring(1)}'; // Use string interpolation to build the string
+    }
+
+    // If phone starts with '972', it's already in international format, just prepend '+'
+    if (phone.startsWith('972')) {
+      return '+972${phone.substring(3)}'; // Use string interpolation
+    }
+
+    // If phone doesn't start with '0' or '972', assume it's already in the correct international format
+    if (!phone.startsWith('+972')) {
+      return '+972$phone'; // Use string interpolation to prepend '+972'
+    }
+
+    return phone; // Return as is if already in correct format
   }
 
   @override

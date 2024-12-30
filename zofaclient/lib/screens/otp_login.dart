@@ -80,9 +80,11 @@ class _OtpLoginScreenState extends State<OtpLoginScreen> {
       print('OTP verified!');
 
       if (mounted) {
-        Navigator.pushReplacement(
+        Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => const AdminMainPageScreen()),
+          (Route<dynamic> route) =>
+              false, // This ensures all previous routes are removed
         );
       }
     } catch (e) {

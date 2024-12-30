@@ -1,6 +1,7 @@
 const mysql = require("mysql2/promise");
 require("dotenv").config();
 const { s3, DeleteObjectCommand } = require('./aws'); // Import from the updated aws.js
+const { CloudFrontClient, CreateInvalidationCommand } = require('@aws-sdk/client-cloudfront');
 
 // Configure database connection details (replace with your actual values)
 const pool = mysql.createPool({
@@ -10,15 +11,23 @@ const pool = mysql.createPool({
   database: process.env.DB_NAME,
 });
 
+const CloudFront=new CloudFrontClient({
+  credentials:{
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+  }
+});
+
 async function deleteImageFromS3(id) {
   try {
     // Construct the image filename using the barcode (id)
-    const fileName = `https://zofa-pictures.s3.il-central-1.amazonaws.com/images/${id}.jpeg`; // Adjust if the extension or structure is different
-    
+    const s3Key = `images/${id}.jpeg`; // Path inside S3 bucket
+    const cloudFrontPath = `/images/${id}.jpeg`; // Path for CloudFront invalidation
+
     // Prepare the parameters for deleting the object from S3
     const s3Params = {
       Bucket: 'zofa-pictures', // Your S3 bucket name
-      Key: `${fileName}`, // Path to the file in the bucket
+      Key: s3Key, // Path to the file in the S3 bucket
     };
 
     // Create a delete command for S3
@@ -27,12 +36,28 @@ async function deleteImageFromS3(id) {
     // Send the command to S3 to delete the file
     await s3.send(command);
 
-    console.log(`Image ${fileName} deleted from S3.`);
+    // Invalidate the CloudFront cache for the image
+    const invalidationParams = {
+      DistributionId: process.env.CLOUDFRONT_DISTRIBUTION_ID, // CloudFront Distribution ID
+      InvalidationBatch: {
+        CallerReference: cloudFrontPath, // Use a unique value like a timestamp
+        Paths: {
+          Quantity: 1,
+          Items: [cloudFrontPath], // CloudFront path (relative, not full URL)
+        },
+      },
+    };
+
+    const invalidationCommand = new CreateInvalidationCommand(invalidationParams);
+    await CloudFront.send(invalidationCommand);
+
+    console.log(`Image ${s3Key} deleted from S3 and CloudFront cache invalidated.`);
   } catch (error) {
     console.error("Error deleting image from S3:", error.message);
     throw error;
   }
 }
+
 
 // Function to search for products by name
 async function searchProductsByName(name) {

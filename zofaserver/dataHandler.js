@@ -3,7 +3,7 @@ require("dotenv").config();
 const axios = require("axios"); // Add this line to import axios
 const sharp = require("sharp"); // For image manipulation
 const admin = require("firebase-admin");
-const s3 = require('./aws'); // Adjust the path based on your project structure
+const s3 = require("./aws"); // Adjust the path based on your project structure
 
 // Configure database connection details (replace with your actual values)
 const pool = mysql.createPool({
@@ -208,14 +208,17 @@ async function addWhiteBackground(filePath, fileName) {
   }
 }
 
-
 async function sendNotificationToToken(fcmToken, title, body) {
   try {
+    // Add the RTL marker at the beginning of the body
+    const rtlMarker = "\u202B"; // Unicode for RTL mark
+    const rtlBody = rtlMarker + body;
+    
     // Prepare the notification payload
     const message = {
       notification: {
         title: title,
-        body: body,
+        body: rtlBody,
       },
       token: fcmToken, // Single FCM token
     };
@@ -230,7 +233,6 @@ async function sendNotificationToToken(fcmToken, title, body) {
     throw error; // Re-throw the error to be caught by the calling function
   }
 }
-
 
 async function getFcmTokenFromPhoneNumber(phoneNumber) {
   try {
@@ -284,7 +286,10 @@ async function addNewUser(user) {
 
 async function deleteUser(phoneNumber) {
   try {
-    const [result] = await pool.query("DELETE FROM users WHERE phone_number = ?", [phoneNumber]);
+    const [result] = await pool.query(
+      "DELETE FROM users WHERE phone_number = ?",
+      [phoneNumber]
+    );
     if (result.affectedRows === 0) {
       return { message: "User not found" };
     }
