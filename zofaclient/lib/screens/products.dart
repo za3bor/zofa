@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:zofa_client/models/category.dart';
 import 'package:zofa_client/models/product.dart';
@@ -526,13 +527,14 @@ class _ProductsScreenState extends State<ProductsScreen>
                                                 .withValues(alpha: 0.25),
                                             BlendMode.darken,
                                           ),
-                                          child: Image.network(
-                                            imageUrl,
+                                          child: CachedNetworkImage(
+                                            imageUrl: imageUrl,
                                             fit: BoxFit.cover,
                                             height: 150.w,
                                             width: double.infinity,
-                                            errorBuilder:
-                                                (context, error, stackTrace) {
+                                            placeholder: (context, url) =>
+                                                const CircularProgressIndicator(),
+                                            errorWidget: (context, url, error) {
                                               return Image.asset(
                                                 'assets/noimage.jpg',
                                                 fit: BoxFit.cover,

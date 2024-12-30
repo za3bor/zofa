@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:zofa_client/models/product.dart';
@@ -114,7 +115,7 @@ class _EditProductStockScreenState extends State<EditProductStockScreen> {
     });
   }
 
-    double calculateAspectRatio(BuildContext context) {
+  double calculateAspectRatio(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     // Adjust the multiplier (0.6) to fine-tune the aspect ratio
@@ -130,7 +131,7 @@ class _EditProductStockScreenState extends State<EditProductStockScreen> {
     final aspectRatio = screenWidth / screenHeight;
 
     // Define a threshold for foldable device detection
-    print('Aspect ratio: $aspectRatio'  'Screen width: $screenWidth');
+    print('Aspect ratio: $aspectRatio' 'Screen width: $screenWidth');
     return aspectRatio > 2.0 || screenWidth > 500;
   }
 
@@ -179,14 +180,14 @@ class _EditProductStockScreenState extends State<EditProductStockScreen> {
                               crossAxisSpacing: 10.w,
                               mainAxisSpacing: 10.h,
                               childAspectRatio: isFoldableDevice(context)
-                                ? calculateAspectRatio(context) * 0.44.h
-                                : calculateAspectRatio(context) * 0.47.h,
+                                  ? calculateAspectRatio(context) * 0.44.h
+                                  : calculateAspectRatio(context) * 0.47.h,
                             ),
                             itemCount: _filteredProducts.length,
                             itemBuilder: (ctx, index) {
                               final product = _filteredProducts[index];
                               final imageUrl =
-                                  'https://f003.backblazeb2.com/file/zofapic/${product.id}.jpg';
+                                  'https://d1qq705dywrog2.cloudfront.net/images/${product.id}.jpeg';
 
                               return Card(
                                 shape: RoundedRectangleBorder(
@@ -204,38 +205,21 @@ class _EditProductStockScreenState extends State<EditProductStockScreen> {
                                       // Product Image
                                       ClipRRect(
                                         borderRadius: BorderRadius.circular(10),
-                                        child: Image.network(
-                                          imageUrl,
+                                        child: CachedNetworkImage(
+                                          imageUrl: imageUrl,
                                           fit: BoxFit.cover,
                                           height: 150,
                                           width: double.infinity,
-                                          loadingBuilder: (BuildContext context,
-                                              Widget child,
-                                              ImageChunkEvent?
-                                                  loadingProgress) {
-                                            if (loadingProgress == null) {
-                                              return child;
-                                            }
-                                            return Center(
-                                              child: CircularProgressIndicator(
-                                                value: loadingProgress
-                                                            .expectedTotalBytes !=
-                                                        null
-                                                    ? loadingProgress
-                                                            .cumulativeBytesLoaded /
-                                                        (loadingProgress
-                                                                .expectedTotalBytes ??
-                                                            1)
-                                                    : null,
-                                              ),
-                                            );
-                                          },
-                                          errorBuilder: (BuildContext context,
-                                              Object error,
-                                              StackTrace? stackTrace) {
-                                            return const Icon(
-                                              Icons.broken_image,
-                                              size: 50,
+                                          placeholder: (context, url) =>
+                                              const Center(
+                                            child: CircularProgressIndicator(),
+                                          ),
+                                          errorWidget: (context, url, error) {
+                                            return Image.asset(
+                                              'assets/noimage.jpg',
+                                              fit: BoxFit.cover,
+                                              height: 150.w,
+                                              width: double.infinity,
                                             );
                                           },
                                         ),
