@@ -7,6 +7,8 @@ import 'package:zofa_client/admin/widgets/custom_elevated_but.dart';
 import 'package:zofa_client/screens/tabs.dart';
 import 'package:zofa_client/widgets/snow_layer.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:http/http.dart' as http;
+import 'package:zofa_client/constant.dart';
 
 class AdminMainPageScreen extends StatelessWidget {
   const AdminMainPageScreen({super.key});
@@ -20,7 +22,7 @@ class AdminMainPageScreen extends StatelessWidget {
     final aspectRatio = screenWidth / screenHeight;
 
     // Define a threshold for foldable device detection
-    print('Aspect ratio: $aspectRatio'  'Screen width: $screenWidth');
+    print('Aspect ratio: $aspectRatio' 'Screen width: $screenWidth');
     return aspectRatio > 2.0 || screenWidth > 500;
   }
 
@@ -43,9 +45,9 @@ class AdminMainPageScreen extends StatelessWidget {
             mainAxisSpacing: 16.0.w, // Adjusted spacing for a cleaner look
             crossAxisSpacing: 16.0.h, // Adjusted spacing
             childAspectRatio: isFoldableDevice(context)
-                                ? 1.15.w
-                                : 1.4.w, // Slightly adjusted aspect ratio
-            children: const [
+                ? 1.15.w
+                : 1.4.w, // Slightly adjusted aspect ratio
+            children: const[
               CustomElevatedButton(
                 label: 'מוצרים',
                 targetPage: ProductFuncScreen(),

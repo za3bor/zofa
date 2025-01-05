@@ -57,22 +57,26 @@ class AboutAppScreen extends StatelessWidget {
                 CrossAxisAlignment.start, // Align content to the right
             children: [
               // App name
-              const Text(
+              Text(
                 'שם האפליקציה: Zofa Health Shop', // App name in Hebrew
+                style: Theme.of(context).textTheme.bodyMedium,
               ),
               SizedBox(height: 20.h),
-              const Text(
+              Text(
                 'גרסה: 3.02.4', // App name in Hebrew
+                style: Theme.of(context).textTheme.bodyMedium,
               ),
               SizedBox(height: 20.h),
               // Developer name
-              const Text(
+              Text(
                 'מפתח: פאדי סרור', // Developer's name in Hebrew
+                style: Theme.of(context).textTheme.bodyMedium,
               ),
               SizedBox(height: 20.h),
               // Contact section title
-              const Text(
+              Text(
                 'צור קשר:',
+                style: Theme.of(context).textTheme.bodyMedium,
               ),
               SizedBox(height: 20.h),
               // LinkedIn link
@@ -88,8 +92,9 @@ class AboutAppScreen extends StatelessWidget {
                   SizedBox(width: 8.w),
                   GestureDetector(
                     onTap: () => _launchURL(linkedinUrl),
-                    child: const Text(
+                    child: Text(
                       'פאדי סרור', // LinkedIn name in Hebrew
+                      style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ),
                 ],
@@ -109,8 +114,9 @@ class AboutAppScreen extends StatelessWidget {
                   SizedBox(width: 8.w),
                   GestureDetector(
                     onTap: () => _launchURL(emailUrl),
-                    child: const Text(
+                    child: Text(
                       'fadisrour.zarbor@gmail.com', // Email address in Hebrew
+                      style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ),
                 ],

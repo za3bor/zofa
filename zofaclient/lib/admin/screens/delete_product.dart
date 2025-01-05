@@ -24,7 +24,7 @@ class _DeleteProductScreenState extends State<DeleteProductScreen> {
 
     try {
       final response = await http
-          .delete(Uri.parse('http://$ipAddress:3000/api/deleteProduct/$id'));
+          .delete(Uri.parse('http://$ipAddress/api/deleteProduct/$id'));
 
       if (response.statusCode == 200) {
         // Successfully deleted
@@ -115,12 +115,16 @@ class _DeleteProductScreenState extends State<DeleteProductScreen> {
               if (_message.isNotEmpty)
                 Text(
                   _message,
-                  style: const TextStyle(color: Colors.green),
+                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                        color: Colors.green,
+                      ),
                 ),
               if (_error.isNotEmpty)
                 Text(
                   _error,
-                  style: const TextStyle(color: Colors.red),
+                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                        color: Colors.red,
+                      ),
                 ),
             ],
           ),

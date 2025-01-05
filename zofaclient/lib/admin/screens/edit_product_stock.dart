@@ -39,7 +39,7 @@ class _EditProductStockScreenState extends State<EditProductStockScreen> {
 
     try {
       final response = await http.get(
-        Uri.parse('http://$ipAddress:3000/api/getAllProducts'),
+        Uri.parse('http://$ipAddress/api/getAllProducts'),
       );
 
       if (response.statusCode == 200) {
@@ -79,7 +79,7 @@ class _EditProductStockScreenState extends State<EditProductStockScreen> {
   Future<void> _updateProductStock(int productId, bool stock) async {
     try {
       final response = await http.patch(
-        Uri.parse('http://$ipAddress:3000/api/updateStock/$productId'),
+        Uri.parse('http://$ipAddress/api/updateStock/$productId'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'stock': stock ? 1 : 0}),
       );
@@ -233,6 +233,9 @@ class _EditProductStockScreenState extends State<EditProductStockScreen> {
                                           product.name,
                                           maxLines: 3,
                                           overflow: TextOverflow.ellipsis,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium,
                                         ),
                                       ),
                                       SizedBox(height: 5.h),
@@ -241,6 +244,9 @@ class _EditProductStockScreenState extends State<EditProductStockScreen> {
                                       Center(
                                         child: Text(
                                           '₪${product.price.toStringAsFixed(1)}',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium,
                                         ),
                                       ),
                                       SizedBox(height: 5.h),

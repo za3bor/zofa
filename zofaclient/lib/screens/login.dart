@@ -82,39 +82,45 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Login'),
+        title: const Text('התחברות'),
       ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0.w),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Enter your name and phone number:'),
-            SizedBox(height: 10.h),
-            TextField(
-              controller: _nameController,
-              decoration: const InputDecoration(
-                labelText: 'Name',
-                border: OutlineInputBorder(),
+      body: Directionality(
+        textDirection: TextDirection.rtl,
+        child: Padding(
+          padding: EdgeInsets.all(16.0.w),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'הזן את שמך ומספר הטלפון שלך:',
+                style: Theme.of(context).textTheme.bodyLarge,
               ),
-            ),
-            SizedBox(height: 10.h),
-            TextField(
-              controller: _phoneController,
-              keyboardType: TextInputType.phone,
-              decoration: const InputDecoration(
-                labelText: 'Phone Number',
-                border: OutlineInputBorder(),
+              SizedBox(height: 10.h),
+              TextField(
+                controller: _nameController,
+                decoration: const InputDecoration(
+                  labelText: 'שם',
+                  border: OutlineInputBorder(),
+                ),
               ),
-            ),
-            SizedBox(height: 20.h),
-            _isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : ElevatedButton(
-                    onPressed: _proceedToOtp,
-                    child: const Text('Proceed to OTP'),
-                  ),
-          ],
+              SizedBox(height: 10.h),
+              TextField(
+                controller: _phoneController,
+                keyboardType: TextInputType.phone,
+                decoration: const InputDecoration(
+                  labelText: 'מספר טלפון',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              SizedBox(height: 20.h),
+              _isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : ElevatedButton(
+                      onPressed: _proceedToOtp,
+                      child: const Text('המשך ל-OTP'),
+                    ),
+            ],
+          ),
         ),
       ),
     );

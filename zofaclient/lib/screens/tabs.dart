@@ -236,7 +236,7 @@ class TabsScreenState extends State<TabsScreen>
 
       // Proceed with account deletion after re-authentication
       final response = await http.delete(
-        Uri.parse('http://$ipAddress:3000/api/deleteUser/${user.phoneNumber}'),
+        Uri.parse('http://$ipAddress/api/deleteUser/${user.phoneNumber}'),
       );
 
       if (response.statusCode == 200) {
@@ -340,13 +340,13 @@ class TabsScreenState extends State<TabsScreen>
                             child: CircleAvatar(
                               radius: 8,
                               backgroundColor: Colors.red,
-                              child: Text(
-                                '$cartCount',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 12.sp,
-                                ),
-                              ),
+                              child: Text('$cartCount',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodySmall!
+                                      .copyWith(
+                                        color: Colors.white,
+                                      )),
                             ),
                           ),
                       ],
@@ -440,47 +440,54 @@ class TabsScreenState extends State<TabsScreen>
                 ),
                 ListTile(
                   leading: const Icon(Icons.home),
-                  title: const Text('צור קשר'),
+                  title: Text('צור קשר',
+                      style: Theme.of(context).textTheme.bodyLarge),
                   onTap: () {
                     _navigateToDrawerPage(ContactUsScreen());
                   },
                 ),
                 ListTile(
                   leading: const Icon(Icons.person),
-                  title: const Text('אודות האפליקציה'),
+                  title: Text('אודות האפליקציה',
+                      style: Theme.of(context).textTheme.bodyLarge),
                   onTap: () {
                     _navigateToDrawerPage(const AboutAppScreen());
                   },
                 ),
                 ListTile(
                   leading: const Icon(Icons.settings),
-                  title: const Text('הגדרות'),
+                  title: Text('הגדרות',
+                      style: Theme.of(context).textTheme.bodyLarge),
                   onTap: () {
                     _navigateToDrawerPage(const ShareAppScreen());
                   },
                 ),
                 ListTile(
                   leading: const Icon(Icons.notifications),
-                  title: const Text('הערות'),
+                  title: Text('הערות',
+                      style: Theme.of(context).textTheme.bodyLarge),
                   onTap: () {
                     _navigateToDrawerPage(const RateAppScreen());
                   },
                 ),
                 ListTile(
                   leading: const Icon(Icons.info),
-                  title: const Text('תנאי שימוש'),
+                  title: Text('תנאי שימוש',
+                      style: Theme.of(context).textTheme.bodyLarge),
                   onTap: () {
                     _navigateToDrawerPage(const TermOfUseScreen());
                   },
                 ),
                 ListTile(
                   leading: const Icon(Icons.logout),
-                  title: const Text('יציאה'),
+                  title: Text('יציאה',
+                      style: Theme.of(context).textTheme.bodyLarge),
                   onTap: _logout, // Call the logout method
                 ),
                 ListTile(
                   leading: const Icon(Icons.delete),
-                  title: const Text('מחק חשבון'),
+                  title: Text('מחק חשבון',
+                      style: Theme.of(context).textTheme.bodyLarge),
                   onTap: () {
                     _deleteAccount(context);
                   },

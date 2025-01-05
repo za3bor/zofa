@@ -40,13 +40,13 @@ class _BreadQuantityRowState extends State<BreadQuantityRow> {
     }
   }
 
-  
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 222, 210, 206), // Light background color
+        color:
+            const Color.fromARGB(255, 222, 210, 206), // Light background color
         borderRadius: BorderRadius.circular(12.r), // Rounded corners
         boxShadow: const [
           BoxShadow(
@@ -62,16 +62,16 @@ class _BreadQuantityRowState extends State<BreadQuantityRow> {
         children: [
           Text(
             widget.name,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           SizedBox(height: 8.h),
-          const Text(
+          Text(
             '(מעורבב עם קמח מלא בלי תוספת סוכר)',
-            style: TextStyle(
-              color: Color.fromARGB(255, 98, 98, 98),
-            ),
+            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                  color: const Color.fromARGB(255, 88, 88, 88),
+                ),
           ),
           SizedBox(height: 8.h),
           Row(
@@ -81,9 +81,9 @@ class _BreadQuantityRowState extends State<BreadQuantityRow> {
                 flex: 1,
                 child: Text(
                   '₪ ${widget.price.toStringAsFixed(2)}',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
               ),
               // Quantity control section
@@ -105,12 +105,10 @@ class _BreadQuantityRowState extends State<BreadQuantityRow> {
                       ),
                     ),
                     SizedBox(width: 8.w),
-                    Text(
-                      quantity.toString(),
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                    Text(quantity.toString(),
+                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                              fontWeight: FontWeight.bold,
+                            )),
                     SizedBox(width: 8.w),
                     InkWell(
                       onTap: decreaseQuantity,
@@ -134,6 +132,9 @@ class _BreadQuantityRowState extends State<BreadQuantityRow> {
                   alignment: Alignment.centerRight,
                   child: Text(
                     '${widget.quantity} יח',
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                 ),
               ),

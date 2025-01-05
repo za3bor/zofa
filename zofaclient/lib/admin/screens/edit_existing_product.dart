@@ -42,12 +42,13 @@ class _TextFieldDropdownPageState extends State<EditExistingProductScreen> {
   ];
 
   List<Category> _categories = []; // List to store fetched categories
-  final Map<int, bool> _categorySelections = {}; // Store selections for each category
+  final Map<int, bool> _categorySelections =
+      {}; // Store selections for each category
 
   Future<void> _fetchCategories() async {
     try {
-      final response = await http
-          .get(Uri.parse('http://$ipAddress:3000/api/getAllCategories'));
+      final response =
+          await http.get(Uri.parse('http://$ipAddress/api/getAllCategories'));
 
       if (response.statusCode == 200) {
         final jsonData = jsonDecode(response.body) as List;
@@ -76,8 +77,8 @@ class _TextFieldDropdownPageState extends State<EditExistingProductScreen> {
   Future<void> _fetchProductCategories() async {
     try {
       final barcode = _barcodeController.text; // Get the barcode from input
-      final response = await http.get(Uri.parse(
-          'http://$ipAddress:3000/api/getProductCategories/$barcode'));
+      final response = await http.get(
+          Uri.parse('http://$ipAddress/api/getProductCategories/$barcode'));
 
       if (response.statusCode == 200) {
         final List<dynamic> productCategories = jsonDecode(response.body);
@@ -127,7 +128,7 @@ class _TextFieldDropdownPageState extends State<EditExistingProductScreen> {
     if (fieldInEnglish != null && newWord.isNotEmpty && barcode.isNotEmpty) {
       try {
         final response = await http.post(
-          Uri.parse('http://$ipAddress:3000/api/updateProductField'),
+          Uri.parse('http://$ipAddress/api/updateProductField'),
           headers: <String, String>{
             'Content-Type': 'application/json',
           },
@@ -183,7 +184,7 @@ class _TextFieldDropdownPageState extends State<EditExistingProductScreen> {
       if (selectedCategoryIds.isNotEmpty) {
         final barcode = _barcodeController.text;
         final response = await http.post(
-          Uri.parse('http://$ipAddress:3000/api/saveProductCategories'),
+          Uri.parse('http://$ipAddress/api/saveProductCategories'),
           headers: <String, String>{
             'Content-Type': 'application/json',
           },
@@ -249,8 +250,12 @@ class _TextFieldDropdownPageState extends State<EditExistingProductScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Barcode TextField (Numbers only)
-                const Text(
+                Text(
                   'הכנס ברקוד:',
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyLarge!
+                      .copyWith(fontWeight: FontWeight.bold),
                 ),
                 TextField(
                   controller: _barcodeController,
@@ -261,7 +266,7 @@ class _TextFieldDropdownPageState extends State<EditExistingProductScreen> {
                   ),
                 ),
                 SizedBox(height: 20.h),
-        
+
                 // Button to check and set categories
                 ElevatedButton(
                   onPressed: _fetchProductCategories,
@@ -269,8 +274,12 @@ class _TextFieldDropdownPageState extends State<EditExistingProductScreen> {
                 ),
                 SizedBox(height: 20.h),
                 // New Word TextField
-                const Text(
+                Text(
                   'הכנס את הערך החדש:',
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyLarge!
+                      .copyWith(fontWeight: FontWeight.bold),
                 ),
                 TextField(
                   controller: _newWordController,
@@ -280,19 +289,27 @@ class _TextFieldDropdownPageState extends State<EditExistingProductScreen> {
                   ),
                 ),
                 SizedBox(height: 20.h),
-        
+
                 // DropdownButton for field selection
-                const Text(
+                Text(
                   'בחר:',
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyLarge!
+                      .copyWith(fontWeight: FontWeight.bold),
                 ),
                 DropdownButton<String>(
                   value: _selectedItem,
-                  hint: const Text('תבחר אופציה'),
+                  hint: Text('תבחר אופציה',
+                      style: Theme.of(context).textTheme.bodyMedium),
                   isExpanded: true,
                   items: _dropdownItems.map((String item) {
                     return DropdownMenuItem<String>(
                       value: item,
-                      child: Text(item),
+                      child: Text(
+                        item,
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
                     );
                   }).toList(),
                   onChanged: (String? newValue) {
@@ -302,23 +319,30 @@ class _TextFieldDropdownPageState extends State<EditExistingProductScreen> {
                   },
                 ),
                 SizedBox(height: 20.h),
-        
+
                 // Change Field Button (Moved above categories)
                 ElevatedButton(
                   onPressed: _updateProduct,
-                  child: const Text('תשנה'),
+                  child: const Text('שינוי'),
                 ),
                 SizedBox(height: 20.h),
-        
+
                 // Display Categories as Checkboxes
-                const Text(
+                Text(
                   'בחר קטגוריה/ות:',
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyLarge!
+                      .copyWith(fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 10.h),
                 Wrap(
                   children: _categories.map((category) {
                     return CheckboxListTile(
-                      title: Text(category.name),
+                      title: Text(
+                        category.name,
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
                       value: _categorySelections[category.id],
                       onChanged: (bool? value) {
                         setState(() {
@@ -329,7 +353,7 @@ class _TextFieldDropdownPageState extends State<EditExistingProductScreen> {
                   }).toList(),
                 ),
                 SizedBox(height: 20.h),
-        
+
                 // Save Categories Button
                 ElevatedButton(
                   onPressed: _saveCategoryChanges,

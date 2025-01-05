@@ -31,7 +31,7 @@ class _AddNewBreadState extends State<AddNewBread> {
       return;
     }
 
-    final url = Uri.parse('http://$ipAddress:3000/api/addNewBreadType');
+    final url = Uri.parse('http://$ipAddress/api/addNewBreadType');
     try {
       final response = await http.post(
         url,

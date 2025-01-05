@@ -21,7 +21,7 @@ class _AddNewCategoryState extends State<AddNewCategory> {
       return;
     }
 
-    final url = Uri.parse('http://$ipAddress:3000/api/addNewCategory');
+    final url = Uri.parse('http://$ipAddress/api/addNewCategory');
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},

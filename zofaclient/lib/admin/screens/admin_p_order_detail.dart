@@ -22,8 +22,8 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
 
   // Fetch product details by product ID
   Future<Map<String, dynamic>> fetchProductDetails(int productId) async {
-    final response = await http.get(
-        Uri.parse('http://$ipAddress:3000/api/getProductDetails/$productId'));
+    final response = await http
+        .get(Uri.parse('http://$ipAddress/api/getProductDetails/$productId'));
 
     if (response.statusCode == 200) {
       // Assuming the API returns a JSON object with product details
@@ -116,7 +116,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
       String phoneNumber, String title, String body) async {
     try {
       final response = await http.post(
-        Uri.parse('http://$ipAddress:3000/api/sendNotification'),
+        Uri.parse('http://$ipAddress/api/sendNotification'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'phoneNumber': phoneNumber,
@@ -145,7 +145,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   Future<void> deleteOrder(int orderId) async {
     try {
       final response = await http.delete(
-        Uri.parse('http://$ipAddress:3000/api/deleteProductOrder/$orderId'),
+        Uri.parse('http://$ipAddress/api/deleteProductOrder/$orderId'),
       );
 
       if (response.statusCode == 200) {
@@ -212,26 +212,34 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
             children: [
               Text(
                 'מספר הזמנה: ${widget.order.id}',
+                style: Theme.of(context).textTheme.bodyMedium,
               ),
               SizedBox(height: 10.h),
               Text(
                 'שם הלקוח: ${widget.order.userName}',
+                style: Theme.of(context).textTheme.bodyMedium,
               ),
               SizedBox(height: 10.h),
               Text(
                 'טלפון: ${widget.order.phoneNumber}',
+                style: Theme.of(context).textTheme.bodyMedium,
               ),
               SizedBox(height: 10.h),
               Text(
                 'סטטוס: ${widget.order.status}',
+                style: Theme.of(context).textTheme.bodyMedium,
               ),
               SizedBox(height: 10.h),
               Text(
                 'סך הכל: ₪${widget.order.totalPrice.toStringAsFixed(2)}',
+                style: Theme.of(context).textTheme.bodyMedium,
               ),
               SizedBox(height: 20.h),
-              const Text(
+              Text(
                 'פרטי ההזמנה:',
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
               SizedBox(height: 10.h),
               productDetailsList.isEmpty
@@ -292,16 +300,23 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                           product['name'],
                                           maxLines: 3,
                                           overflow: TextOverflow.ellipsis,
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                          ),
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium,
                                         ),
-                                        SizedBox(height: 8.h),
+                                        SizedBox(height: 2.h),
                                         Text(
                                           'כמות: ${product['quantity']}',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium,
                                         ),
+                                        SizedBox(height: 2.h),
                                         Text(
                                           'ברקוד: ${product['id']}',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium,
                                         ),
                                         SizedBox(height: 5.h),
                                       ],

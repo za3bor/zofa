@@ -44,8 +44,7 @@ class _CheckoutPageScreenState extends State<CheckoutPageScreen> {
             'name': product['name'],
             'quantity': parsedQty,
             'price': product['price'],
-            'imageUrl':
-                'https://d1qq705dywrog2.cloudfront.net/images/$id.jpeg',
+            'imageUrl': 'https://d1qq705dywrog2.cloudfront.net/images/$id.jpeg',
           });
         }
       } catch (e) {
@@ -60,8 +59,8 @@ class _CheckoutPageScreenState extends State<CheckoutPageScreen> {
 
   Future<Map<String, dynamic>?> _getProductDetails(int productId) async {
     try {
-      final response = await http.get(
-          Uri.parse('http://$ipAddress:3000/api/getProductDetails/$productId'));
+      final response = await http
+          .get(Uri.parse('http://$ipAddress/api/getProductDetails/$productId'));
       if (response.statusCode == 200) {
         Map<String, dynamic> productData = json.decode(response.body);
         double price = double.tryParse(productData['price'].toString()) ?? 0.0;
@@ -154,8 +153,9 @@ class _CheckoutPageScreenState extends State<CheckoutPageScreen> {
                       size: 150.h, // Adjust the size to your preference
                     ),
                     SizedBox(height: 20.h),
-                    const Text(
+                    Text(
                       'העגלה שלך ריקה!',
+                      style: Theme.of(context).textTheme.bodyLarge,
                     ),
                     SizedBox(height: 10.h),
                     ElevatedButton(
@@ -243,16 +243,25 @@ class _CheckoutPageScreenState extends State<CheckoutPageScreen> {
                                           item['name'],
                                           maxLines: 3,
                                           overflow: TextOverflow.ellipsis,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium,
                                         ),
-                                        SizedBox(height: 8.h),
+                                        SizedBox(height: 5.h),
                                         Text(
                                           'כמות: ${item['quantity']}',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium,
                                         ),
                                         SizedBox(height: 5.h),
                                         Directionality(
                                           textDirection: TextDirection.ltr,
                                           child: Text(
                                             '${item['quantity']} X ${item['price'].toStringAsFixed(2)} = ${totalPrice.toStringAsFixed(2)}₪',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyMedium,
                                           ),
                                         ),
                                         SizedBox(height: 5.h),
@@ -283,11 +292,17 @@ class _CheckoutPageScreenState extends State<CheckoutPageScreen> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text(
+                            Text(
                               'סה״כ:',
+                              style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                             ),
                             Text(
                               '₪${getTotalPrice().toStringAsFixed(2)}',
+                              style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                             ),
                           ],
                         ),

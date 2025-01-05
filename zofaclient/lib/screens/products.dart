@@ -70,7 +70,7 @@ class _ProductsScreenState extends State<ProductsScreen>
   void _initializeSocket() {
     // Initialize the socket connection
     _socket = IO.io(
-      'http://$ipAddress:3000', // Replace with your backend URL
+      'http://$ipAddress', // Replace with your backend URL
       IO.OptionBuilder()
           .setTransports(['websocket']) // Use WebSocket for the connection
           .build(),
@@ -119,7 +119,7 @@ class _ProductsScreenState extends State<ProductsScreen>
   Future<void> _fetchCategories() async {
     try {
       final response = await http.get(
-        Uri.parse('http://$ipAddress:3000/api/getAllCategories'),
+        Uri.parse('http://$ipAddress/api/getAllCategories'),
       );
 
       if (response.statusCode == 200) {
@@ -159,7 +159,7 @@ class _ProductsScreenState extends State<ProductsScreen>
 
     try {
       final response = await http.post(
-        Uri.parse('http://$ipAddress:3000/api/getProductsByCategory'),
+        Uri.parse('http://$ipAddress/api/getProductsByCategory'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'categoryIds': selectedCategoryIds}),
       );
@@ -398,9 +398,9 @@ class _ProductsScreenState extends State<ProductsScreen>
                       labelStyle: TextStyle(
                         color: _selectAll ? Colors.white : Colors.black,
                       ),
-                      side: const BorderSide(
-                        color: Color(0xFF7A6244),
-                        width: 1.5,
+                      side: BorderSide(
+                        color: const Color(0xFF7A6244),
+                        width: 1.5.w,
                       ),
                     ),
                   ),
@@ -452,9 +452,9 @@ class _ProductsScreenState extends State<ProductsScreen>
                               ? Colors.white
                               : Colors.black,
                         ),
-                        side: const BorderSide(
-                          color: Color(0xFF7A6244),
-                          width: 1.5,
+                        side: BorderSide(
+                          color: const Color(0xFF7A6244),
+                          width: 1.5.w,
                         ),
                       ),
                     );
@@ -475,6 +475,7 @@ class _ProductsScreenState extends State<ProductsScreen>
                               : _products.isEmpty
                                   ? 'אין מוצרים להצגה'
                                   : 'שגיאה בטעינת המוצרים, נסה שוב מאוחר יותר',
+                          style: Theme.of(context).textTheme.bodyMedium,
                         ),
                       )
                     : Padding(
@@ -555,7 +556,9 @@ class _ProductsScreenState extends State<ProductsScreen>
                                           top: 4.0.h),
                                       child: Text(
                                         product.name,
-                                        style: TextStyle(fontSize: 14.sp),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium,
                                         overflow: TextOverflow.ellipsis,
                                         maxLines: 2,
                                       ),
@@ -564,7 +567,9 @@ class _ProductsScreenState extends State<ProductsScreen>
                                     Center(
                                       child: Text(
                                         '₪ ${product.price.toStringAsFixed(1)}',
-                                        style: TextStyle(fontSize: 14.sp),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium,
                                       ),
                                     ),
                                     const Spacer(),
@@ -573,16 +578,22 @@ class _ProductsScreenState extends State<ProductsScreen>
                                           MainAxisAlignment.center,
                                       children: [
                                         IconButton(
-                                          icon: Icon(Icons.add, size: 18.sp),
+                                          icon: const Icon(
+                                            Icons.add,
+                                          ),
                                           onPressed: () =>
                                               _incrementQuantity(product.id),
                                         ),
                                         Text(
                                           '${_productQuantities[product.id] ?? 0}',
-                                          style: TextStyle(fontSize: 14.sp),
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium,
                                         ),
                                         IconButton(
-                                          icon: Icon(Icons.remove, size: 18.sp),
+                                          icon: const Icon(
+                                            Icons.remove,
+                                          ),
                                           onPressed: () =>
                                               _decrementQuantity(product.id),
                                         ),

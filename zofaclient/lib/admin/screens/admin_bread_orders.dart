@@ -34,8 +34,7 @@ class _AdminBreadOrdersScreenState extends State<AdminBreadOrdersScreen> {
 
     try {
       final response = await http.get(
-        Uri.parse(
-            'http://$ipAddress:3000/api/getAllBreadOrders?day=${widget.day}'),
+        Uri.parse('http://$ipAddress/api/getAllBreadOrders?day=${widget.day}'),
       );
 
       if (response.statusCode == 200) {
@@ -106,7 +105,7 @@ class _AdminBreadOrdersScreenState extends State<AdminBreadOrdersScreen> {
       });
 
       final response = await http.delete(
-        Uri.parse('http://$ipAddress:3000/api/deleteBreadOrder/$orderId'),
+        Uri.parse('http://$ipAddress/api/deleteBreadOrder/$orderId'),
       );
 
       if (response.statusCode == 200) {
@@ -134,7 +133,7 @@ class _AdminBreadOrdersScreenState extends State<AdminBreadOrdersScreen> {
       });
 
       final response = await http.post(
-        Uri.parse('http://$ipAddress:3000/api/setBreadOrderStatus'),
+        Uri.parse('http://$ipAddress/api/setBreadOrderStatus'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'id': orderId,
@@ -181,28 +180,28 @@ class _AdminBreadOrdersScreenState extends State<AdminBreadOrdersScreen> {
   }
 
   // Function to send notification to backend
-Future<void> sendNotification(String phoneNumber, String title, String body) async {
-  try {
-    final response = await http.post(
-      Uri.parse('http://$ipAddress:3000/api/sendNotification'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'phoneNumber': phoneNumber,
-        'title': title,
-        'body': body,
-      }),
-    );
+  Future<void> sendNotification(
+      String phoneNumber, String title, String body) async {
+    try {
+      final response = await http.post(
+        Uri.parse('http://$ipAddress/api/sendNotification'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'phoneNumber': phoneNumber,
+          'title': title,
+          'body': body,
+        }),
+      );
 
-    if (response.statusCode == 200) {
-      _showSnackbar('ההודעה נשלחה בהצלחה');
-    } else {
-      throw Exception('Failed to send notification');
+      if (response.statusCode == 200) {
+        _showSnackbar('ההודעה נשלחה בהצלחה');
+      } else {
+        throw Exception('Failed to send notification');
+      }
+    } catch (e) {
+      _showSnackbar('שגיאה בשליחת ההודעה: ${e.toString()}');
     }
-  } catch (e) {
-    _showSnackbar('שגיאה בשליחת ההודעה: ${e.toString()}');
   }
-}
-
 
   void _showSnackbar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -224,13 +223,19 @@ Future<void> sendNotification(String phoneNumber, String title, String body) asy
               ? Center(
                   child: Text(
                     _errorMessage!,
-                    style: const TextStyle(fontSize: 18, color: Colors.red),
+                    style: const TextStyle(
+                      fontSize: 18,
+                      color: Colors.red,
+                    ),
                   ),
                 )
               : _breadOrders.isEmpty
-                  ? const Center(
+                  ? Center(
                       child: Text(
                         '.אין הזמנות זמינות להיום',
+                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
                       ),
                     )
                   : Directionality(
@@ -240,8 +245,14 @@ Future<void> sendNotification(String phoneNumber, String title, String body) asy
                         children: [
                           Padding(
                             padding: EdgeInsets.only(bottom: 20.0.h),
-                            child: const Text(
+                            child: Text(
                               'סיכום כמות לחמים להיום:',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge!
+                                  .copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                             ),
                           ),
                           ...breadQuantityMap.entries.map((entry) {
@@ -249,7 +260,8 @@ Future<void> sendNotification(String phoneNumber, String title, String body) asy
                               margin: EdgeInsets.symmetric(vertical: 8.0.w),
                               child: ListTile(
                                 title: Text(
-                                  '${entry.key}: ${entry.value} יחידות',
+                                  '${entry.key}: \n ${entry.value} יחידות',
+                                  style: Theme.of(context).textTheme.bodyMedium,
                                 ),
                                 contentPadding: EdgeInsets.symmetric(
                                     vertical: 10.h, horizontal: 16.w),
@@ -257,8 +269,12 @@ Future<void> sendNotification(String phoneNumber, String title, String body) asy
                             );
                           }),
                           SizedBox(height: 20.h),
-                          const Text(
+                          Text(
                             'הזמנות לחם:',
+                            style:
+                                Theme.of(context).textTheme.bodyLarge!.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                    ),
                           ),
                           SizedBox(height: 10.h),
                           ListView.builder(
@@ -272,20 +288,50 @@ Future<void> sendNotification(String phoneNumber, String title, String body) asy
                               bool isShipped = order.status == 'שלח';
 
                               return Card(
-                                margin:
-                                    EdgeInsets.symmetric(vertical: 10.0.h),
+                                margin: EdgeInsets.symmetric(vertical: 10.0.h),
                                 child: Padding(
                                   padding: EdgeInsets.all(16.0.w),
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text('שם משתמש: ${order.userName}'),
-                                      Text('טלפון: ${order.phoneNumber}'),
-                                      Text('פרטי הזמנה: ${order.orderDetails}'),
                                       Text(
-                                          'סכום סופי: ₪${order.totalPrice.toStringAsFixed(2)}'),
-                                      Text('סטטוס: ${order.status}'),
+                                        'שם משתמש: ${order.userName}',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium,
+                                      ),
+                                      Text(
+                                        'טלפון: ${order.phoneNumber}',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium,
+                                      ),
+                                      Text(
+                                        'פרטי הזמנה: ${order.orderDetails}',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium,
+                                      ),
+                                      Text(
+                                        'סכום סופי: ₪${order.totalPrice.toStringAsFixed(2)}',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium,
+                                      ),
+                                      Text(
+                                        'סטטוס: ${order.status}',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium!
+                                            .copyWith(
+                                              color: isShipped
+                                                  ? Colors.green
+                                                  : isReady
+                                                      ? Colors.blue
+                                                      : Colors.black,
+                                            ),
+                                      ),
                                       SizedBox(height: 10.h),
                                       Row(
                                         mainAxisAlignment:
@@ -312,7 +358,7 @@ Future<void> sendNotification(String phoneNumber, String title, String body) asy
                                                         'ההזמנה שלך יצאה למשלוח',
                                                         'שלום ${order.userName}, ההזמנה שלך יצאה למשלוח');
                                                     sendWhatsApp(
-                                                       order.phoneNumber,
+                                                        order.phoneNumber,
                                                         'ההזמנה מוכנה');
                                                   },
                                             child: const Text('שלח'),

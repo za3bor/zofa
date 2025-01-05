@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:zofa_client/admin/screens/admin_main_page.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:pin_code_fields/pin_code_fields.dart';
 
 class OtpLoginScreen extends StatefulWidget {
   final String phoneNumber;
@@ -117,31 +118,71 @@ class _OtpLoginScreenState extends State<OtpLoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Enter OTP'),
+        title: const Text('הזן את קוד האימות'),
       ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0.w),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('A verification code has been sent to ${widget.phoneNumber}.'),
-            SizedBox(height: 10.h),
-            TextField(
-              controller: _otpController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'Enter OTP',
-                border: OutlineInputBorder(),
+      body: Directionality(
+        textDirection: TextDirection.rtl,
+        child: Padding(
+          padding: EdgeInsets.all(16.0.w),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'קוד אימות נשלח למספר ${widget.phoneNumber}.',
+                style: Theme.of(context).textTheme.bodyMedium, // Text style
               ),
-            ),
-            SizedBox(height: 20.h),
-            _isVerifyingOtp
-                ? const Center(child: CircularProgressIndicator())
-                : ElevatedButton(
-                    onPressed: _verifyOtp,
-                    child: const Text('Verify OTP'),
+              SizedBox(height: 20.h),
+              Directionality(
+                textDirection: TextDirection.ltr,
+                child: PinCodeTextField(
+                  backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                  appContext: context,
+                  length: 6, // Number of OTP digits
+                  controller: _otpController,
+                  keyboardType: TextInputType.number,
+                  obscureText: false,
+                  animationType: AnimationType.fade,
+                  pinTheme: PinTheme(
+                    shape: PinCodeFieldShape
+                        .underline, // Use underline shape for lines
+                    borderRadius:
+                        BorderRadius.zero, // No rounding, keep it a line
+                    fieldHeight: 50.h, // Height of each field (line)
+                    fieldWidth: 40.w, // Width of each field (line's length)
+                    activeColor: Theme.of(context)
+                        .colorScheme
+                        .primary, // Active underline color
+                    selectedColor: Theme.of(context)
+                        .colorScheme
+                        .secondary, // Selected underline color
+                    inactiveColor:Theme.of(context).primaryColor, // Inactive underline color
+                    activeFillColor:
+                        Theme.of(context).scaffoldBackgroundColor,
+                    selectedFillColor: Theme.of(context).scaffoldBackgroundColor,
+                    inactiveFillColor:
+                        Theme.of(context).scaffoldBackgroundColor,
                   ),
-          ],
+                  cursorColor: Theme.of(context).colorScheme.primary,
+                  animationDuration: const Duration(milliseconds: 300),
+                  enableActiveFill: true, // Enable filled style for the input
+                  onChanged: (value) {
+                    // Handle input changes
+                  },
+                  onCompleted: (value) {
+                    // Optionally handle OTP complete
+                    print("Completed OTP: $value");
+                  },
+                ),
+              ),
+              SizedBox(height: 20.h),
+              _isVerifyingOtp
+                  ? const Center(child: CircularProgressIndicator())
+                  : ElevatedButton(
+                      onPressed: _verifyOtp,
+                      child: const Text('אמת קוד'),
+                    ),
+            ],
+          ),
         ),
       ),
     );

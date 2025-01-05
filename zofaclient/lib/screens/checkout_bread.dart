@@ -60,7 +60,7 @@ class _CheckoutBreadScreenState extends State<CheckoutBreadScreen> {
       return;
     }
 
-    final url = Uri.parse('http://$ipAddress:3000/api/addNewBreadOrder');
+    final url = Uri.parse('http://$ipAddress/api/addNewBreadOrder');
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -104,6 +104,7 @@ class _CheckoutBreadScreenState extends State<CheckoutBreadScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false, // Prevent resizing when keyboard appears
       appBar: AppBar(
         flexibleSpace: const SnowLayer(), // Snow falling in the appBar
         title: const Text(
@@ -115,103 +116,118 @@ class _CheckoutBreadScreenState extends State<CheckoutBreadScreen> {
         child: Stack(
           children: [
             // Background Image
-            Positioned.fill(
+            SizedBox(
+              height: double
+                  .infinity, // Ensures the background image fills the whole screen
               child: Image.asset(
-                'assets/background.jpg', // Path to your background image
-                fit: BoxFit.cover, // Cover the entire screen
+                'assets/background.jpg',
+                fit: BoxFit.cover,
               ),
             ),
             // Foreground Content
             SingleChildScrollView(
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  minHeight: MediaQuery.of(context)
-                      .size
-                      .height, // Ensure it fills the screen
-                ),
-                child: Padding(
-                  padding: EdgeInsets.all(16.w),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Card(
-                        margin: EdgeInsets.only(bottom: 16.h),
-                        child: Padding(
-                          padding: EdgeInsets.all(16.w),
-                          child: Column(
-                            children: [
-                              const Text(
-                                'פריטים שנבחרו:',
-                              ),
-                              SizedBox(height: 8.h),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: widget.selectedItems.map((entry) {
-                                  double itemTotal =
-                                      entry.key.price * entry.value;
-                                  return Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Padding(
-                                        padding: EdgeInsets.symmetric(
-                                            vertical: 8.w),
-                                        child: Text(
-                                          entry.key
-                                              .name, // Directly using the variable
-                                        ),
+              child: Padding(
+                padding: EdgeInsets.all(16.w),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Card(
+                      margin: EdgeInsets.only(bottom: 16.h),
+                      child: Padding(
+                        padding: EdgeInsets.all(16.w),
+                        child: Column(
+                          children: [
+                            Text(
+                              'פריטים שנבחרו:',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium!
+                                  .copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                            ),
+                            SizedBox(height: 8.h),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: widget.selectedItems.map((entry) {
+                                double itemTotal =
+                                    entry.key.price * entry.value;
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(vertical: 8.w),
+                                      child: Text(
+                                        entry.key
+                                            .name, // Directly using the variable
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium,
                                       ),
-                                      Row(
-                                        children: [
-                                          Directionality(
-                                            textDirection: TextDirection.ltr,
-                                            child: Text(
-                                              '${entry.value} X ${entry.key.price.toStringAsFixed(2)} = ${itemTotal.toStringAsFixed(2)} ₪',
-                                            ),
+                                    ),
+                                    Row(
+                                      children: [
+                                        Directionality(
+                                          textDirection: TextDirection.ltr,
+                                          child: Text(
+                                            '${entry.value} X ${entry.key.price.toStringAsFixed(2)} = ${itemTotal.toStringAsFixed(2)} ₪',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyMedium,
                                           ),
-                                        ],
-                                      ),
-                                      Divider(
-                                        color: Colors.grey,
-                                        thickness: 1.h,
-                                        height: 20.h,
-                                      ),
-                                    ],
-                                  );
-                                }).toList(),
-                              ),
-                              SizedBox(height: 10.h),
-                              Text(
-                                'סה"כ: ₪ ${totalPrice().toStringAsFixed(2)}',
-                              ),
-                              SizedBox(height: 5.h),
-                              const Text(
-                                'תשלום וקבלה רק בחנות',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.redAccent,
-                                ),
-                              ),
-                            ],
-                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Divider(
+                                      color: Colors.grey,
+                                      thickness: 1.h,
+                                      height: 20.h,
+                                    ),
+                                  ],
+                                );
+                              }).toList(),
+                            ),
+                            SizedBox(height: 10.h),
+                            Text(
+                              'סה"כ: ₪ ${totalPrice().toStringAsFixed(2)}',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium!
+                                  .copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                            ),
+                            SizedBox(height: 5.h),
+                            Text(
+                              'תשלום וקבלה רק בחנות',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium!
+                                  .copyWith(
+                                    color: Colors.red,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                            ),
+                          ],
                         ),
                       ),
-                      SizedBox(height: 16.h),
-                      TextField(
-                        controller: _nameController,
-                        decoration: const InputDecoration(
-                          labelText: 'שם',
-                        ),
+                    ),
+                    SizedBox(height: 16.h),
+                    TextField(
+                      controller: _nameController,
+                      decoration: const InputDecoration(
+                        labelText: 'שם',
                       ),
-                      SizedBox(height: 16.h),
-                      ElevatedButton(
-                        onPressed: _saveBreadOrder,
-                        child: const Text(
-                          'שלח',
-                        ),
+                    ),
+                    SizedBox(height: 16.h),
+                    ElevatedButton(
+                      onPressed: _saveBreadOrder,
+                      child: const Text(
+                        'שלח',
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),

@@ -11,6 +11,7 @@ const pool = mysql.createPool({
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
+  charset: 'utf8mb4',   // Ensure the character set is utf8mb4
 });
 
 async function addNewCategory(category) {

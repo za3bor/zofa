@@ -15,13 +15,15 @@ class DeleteCategory extends StatefulWidget {
 
 class _DeleteCategoryState extends State<DeleteCategory> {
   List<Category> _categories = []; // List to hold categories
-  final Map<int, bool> _categorySelections = {}; // Map to track selections for categories
+  final Map<int, bool> _categorySelections =
+      {}; // Map to track selections for categories
   int? _selectedCategoryId; // Store the selected category's ID
 
   // Fetch categories from the server
   Future<void> _fetchCategories() async {
     try {
-      final response = await http.get(Uri.parse('http://$ipAddress:3000/api/getAllCategories'));
+      final response =
+          await http.get(Uri.parse('http://$ipAddress/api/getAllCategories'));
 
       if (response.statusCode == 200) {
         final jsonData = jsonDecode(response.body) as List;
@@ -29,8 +31,10 @@ class _DeleteCategoryState extends State<DeleteCategory> {
         setState(() {
           _categories = jsonData.map((item) {
             return Category(
-              id: item['id'], // Assuming 'id' is the correct key for category ID
-              name: item['name'], // Assuming 'name' is the correct key for category name
+              id: item[
+                  'id'], // Assuming 'id' is the correct key for category ID
+              name: item[
+                  'name'], // Assuming 'name' is the correct key for category name
             );
           }).toList();
 
@@ -54,7 +58,8 @@ class _DeleteCategoryState extends State<DeleteCategory> {
       return;
     }
 
-    final url = Uri.parse('http://$ipAddress:3000/api/deleteCategory/$_selectedCategoryId');
+    final url =
+        Uri.parse('http://$ipAddress/api/deleteCategory/$_selectedCategoryId');
     final response = await http.delete(url);
 
     if (!mounted) {
@@ -114,7 +119,10 @@ class _DeleteCategoryState extends State<DeleteCategory> {
               SizedBox(height: 5.h),
               // Dropdown to select category
               DropdownButton<int>(
-                hint: const Text('בחר קטגוריה'),
+                hint: Text(
+                  'בחר קטגוריה',
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
                 value: _selectedCategoryId,
                 onChanged: (int? newValue) {
                   setState(() {
@@ -124,7 +132,10 @@ class _DeleteCategoryState extends State<DeleteCategory> {
                 items: _categories.map((category) {
                   return DropdownMenuItem<int>(
                     value: category.id,
-                    child: Text(category.name),
+                    child: Text(
+                      category.name,
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
                   );
                 }).toList(),
               ),

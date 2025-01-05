@@ -17,7 +17,8 @@ class CustomElevatedButton extends StatelessWidget {
       style: ElevatedButton.styleFrom(
         padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 12.w),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12.r), // Rounded corners for a modern look
+          borderRadius:
+              BorderRadius.circular(12.r), // Rounded corners for a modern look
         ),
       ),
       onPressed: () {
@@ -26,7 +27,14 @@ class CustomElevatedButton extends StatelessWidget {
           MaterialPageRoute(builder: (context) => targetPage),
         );
       },
-      child: Text(label, textAlign: TextAlign.center),
+      child: Text(
+        label,
+        textAlign: TextAlign.center,
+        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.bold
+            ),
+        ),
     );
   }
 }

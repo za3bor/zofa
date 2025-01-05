@@ -95,8 +95,8 @@ class _BreadOrderScreenState extends State<BreadOrderScreen> {
       errorMessage = null; // Reset error message before fetching data
     });
     try {
-      final response = await http
-          .get(Uri.parse('http://$ipAddress:3000/api/showAllBreadTypes'));
+      final response =
+          await http.get(Uri.parse('http://$ipAddress/api/showAllBreadTypes'));
       if (response.statusCode == 200) {
         final jsonData = jsonDecode(response.body) as List;
         setState(() {
@@ -172,8 +172,9 @@ class _BreadOrderScreenState extends State<BreadOrderScreen> {
                     children: [
                       const CircularProgressIndicator(), // Spinner
                       SizedBox(height: 16.h),
-                      const Text(
+                      Text(
                         'טוען נתונים, אנא המתן...', // "Loading data, please wait..."
+                        style: Theme.of(context).textTheme.bodyMedium,
                       ),
                     ],
                   ),
@@ -189,6 +190,12 @@ class _BreadOrderScreenState extends State<BreadOrderScreen> {
                             children: [
                               Text(
                                 'הזמנת לחם ליום $day', // "Bread order for $day"
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge!
+                                    .copyWith(
+                                      fontWeight: FontWeight.bold,
+                                    ),
                               ),
                               SizedBox(height: 16.h),
                               // Display the bread list with quantity rows
@@ -208,20 +215,22 @@ class _BreadOrderScreenState extends State<BreadOrderScreen> {
                                 );
                               }),
                               Padding(
-                                padding: EdgeInsets.all(16.0.w),
+                                padding: EdgeInsets.only(
+                                  top: 6.h,
+                                  left: 8.w,
+                                  right: 8.w,
+                                ),
                                 child: SizedBox(
-                                  child: SizedBox(
-                                    width: double
-                                        .infinity, // Makes the button full-width
-                                    child: ElevatedButton(
-                                      onPressed: isButtonEnabled
-                                          ? () {
-                                              addToCart(context);
-                                            }
-                                          : null,
-                                      child: Text(
-                                        buttonText, // Button text based on the time restriction
-                                      ),
+                                  width: double
+                                      .infinity, // Makes the button full-width
+                                  child: ElevatedButton(
+                                    onPressed: isButtonEnabled
+                                        ? () {
+                                            addToCart(context);
+                                          }
+                                        : null,
+                                    child: Text(
+                                      buttonText, // Button text based on the time restriction
                                     ),
                                   ),
                                 ),

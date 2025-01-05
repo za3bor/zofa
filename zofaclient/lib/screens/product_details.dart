@@ -25,8 +25,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   }
 
   Future<Map<String, dynamic>> fetchProductDetails(int productId) async {
-    final response = await http.get(
-        Uri.parse('http://$ipAddress:3000/api/getProductDetails/$productId'));
+    final response = await http
+        .get(Uri.parse('http://$ipAddress/api/getProductDetails/$productId'));
     print(response.body);
     if (response.statusCode == 200) {
       return json.decode(response.body); // Return product details as a Map
@@ -137,11 +137,19 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                         SizedBox(height: 20.h),
 
                         // Stock information
-                        if (stock == 0)
-                          const Text(
+                        if (stock == 0) ...[
+                          Text(
                             'המוצר אזל מהמלאי',
-                            style: TextStyle(color: Colors.red),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium!
+                                .copyWith(
+                                  color: Colors.red,
+                                  fontWeight: FontWeight.bold,
+                                ),
                           ),
+                          SizedBox(height: 8.h),
+                        ],
 
                         // Product Data Sections
                         if (productData['name'] != null &&
@@ -354,11 +362,12 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                           color: Colors.black,
                           thickness: 2.h,
                         ),
-                        const Text(
+                        Text(
                           'אין להסתמך על הפירוט המופיע באפליקציה על מרכיבי המוצר, יתכנו טעויות או אי התאמות במידע, הנתונים המדויקים מופיעים על גבי המוצר. יש לבדוק שוב את הנתונים על גבי אריזת המוצר לפני השימוש.',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium!.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                         ),
                         SizedBox(height: 12.h),
                       ],
@@ -380,6 +389,10 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
       children: [
         Text(
           title,
+          style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                fontWeight: FontWeight.bold,
+                fontSize: 17.sp,
+              ),
         ),
         Divider(thickness: 1.h, color: Colors.black),
       ],
@@ -394,12 +407,16 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           padding: EdgeInsets.all(8.0.w),
           child: Text(
             title,
+            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
           ),
         ),
         Padding(
           padding: EdgeInsets.all(8.0.w),
           child: Text(
             value,
+            style: Theme.of(context).textTheme.bodyMedium,
           ),
         ),
       ],

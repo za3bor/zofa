@@ -31,7 +31,7 @@ class _NotesScreenState extends State<NotesScreen> {
     });
     try {
       final response =
-          await http.get(Uri.parse('http://$ipAddress:3000/api/getAllNotes'));
+          await http.get(Uri.parse('http://$ipAddress/api/getAllNotes'));
       print('Response Status: ${response.statusCode}');
       print('Response Body: ${response.body}');
       if (response.statusCode == 200) {
@@ -93,7 +93,7 @@ class _NotesScreenState extends State<NotesScreen> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://$ipAddress:3000/api/addNewNote'),
+        Uri.parse('http://$ipAddress/api/addNewNote'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'content': _controller.text}),
       );
@@ -135,7 +135,7 @@ class _NotesScreenState extends State<NotesScreen> {
   Future<void> _deleteNote(int id) async {
     try {
       final response = await http.delete(
-        Uri.parse('http://$ipAddress:3000/api/deleteNote/$id'),
+        Uri.parse('http://$ipAddress/api/deleteNote/$id'),
       );
 
       // Log the response status and body for debugging
@@ -246,7 +246,10 @@ class _NotesScreenState extends State<NotesScreen> {
                                       _notes[index].content[0].toUpperCase(),
                                     ),
                                   ),
-                                  title: Text(_notes[index].content),
+                                  title: Text(_notes[index].content,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyLarge),
                                 ),
                               );
                             },

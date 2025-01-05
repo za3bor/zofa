@@ -88,7 +88,7 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
 
     final request = http.MultipartRequest(
       'POST',
-      Uri.parse('http://$ipAddress:3000/api/uploadPicture'),
+      Uri.parse('http://$ipAddress/api/uploadPicture'),
     );
 
     request.fields['filename'] = barcode;
@@ -129,8 +129,8 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
 
   Future<void> _fetchCategories() async {
     try {
-      final response = await http
-          .get(Uri.parse('http://$ipAddress:3000/api/getAllCategories'));
+      final response =
+          await http.get(Uri.parse('http://$ipAddress/api/getAllCategories'));
 
       if (response.statusCode == 200) {
         final jsonData = jsonDecode(response.body) as List;
@@ -236,7 +236,7 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
 
       try {
         final response = await http.post(
-          Uri.parse('http://$ipAddress:3000/api/addNewProduct'),
+          Uri.parse('http://$ipAddress/api/addNewProduct'),
           headers: {"Content-Type": "application/json"},
           body: jsonEncode(product),
         );
@@ -356,8 +356,9 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
 
                 // Switches for product status
                 SwitchListTile(
-                  title: const Text(
+                  title: Text(
                     'במלאי',
+                    style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   value: _inStock,
                   onChanged: (value) => setState(() => _inStock = value),
@@ -365,8 +366,9 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
                 SizedBox(height: 10.h),
 
                 SwitchListTile(
-                  title: const Text(
+                  title: Text(
                     'משקה',
+                    style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   value: _isDrink,
                   onChanged: (value) => setState(() => _isDrink = value),
@@ -374,8 +376,9 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
                 SizedBox(height: 10.h),
 
                 SwitchListTile(
-                  title: const Text(
+                  title: Text(
                     'בזוראת',
+                    style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   value: _isSeeds,
                   onChanged: (value) => setState(() => _isSeeds = value),
@@ -383,10 +386,13 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
                 SizedBox(height: 10.h),
 
                 // Categories as SwitchListTiles
-                const Padding(
+                Padding(
                   padding: EdgeInsets.symmetric(vertical: 10.0),
                   child: Text(
                     'קטגוריות',
+                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                 ),
                 SizedBox(height: 10.h),
@@ -405,14 +411,19 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
                     },
                   );
                 }),
-                const Text(
+                SizedBox(height: 12.h),
+                Text(
                   'סימנים',
+                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
                 SizedBox(height: 10.h),
 
                 SwitchListTile(
-                  title: const Text(
+                  title: Text(
                     'נתרו',
+                    style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   value: _containsSodium,
                   onChanged: (value) => setState(() => _containsSodium = value),
@@ -420,8 +431,9 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
                 SizedBox(height: 10.h),
 
                 SwitchListTile(
-                  title: const Text(
+                  title: Text(
                     'סוכר',
+                    style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   value: _containsSugar,
                   onChanged: (value) => setState(() => _containsSugar = value),
@@ -429,8 +441,9 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
                 SizedBox(height: 10.h),
 
                 SwitchListTile(
-                  title: const Text(
+                  title: Text(
                     'שומן',
+                    style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   value: _containsFat,
                   onChanged: (value) => setState(() => _containsFat = value),
@@ -438,8 +451,9 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
                 SizedBox(height: 10.h),
 
                 SwitchListTile(
-                  title: const Text(
+                  title: Text(
                     'ירוק',
+                    style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   value: _isGreen,
                   onChanged: (value) => setState(() => _isGreen = value),
@@ -460,8 +474,9 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
                 SizedBox(height: 10.h),
 
                 SwitchListTile(
-                  title: const Text(
+                  title: Text(
                     'מתוכם',
+                    style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   value: _ofWhichF,
                   onChanged: (value) => setState(() => _ofWhichF = value),
@@ -499,8 +514,9 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
                 SizedBox(height: 10.h),
 
                 SwitchListTile(
-                  title: const Text(
+                  title: Text(
                     'מתוכם',
+                    style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   value: _ofWhichC,
                   onChanged: (value) => setState(() => _ofWhichC = value),

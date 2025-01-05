@@ -31,7 +31,7 @@ class _CouponsScreenState extends State<CouponsScreen> {
   Future<void> _fetchCoupons() async {
     try {
       final response =
-          await http.get(Uri.parse('http://$ipAddress:3000/api/getAllCoupons'));
+          await http.get(Uri.parse('http://$ipAddress/api/getAllCoupons'));
       if (response.statusCode == 200) {
         final List<dynamic> couponsData = jsonDecode(response.body);
         setState(() {
@@ -84,7 +84,7 @@ class _CouponsScreenState extends State<CouponsScreen> {
         }
 
         final response = await http.post(
-          Uri.parse('http://$ipAddress:3000/api/addNewCoupon'),
+          Uri.parse('http://$ipAddress/api/addNewCoupon'),
           headers: {'Content-Type': 'application/json'},
           body: jsonEncode({
             'code': _codeController.text,
@@ -147,7 +147,7 @@ class _CouponsScreenState extends State<CouponsScreen> {
   Future<void> _deleteCoupon(int id) async {
     try {
       final response = await http.delete(
-        Uri.parse('http://$ipAddress:3000/api/deleteCoupon/$id'),
+        Uri.parse('http://$ipAddress/api/deleteCoupon/$id'),
       );
 
       if (response.statusCode == 200) {
@@ -222,9 +222,12 @@ class _CouponsScreenState extends State<CouponsScreen> {
             ),
             // Check if there are any coupons
             _coupons.isEmpty
-                ? const Expanded(
+                ? Expanded(
                     child: Center(
-                      child: Text('No coupons available'),
+                      child: Text(
+                        'No coupons available',
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
                     ),
                   )
                 : Expanded(
@@ -246,9 +249,14 @@ class _CouponsScreenState extends State<CouponsScreen> {
                             _deleteCoupon(_coupons[index].id);
                           },
                           child: ListTile(
-                            title: Text(_coupons[index].code),
-                            subtitle:
-                                Text('הנחה: ${_coupons[index].percentage}%'),
+                            title: Text(
+                              _coupons[index].code,
+                              style: Theme.of(context).textTheme.bodyLarge,
+                            ),
+                            subtitle: Text(
+                              'הנחה: ${_coupons[index].percentage}%',
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            ),
                           ),
                         );
                       },

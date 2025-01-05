@@ -49,93 +49,112 @@ class ContactUsScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text("צור קשר"),
       ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0.w),
-        child: SingleChildScrollView(
-          // Ensures the screen is scrollable
-          child: Column(
-            children: [
-              // Phone Number Section
-              _buildSectionTitle("מספר טלפון"),
-              SizedBox(height: 8.h),
-              _buildCard(
-                child: GestureDetector(
-                  onTap: () => _launchUrl(context, Uri.parse("tel:+123456789"),
-                      Uri.parse("tel:+123456789")),
-                  child: const Text(
-                    "+123 456 789",
-                  ),
-                ),
-              ),
-              SizedBox(height: 24.h),
-
-              // Follow Us Section
-              _buildSectionTitle("עקוב אחרינו"),
-              SizedBox(height: 8.h),
-              _buildCard(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _buildIconButton(
-                      iconUrl:
-                          "https://img.icons8.com/ios-glyphs/60/000000/instagram-new.png",
-                      onPressed: () =>
-                          _launchUrl(context, instagramAppUrl, instagramWebUrl),
-                    ),
-                    _buildIconButton(
-                      iconUrl:
-                          "https://img.icons8.com/ios-filled/50/000000/tiktok.png",
-                      onPressed: () =>
-                          _launchUrl(context, tiktokAppUrl, tiktokWebUrl),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 24.h),
-
-              // Location Section
-              _buildSectionTitle("המיקום שלנו"),
-              SizedBox(height: 8.h),
-              _buildCard(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _buildIconButton(
-                      iconUrl:
-                          "https://img.icons8.com/color/48/000000/waze.png",
-                      onPressed: () =>
-                          _launchUrl(context, wazeAppUrl, wazeWebUrl),
-                    ),
-                    _buildIconButton(
-                      iconUrl:
-                          "https://img.icons8.com/ios-filled/50/000000/google-maps.png",
-                      onPressed: () => _launchUrl(
-                          context, googleMapsAppUrl, googleMapsWebUrl),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 24.h),
-
-              // Opening Hours Section
-              _buildSectionTitle("שעות פתיחה"),
-              SizedBox(height: 4.h),
-              Directionality(
-                textDirection: TextDirection.rtl,
-                child: _buildCard(
-                  child: const Text(
-                    "ראשון: סגור\n"
-                    "שני - חמישי:\n"
-                    "10:00 - 15:00\n"
-                    "16:00 - 20:00\n"
-                    "שישי - שבת:\n"
-                    "20:00 - 10:00",
-                  ),
-                ),
-              ),
-            ],
+      body: Stack(
+        children: [
+          SizedBox(
+            height: double
+                .infinity, // Ensures the background image fills the whole screen
+            child: Image.asset(
+              'assets/background.jpg',
+              fit: BoxFit.cover,
+            ),
           ),
-        ),
+          Padding(
+            padding: EdgeInsets.all(16.0.w),
+            child: SingleChildScrollView(
+              // Ensures the screen is scrollable
+              child: Column(
+                children: [
+                  // Phone Number Section
+                  _buildSectionTitle("מספר טלפון"),
+                  SizedBox(height: 8.h),
+                  _buildCard(
+                    child: GestureDetector(
+                      onTap: () => _launchUrl(
+                        context,
+                        Uri.parse("tel:+123456789"),
+                        Uri.parse("tel:+123456789"),
+                      ),
+                      child: Text(
+                        "+123 456 789",
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 24.h),
+
+                  // Follow Us Section
+                  _buildSectionTitle("עקוב אחרינו"),
+                  SizedBox(height: 8.h),
+                  _buildCard(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        _buildIconButton(
+                          iconUrl:
+                              "https://img.icons8.com/ios-glyphs/60/000000/instagram-new.png",
+                          onPressed: () => _launchUrl(
+                              context, instagramAppUrl, instagramWebUrl),
+                        ),
+                        _buildIconButton(
+                          iconUrl:
+                              "https://img.icons8.com/ios-filled/50/000000/tiktok.png",
+                          onPressed: () =>
+                              _launchUrl(context, tiktokAppUrl, tiktokWebUrl),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 24.h),
+
+                  // Location Section
+                  _buildSectionTitle("המיקום שלנו"),
+                  SizedBox(height: 8.h),
+                  _buildCard(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        _buildIconButton(
+                          iconUrl:
+                              "https://img.icons8.com/color/48/000000/waze.png",
+                          onPressed: () =>
+                              _launchUrl(context, wazeAppUrl, wazeWebUrl),
+                        ),
+                        _buildIconButton(
+                          iconUrl:
+                              "https://img.icons8.com/ios-filled/50/000000/google-maps.png",
+                          onPressed: () => _launchUrl(
+                              context, googleMapsAppUrl, googleMapsWebUrl),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 24.h),
+
+                  // Opening Hours Section
+                  _buildSectionTitle("שעות פתיחה"),
+                  SizedBox(height: 4.h),
+                  Directionality(
+                    textDirection: TextDirection.rtl,
+                    child: _buildCard(
+                      child: Text(
+                        "ראשון: סגור\n"
+                        "שני - חמישי:\n"
+                        "10:00 - 15:00\n"
+                        "16:00 - 20:00\n"
+                        "שישי - שבת:\n"
+                        "20:00 - 10:00",
+                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                              fontSize: 16.sp,
+                            ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -143,6 +162,10 @@ class ContactUsScreen extends StatelessWidget {
   Widget _buildSectionTitle(String title) {
     return Text(
       title,
+      style: TextStyle(
+        fontSize: 21.sp,
+        fontWeight: FontWeight.bold,
+      ),
     );
   }
 

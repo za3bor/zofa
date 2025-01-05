@@ -37,7 +37,12 @@ ThemeData buildThemeData() {
         color: textColor,
       ),
       bodyMedium: GoogleFonts.rubik(
-        fontSize: 15.0.sp,
+        fontSize: 16.0.sp,
+        fontWeight: FontWeight.normal,
+        color: textColor,
+      ),
+      bodySmall: GoogleFonts.rubik(
+        fontSize: 12.0.sp,
         fontWeight: FontWeight.normal,
         color: textColor,
       ),
@@ -62,7 +67,7 @@ ThemeData buildThemeData() {
         backgroundColor: primaryColor,
         foregroundColor: Colors.white,
         textStyle: GoogleFonts.rubik(
-          fontSize: 16.0.sp,
+          fontSize: 17.0.sp,
           fontWeight: FontWeight.w600,
         ),
         shape: RoundedRectangleBorder(
@@ -107,7 +112,8 @@ ThemeData buildThemeData() {
         fontWeight: FontWeight.bold,
       ),
       unselectedLabelStyle: GoogleFonts.rubik(
-        fontSize: 12.sp,
+        fontSize: 11.sp,
+        fontWeight: FontWeight.normal,
       ),
     ),
 
@@ -126,6 +132,15 @@ ThemeData buildThemeData() {
       ),
       prefixIconColor: primaryColor,
       suffixIconColor: primaryColor,
+    ),
+
+    snackBarTheme: SnackBarThemeData(
+      backgroundColor: accentColor,
+      contentTextStyle: GoogleFonts.rubik(
+        color: Colors.black,
+        fontSize: 14.sp,
+      ),
+      actionTextColor: accentColor,
     ),
 
 // Switch Theme

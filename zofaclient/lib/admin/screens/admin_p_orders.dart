@@ -20,7 +20,7 @@ class _ProductOrdersScreenState extends State<ProductOrdersScreen> {
   Future<void> getOrders() async {
     try {
       final response = await http
-          .get(Uri.parse('http://$ipAddress:3000/api/getAllProductOrders'));
+          .get(Uri.parse('http://$ipAddress/api/getAllProductOrders'));
 
       // Check status code and print the response body for debugging
       if (response.statusCode == 200) {
@@ -74,12 +74,11 @@ class _ProductOrdersScreenState extends State<ProductOrdersScreen> {
         child: Padding(
           padding: EdgeInsets.all(16.0.w),
           child: _productOrders.isEmpty
-              ? Center(
+              ? const Center(
                   child: Text(
                     'אין הזמנות זמינות.',
                     style: TextStyle(
                       fontSize: 18,
-                      color: Colors.grey[600],
                     ),
                   ),
                 )

@@ -32,7 +32,6 @@ class ProductFuncScreen extends StatelessWidget {
       appBar: AppBar(
         flexibleSpace:
             const SnowLayer(), // Directly use SnowLayer without Container
-
         title: const Text(
           'לוח בקרה למוצרים',
         ),
@@ -46,8 +45,8 @@ class ProductFuncScreen extends StatelessWidget {
             mainAxisSpacing: 16.0.w, // Adjusted spacing for a cleaner look
             crossAxisSpacing: 16.0.h, // Adjusted spacing
             childAspectRatio: isFoldableDevice(context)
-                                ? 1.15.w
-                                : 1.4.w, // Slightly adjusted aspect ratio
+                ? 1.15.w
+                : 1.4.w, // Slightly adjusted aspect ratio
             children: const [
               CustomElevatedButton(
                 label: 'הוספת קטגוריה חדשה',
