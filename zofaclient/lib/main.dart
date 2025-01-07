@@ -11,6 +11,8 @@ import 'package:zofa_client/theme_data.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:http/http.dart' as http;
+import 'package:zofa_client/constant.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -62,13 +64,26 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   final NotificationService _notificationService = NotificationService();
 
-  final List<String> adminPhoneNumbers = [
-    '+972525707415', '+11234567890', // Example admin phone numbers
-  ];
-
   @override
   void initState() {
     super.initState();
+  }
+
+  Future<bool> _checkAdmin(String phone) async {
+    try {
+      final response = await http.get(
+        Uri.parse('http://$ipAddress/api/checkAdmin/$phone'),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return data['exists']; // Return true or false
+      } else {
+        return false; // Return false if the API call fails
+      }
+    } catch (e) {
+      return false; // Return false if there's an error during the request
+    }
   }
 
   @override
@@ -82,13 +97,30 @@ class _MainScreenState extends State<MainScreen> {
       return const SignupScreen();
     }
 
-    // Check if the logged-in user is an admin
-    bool isAdmin = adminPhoneNumbers.contains(user.phoneNumber);
+    // Use FutureBuilder to handle async operation and show loading state
+    return FutureBuilder<bool>(
+      future: _checkAdmin(user.phoneNumber ?? ''),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
 
-    return Scaffold(
-      body: isAdmin
-          ? const AdminMainPageScreen() // Show admin screen for admin devices
-          : const TabsScreen(), // Show non-admin screen for non-admin devices
+        if (snapshot.hasError) {
+          return Scaffold(
+            body: Center(child: Text('Error: ${snapshot.error}')),
+          );
+        }
+
+        if (snapshot.hasData && snapshot.data == true) {
+          // If the phone number belongs to an admin
+          return const AdminMainPageScreen();
+        } else {
+          // If the phone number does not belong to an admin
+          return const TabsScreen();
+        }
+      },
     );
   }
 }

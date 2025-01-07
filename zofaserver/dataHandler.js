@@ -11,7 +11,7 @@ const pool = mysql.createPool({
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  charset: 'utf8mb4',   // Ensure the character set is utf8mb4
+  charset: "utf8mb4", // Ensure the character set is utf8mb4
 });
 
 async function addNewCategory(category) {
@@ -214,7 +214,7 @@ async function sendNotificationToToken(fcmToken, title, body) {
     // Add the RTL marker at the beginning of the body
     const rtlMarker = "\u202B"; // Unicode for RTL mark
     const rtlBody = rtlMarker + body;
-    
+
     // Prepare the notification payload
     const message = {
       notification: {
@@ -301,6 +301,77 @@ async function deleteUser(phoneNumber) {
   }
 }
 
+async function getAllAdmins() {
+  try {
+    const [rows] = await pool.query("SELECT * FROM admins");
+    if (rows.length === 0) {
+      return { message: "No admins found" };
+    }
+    return rows;
+  } catch (err) {
+    console.error("Error fetching admins:", err.message);
+    throw { message: err.message || "Error fetching admins" };
+  }
+}
+
+async function addAdmin(admin) {
+  const { name, phoneNumber } = admin;
+
+  try {
+    // Check if admin already exists
+    const checkQuery = "SELECT * FROM admins WHERE phone_number = ?";
+    const [existingAdmin] = await pool.query(checkQuery, [phoneNumber]);
+
+    if (existingAdmin.length > 0) {
+      return { message: "Admin with this phone number already exists" };
+    }
+
+    // Insert new admin
+    const insertQuery = "INSERT INTO admins (name, phone_number) VALUES (?, ?)";
+    const [result] = await pool.query(insertQuery, [name, phoneNumber]);
+    return { message: "Admin added successfully", id: result.insertId };
+  } catch (err) {
+    console.error("Error adding admin:", err.message);
+    throw { message: err.message || "Error adding admin" };
+  }
+}
+
+async function deleteAdmin(phoneNumber) {
+  try {
+    // Check if admin exists
+    const checkQuery = "SELECT * FROM admins WHERE phone_number = ?";
+    const [existingAdmin] = await pool.query(checkQuery, [phoneNumber]);
+
+    if (existingAdmin.length === 0) {
+      return { message: "Admin with this phone number does not exist" };
+    }
+
+    // Delete admin
+    const deleteQuery = "DELETE FROM admins WHERE phone_number = ?";
+    const [result] = await pool.query(deleteQuery, [phoneNumber]);
+    return { message: "Admin deleted successfully" };
+  } catch (err) {
+    console.error("Error deleting admin:", err.message);
+    throw { message: err.message || "Error deleting admin" };
+  }
+}
+
+// Check if admin exists by phone number
+async function checkAdminByPhoneNumber(phoneNumber) {
+  try {
+    // Check if admin exists
+    const checkQuery = "SELECT * FROM admins WHERE phone_number = ?";
+    const [existingAdmin] = await pool.query(checkQuery, [phoneNumber]);
+
+    // Return true if admin exists, false if not
+    return existingAdmin.length > 0;  // true if admin exists, false if not
+  } catch (err) {
+    console.error("Error checking admin:", err.message);
+    throw { message: err.message || "Error checking admin" };
+  }
+}
+
+
 module.exports = {
   addNewCategory,
   getAllCategories,
@@ -318,4 +389,8 @@ module.exports = {
   getFcmTokenFromPhoneNumber,
   sendNotificationToToken,
   deleteUser,
+  addAdmin,
+  getAllAdmins,
+  deleteAdmin,
+  checkAdminByPhoneNumber,
 };

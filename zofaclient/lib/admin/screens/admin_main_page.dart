@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:zofa_client/admin/screens/add_admin.dart';
 import 'package:zofa_client/admin/screens/bread_func.dart';
 import 'package:zofa_client/admin/screens/coupons.dart';
 import 'package:zofa_client/admin/screens/notes.dart';
@@ -7,8 +8,6 @@ import 'package:zofa_client/admin/widgets/custom_elevated_but.dart';
 import 'package:zofa_client/screens/tabs.dart';
 import 'package:zofa_client/widgets/snow_layer.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:http/http.dart' as http;
-import 'package:zofa_client/constant.dart';
 
 class AdminMainPageScreen extends StatelessWidget {
   const AdminMainPageScreen({super.key});
@@ -47,7 +46,7 @@ class AdminMainPageScreen extends StatelessWidget {
             childAspectRatio: isFoldableDevice(context)
                 ? 1.15.w
                 : 1.4.w, // Slightly adjusted aspect ratio
-            children: const[
+            children: const [
               CustomElevatedButton(
                 label: 'מוצרים',
                 targetPage: ProductFuncScreen(),
@@ -67,6 +66,10 @@ class AdminMainPageScreen extends StatelessWidget {
               CustomElevatedButton(
                 label: 'קופונים',
                 targetPage: CouponsScreen(),
+              ),
+              CustomElevatedButton(
+                label: 'מנהלים',
+                targetPage: AddAdminScreen(),
               ),
             ],
           ),

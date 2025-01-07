@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart'; // Import for FCM
-import 'package:http/http.dart' as http;
 import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:http/http.dart' as http;
 import 'package:zofa_client/constant.dart';
 import 'package:zofa_client/admin/screens/admin_main_page.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:zofa_client/screens/tabs.dart';
 
 class OtpSignupScreen extends StatefulWidget {
   final String phoneNumber;
@@ -23,6 +24,23 @@ class _OtpSignupScreenState extends State<OtpSignupScreen> {
   String verificationId = ''; // Store the verification ID
   bool _isSendingOtp = false; // Loading indicator for sending OTP
   bool _isVerifyingOtp = false; // Loading indicator for verifying OTP
+
+  Future<bool> _checkAdmin(String phone) async {
+    try {
+      final response = await http.get(
+        Uri.parse('http://$ipAddress/api/checkAdmin/$phone'),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return data['exists']; // Return true or false
+      } else {
+        return false; // Return false if the API call fails
+      }
+    } catch (e) {
+      return false; // Return false if there's an error during the request
+    }
+  }
 
   Future<void> _saveNewUser(String fcmToken) async {
     try {
@@ -91,6 +109,7 @@ class _OtpSignupScreenState extends State<OtpSignupScreen> {
 
   // Function to verify OTP
   Future<void> _verifyOtp() async {
+    User? user = FirebaseAuth.instance.currentUser;
     String otp = _otpController.text.trim();
     if (otp.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -119,10 +138,17 @@ class _OtpSignupScreenState extends State<OtpSignupScreen> {
         print('Failed to retrieve FCM token');
       }
 
+      // Check if the phone number is an admin
+      bool isAdmin = await _checkAdmin(user?.phoneNumber ?? '');
+
       if (mounted) {
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => const AdminMainPageScreen()),
+          MaterialPageRoute(
+            builder: (context) => isAdmin
+                ? const AdminMainPageScreen() // Show admin screen for admin devices
+                : const TabsScreen(),
+          ),
           (Route<dynamic> route) =>
               false, // This ensures all previous routes are removed
         );
@@ -168,7 +194,7 @@ class _OtpSignupScreenState extends State<OtpSignupScreen> {
             children: [
               Text('קוד אימות נשלח למספר ${widget.phoneNumber}.'),
               SizedBox(height: 10.h),
-                            Directionality(
+              Directionality(
                 textDirection: TextDirection.ltr,
                 child: PinCodeTextField(
                   backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -191,10 +217,11 @@ class _OtpSignupScreenState extends State<OtpSignupScreen> {
                     selectedColor: Theme.of(context)
                         .colorScheme
                         .secondary, // Selected underline color
-                    inactiveColor:Theme.of(context).primaryColor, // Inactive underline color
-                    activeFillColor:
+                    inactiveColor: Theme.of(context)
+                        .primaryColor, // Inactive underline color
+                    activeFillColor: Theme.of(context).scaffoldBackgroundColor,
+                    selectedFillColor:
                         Theme.of(context).scaffoldBackgroundColor,
-                    selectedFillColor: Theme.of(context).scaffoldBackgroundColor,
                     inactiveFillColor:
                         Theme.of(context).scaffoldBackgroundColor,
                   ),

@@ -26,7 +26,7 @@ const connection = mysql.createConnection({
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  charset: 'utf8mb4'
+  charset: "utf8mb4",
 });
 
 // Initialize Firebase Admin SDK
@@ -671,6 +671,63 @@ app.post("/api/addNewUser", async (req, res) => {
     }
   } catch (error) {
     res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+// Add a new admin
+app.post("/api/addAdmin", async (req, res) => {
+  const admin = req.body; // Pass the entire body as the admin object
+  try {
+    const result = await dataHandler.addAdmin(admin); // Use the admin object directly
+    if (result.message === "Admin with this phone number already exists") {
+      return res.status(409).json({ error: result.message });
+    }
+    res.status(201).json(result); // Return the success message
+  } catch (err) {
+    console.error("Error adding admin:", err.message);
+    res.status(500).json({ error: "Error adding admin" });
+  }
+});
+
+// Get all admins
+app.get("/api/getAllAdmins", async (req, res) => {
+  try {
+    const admins = await dataHandler.getAllAdmins();
+    if (admins.message === "No admins found") {
+      return res.status(404).json({ error: admins.message });
+    }
+    res.status(200).json(admins);
+  } catch (err) {
+    console.error("Error fetching admins:", err.message);
+    res.status(500).json({ error: "Error fetching admins" });
+  }
+});
+
+// Delete an admin by phone number
+app.delete("/api/deleteAdmin/:phoneNumber", async (req, res) => {
+  const { phoneNumber } = req.params;
+  try {
+    const result = await dataHandler.deleteAdmin(phoneNumber);
+    if (result.message === "Admin deleted successfully") {
+      res.status(200).json({ message: result.message });
+    } else {
+      res.status(404).json({ error: result.message });
+    }
+  } catch (err) {
+    console.error("Error deleting admin:", err.message);
+    res.status(500).json({ error: "Error deleting admin" });
+  }
+});
+
+// Check admin by phone number
+app.get("/api/checkAdmin/:phoneNumber", async (req, res) => {
+  const { phoneNumber } = req.params;
+  try {
+    const exists = await dataHandler.checkAdminByPhoneNumber(phoneNumber);
+    res.status(200).json({ exists });  // Return true or false in the response
+  } catch (err) {
+    console.error("Error checking admin:", err.message);
+    res.status(500).json({ error: "Error checking admin" });
   }
 });
 
