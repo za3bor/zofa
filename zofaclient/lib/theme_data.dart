@@ -102,21 +102,6 @@ ThemeData buildThemeData() {
       margin: EdgeInsets.symmetric(vertical: 12.h, horizontal: 12.w),
     ),
 
-    // BottomNavigationBar Theme
-    bottomNavigationBarTheme: BottomNavigationBarThemeData(
-      backgroundColor: primaryColor,
-      selectedItemColor: accentColor,
-      unselectedItemColor: Colors.white.withValues(alpha: 0.7),
-      selectedLabelStyle: GoogleFonts.rubik(
-        fontSize: 14.sp,
-        fontWeight: FontWeight.bold,
-      ),
-      unselectedLabelStyle: GoogleFonts.rubik(
-        fontSize: 11.sp,
-        fontWeight: FontWeight.normal,
-      ),
-    ),
-
     // Input Decoration Theme
     inputDecorationTheme: InputDecorationTheme(
       filled: true,

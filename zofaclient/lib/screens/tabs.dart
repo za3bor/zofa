@@ -17,6 +17,7 @@ import 'package:zofa_client/widgets/snow_layer.dart'; // Adjust the path accordi
 import 'package:http/http.dart' as http;
 import 'package:zofa_client/constant.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 
 class TabsScreen extends StatefulWidget {
   const TabsScreen({super.key});
@@ -404,19 +405,22 @@ class TabsScreenState extends State<TabsScreen>
         ],
       ),
       body: activePage,
-      bottomNavigationBar: BottomNavigationBar(
-        onTap: _selectPage,
-        currentIndex: _selectedPageIndex,
+      bottomNavigationBar: ConvexAppBar(
+        elevation: 10.0, // Adjust the shadow beneath the convex shape
+        curveSize: 120.0.w, // Size of the convex shape
+        top:
+            -15.0.h, // Adjusts the height of the curve apex (negative moves it higher)
+
+        style: TabStyle.flip,
+        backgroundColor: Theme.of(context).primaryColor,
+        color: Theme.of(context).colorScheme.secondary,
+        activeColor: Theme.of(context).colorScheme.secondary,
         items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.storefront),
-            label: 'מוצרים',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(FontAwesomeIcons.breadSlice),
-            label: 'לחם',
-          ),
+          TabItem(icon: Icons.storefront, title: 'מוצרים'),
+          TabItem(icon: FontAwesomeIcons.breadSlice, title: 'לחם'),
         ],
+        initialActiveIndex: _selectedPageIndex,
+        onTap: _selectPage,
       ),
       endDrawer: Drawer(
         child: Directionality(
