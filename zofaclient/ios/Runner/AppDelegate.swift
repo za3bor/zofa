@@ -1,6 +1,7 @@
 import UIKit
 import FirebaseCore
 import FirebaseMessaging
+import FirebaseAuth
 import Flutter
 
 @main
@@ -13,6 +14,9 @@ import Flutter
     // Configure Firebase
     FirebaseApp.configure()
 
+    // Configure Phone Authentication
+    self.setupPhoneAuth()
+
     // Register for remote notifications
     UNUserNotificationCenter.current().delegate = self
     application.registerForRemoteNotifications()
@@ -24,6 +28,13 @@ import Flutter
     Messaging.messaging().delegate = self
 
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+  }
+
+  // Configure Firebase Phone Authentication
+  private func setupPhoneAuth() {
+    // Ensure that the app supports reCAPTCHA verification
+    let settings = Auth.auth().settings
+    settings?.isAppVerificationDisabledForTesting = false // Disable for production use
   }
 
   // This method will be called when the app receives a push notification in the foreground
