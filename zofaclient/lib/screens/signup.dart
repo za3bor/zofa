@@ -32,7 +32,7 @@ class _SignupScreenState extends State<SignupScreen> {
       });
 
       // Format the phone number
-      phone = _formatPhoneNumber(phone);
+      //phone = _formatPhoneNumber(phone);
 
       Future.delayed(const Duration(seconds: 1), () {
         setState(() {

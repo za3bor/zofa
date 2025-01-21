@@ -1,13 +1,52 @@
 import UIKit
+import FirebaseCore
+import FirebaseMessaging
 import Flutter
 
 @main
-@objc class AppDelegate: FlutterAppDelegate {
+@objc class AppDelegate: FlutterAppDelegate, MessagingDelegate {
+
   override func application(
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
+    // Configure Firebase
+    FirebaseApp.configure()
+
+    // Register for remote notifications
+    UNUserNotificationCenter.current().delegate = self
+    application.registerForRemoteNotifications()
+
+    // Register Flutter plugins
     GeneratedPluginRegistrant.register(with: self)
+
+    // Set the Messaging delegate to self
+    Messaging.messaging().delegate = self
+
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+  }
+
+  // This method will be called when the app receives a push notification in the foreground
+  override func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                       willPresent notification: UNNotification,
+                                       withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+    // Show notification even when app is in foreground
+    completionHandler([.alert, .badge, .sound])
+  }
+
+  // This method is called when the app opens from a notification tap
+  override func application(_ application: UIApplication,
+                            didReceiveRemoteNotification userInfo: [AnyHashable : Any],
+                            fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+    Messaging.messaging().appDidReceiveMessage(userInfo)
+    completionHandler(UIBackgroundFetchResult.newData)
+  }
+
+  // Implement this method to receive the FCM token
+  func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
+    if let fcmToken = fcmToken {
+      print("FCM token received: \(fcmToken)")
+      // You can save the FCM token to your server or use it as needed
+    }
   }
 }
