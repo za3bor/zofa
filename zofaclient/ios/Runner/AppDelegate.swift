@@ -47,8 +47,13 @@ import Flutter
 
   // This method is called when the app opens from a notification tap
   override func application(_ application: UIApplication,
-                            didReceiveRemoteNotification userInfo: [AnyHashable : Any],
+                            didReceiveRemoteNotification userInfo: [AnyHashable: Any],
                             fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+    // Forward notification to Firebase Messaging
+    if Auth.auth().canHandleNotification(userInfo) {
+      completionHandler(.noData)
+      return
+    }
     Messaging.messaging().appDidReceiveMessage(userInfo)
     completionHandler(UIBackgroundFetchResult.newData)
   }
