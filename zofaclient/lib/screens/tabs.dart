@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zofa_client/screens/about_app.dart';
@@ -189,8 +190,7 @@ class TabsScreenState extends State<TabsScreen>
     );
   }
 
-// Refactored _reauthenticateUser
-  Future<void> _reauthenticateUser(BuildContext context) async {
+  Future<bool> _reauthenticateUser(BuildContext context) async {
     try {
       final user = FirebaseAuth.instance.currentUser;
 
@@ -198,26 +198,96 @@ class TabsScreenState extends State<TabsScreen>
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('No user is currently signed in.')),
         );
-        return;
+        return false; // Return false if no user is signed in
       }
 
-      // Step 2: Trigger phone number verification
+      // Trigger phone number verification
       await FirebaseAuth.instance.verifyPhoneNumber(
         phoneNumber: user.phoneNumber!,
-        verificationCompleted: (PhoneAuthCredential credential) =>
-            verificationCompleted(credential, context),
-        verificationFailed: (FirebaseAuthException error) =>
-            verificationFailed(error, context),
-        codeSent: (String verificationId, int? resendToken) =>
-            codeSent(verificationId, resendToken, context, user),
+        verificationCompleted: (PhoneAuthCredential credential) async {
+          await user.reauthenticateWithCredential(credential);
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Re-authentication successful')),
+            );
+          }
+        },
+        verificationFailed: (FirebaseAuthException error) {
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Verification failed: ${error.message}')),
+            );
+          }
+        },
+        codeSent: (String verificationId, int? resendToken) async {
+          final TextEditingController codeController = TextEditingController();
+
+          await showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: const Text('Enter SMS code'),
+                content: TextField(
+                  controller: codeController,
+                  decoration: const InputDecoration(labelText: 'SMS Code'),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () async {
+                      final smsCode = codeController.text.trim();
+                      if (smsCode.isNotEmpty) {
+                        final credential = PhoneAuthProvider.credential(
+                          verificationId: verificationId,
+                          smsCode: smsCode,
+                        );
+                        try {
+                          await user.reauthenticateWithCredential(credential);
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content:
+                                      Text('Re-authentication successful')),
+                            );
+                            Navigator.pop(context); // Close the dialog
+                          }
+                        } catch (e) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                  content:
+                                      Text('Re-authentication failed: $e')),
+                            );
+                          }
+                        }
+                      }
+                    },
+                    child: const Text('Submit'),
+                  ),
+                ],
+              );
+            },
+          );
+        },
         codeAutoRetrievalTimeout: (String verificationId) {},
       );
+
+      return true; // Return true if re-authentication succeeds
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error re-authenticating user: $e')),
         );
       }
+      return false; // Return false if an exception occurs
+    }
+  }
+
+  Future<void> _deleteFcmToken() async {
+    try {
+      await FirebaseMessaging.instance.deleteToken();
+      print("FCM token deleted successfully.");
+    } catch (e) {
+      print("Error deleting FCM token: $e");
     }
   }
 
@@ -225,55 +295,63 @@ class TabsScreenState extends State<TabsScreen>
     try {
       final user = FirebaseAuth.instance.currentUser;
 
-      if (user == null) {
+      if (user == null || user.phoneNumber == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('No user is currently signed in.')),
         );
         return;
       }
 
-      // Re-authenticate the user first
-      await _reauthenticateUser(context);
-
-      // Proceed with account deletion after re-authentication
-      final response = await http.delete(
-        Uri.parse('http://$ipAddress/api/deleteUser/${user.phoneNumber}'),
-      );
-
-      if (response.statusCode == 200) {
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('User deleted successfully')),
-          );
-        }
-      } else {
-        final message =
-            jsonDecode(response.body)['message'] ?? 'Failed to delete User';
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(message)),
-          );
-        }
+      // Step 1: Re-authenticate the user
+      final isReauthenticated = await _reauthenticateUser(context);
+      if (!isReauthenticated) {
+        return; // Stop if re-authentication fails
       }
 
-      // Clear Hive data for the user
+      // Step 2: Delete user data on the server
+      final response = await http
+          .delete(
+        Uri.parse('http://$ipAddress/api/deleteUser/${user.phoneNumber}'),
+      )
+          .timeout(Duration(seconds: 10), onTimeout: () {
+        throw Exception('Request timed out');
+      });
+
+      if (response.statusCode != 200) {
+        final body = jsonDecode(response.body);
+        final message = body is Map && body.containsKey('message')
+            ? body['message']
+            : 'Failed to delete user';
+        throw Exception(message);
+      }
+
+      // Step 3: Clear Hive data
       await _deleteHiveData();
 
-      // Firebase account deletion
+      // Step 4: Delete FCM token
+      await _deleteFcmToken();
+
+      // Step 5: Delete Firebase account
       await user.delete();
 
-      // Navigate to the signup screen and clear the navigation stack
+      // Step 6: Navigate to the signup screen
       if (context.mounted) {
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => const SignupScreen()),
-          (route) => false, // Removes all previous routes
+          (route) => false,
+        );
+      }
+
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('User deleted successfully')),
         );
       }
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Error: ${e.toString()}")),
+          SnackBar(content: Text('Error: ${e.toString()}')),
         );
       }
     }
@@ -408,8 +486,8 @@ class TabsScreenState extends State<TabsScreen>
       bottomNavigationBar: ConvexAppBar(
         elevation: 10.0, // Adjust the shadow beneath the convex shape
         curveSize: 120.0.w, // Size of the convex shape
-        top:
-            -15.0.h, // Adjusts the height of the curve apex (negative moves it higher)
+        top: -15.0
+            .h, // Adjusts the height of the curve apex (negative moves it higher)
 
         style: TabStyle.flip,
         backgroundColor: Theme.of(context).primaryColor,
