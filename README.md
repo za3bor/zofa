@@ -27,6 +27,7 @@ Set time constraints and inventory levels for bread orders, ensuring availabilit
 - Framework: Flutter
 - Programming Language: Dart
 - UI/UX: Responsive design for both customer and admin functionalities, supporting intuitive navigation and data entry.
+- Local Storage: Hive for storing local data.
 ## Backend
 - Framework: Node.js with Express.js
 - Database: MySQL
