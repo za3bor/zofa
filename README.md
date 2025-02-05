@@ -30,5 +30,12 @@ Set time constraints and inventory levels for bread orders, ensuring availabilit
 ## Backend
 - Framework: Node.js with Express.js
 - Database: MySQL
-- Storage
-Image Storage: B2 Cloud Storage for uploading and accessing product images.
+- Storage:
+  - Image Storage: Amazon S3 bucket with CloudFront for uploading and accessing product images
+- Authentication & Notifications:
+  - Firebase Phone Authentication for user login.
+  - Firebase Cloud Messaging for push notifications.
+- Real-Time Communication:
+  - Socket.io for real-time updates and interactions.
+- Hosting:
+  - Amazon ECS for server deployment.
