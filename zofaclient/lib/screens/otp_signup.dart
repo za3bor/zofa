@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart'; // Import for FCM
+import 'package:flutter/services.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:http/http.dart' as http;
 import 'package:zofa_client/constant.dart';
@@ -24,6 +25,8 @@ class _OtpSignupScreenState extends State<OtpSignupScreen> {
   String verificationId = ''; // Store the verification ID
   bool _isSendingOtp = false; // Loading indicator for sending OTP
   bool _isVerifyingOtp = false; // Loading indicator for verifying OTP
+  String? fcmToken; // Variable to store FCM token
+
 
   Future<bool> _checkAdmin(String phone) async {
     try {
@@ -171,6 +174,22 @@ class _OtpSignupScreenState extends State<OtpSignupScreen> {
   void initState() {
     super.initState();
     _sendOtp();
+        // Listen for the FCM token received from the iOS native side
+    FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
+      setState(() {
+        fcmToken = newToken; // Update the token when received
+      });
+    });
+
+    // Listen to MethodChannel to receive the token from iOS
+    const platform = MethodChannel('com.example.fcm');
+    platform.setMethodCallHandler((MethodCall call) async {
+      if (call.method == "onTokenReceived") {
+        setState(() {
+          fcmToken = call.arguments; // Update the FCM token
+        });
+      }
+    });
   }
 
   @override

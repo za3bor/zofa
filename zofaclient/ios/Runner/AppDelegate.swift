@@ -59,10 +59,14 @@ import Flutter
   }
 
   // Implement this method to receive the FCM token
-  func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
-    if let fcmToken = fcmToken {
-      print("FCM token received: \(fcmToken)")
-      // You can save the FCM token to your server or use it as needed
+    func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
+        if let fcmToken = fcmToken {
+            print("FCM token received: \(fcmToken)")
+            // Send token to Dart
+            let controller = UIApplication.shared.delegate?.window??.rootViewController as! FlutterViewController
+            let channel = FlutterMethodChannel(name: "com.example.fcm", binaryMessenger: controller.binaryMessenger)
+            channel.invokeMethod("onTokenReceived", arguments: fcmToken)
+        }
     }
-  }
+
 }

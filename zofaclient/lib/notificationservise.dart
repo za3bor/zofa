@@ -30,6 +30,7 @@ class NotificationService {
         _askUserToEnableNotifications(context);
       }
     }
+    _initializeFirebaseMessaging();
   }
 
   // Method to show a Snackbar
@@ -55,4 +56,15 @@ class NotificationService {
       }
     }
   }
+
+  void _initializeFirebaseMessaging() {
+  // Foreground message handler
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    if (message.notification != null) {
+      print('Message received: ${message.notification!.title}, ${message.notification!.body}');
+      // You can show a local notification or update UI accordingly
+    }
+  });
+}
+
 }
