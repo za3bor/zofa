@@ -225,23 +225,30 @@ class _EditProductStockScreenState extends State<EditProductStockScreen> {
                                       // Product Image
                                       ClipRRect(
                                         borderRadius: BorderRadius.circular(10),
-                                        child: CachedNetworkImage(
-                                          imageUrl: imageUrl,
-                                          fit: BoxFit.cover,
-                                          height: 150,
-                                          width: double.infinity,
-                                          placeholder: (context, url) =>
-                                              const Center(
-                                            child: CircularProgressIndicator(),
+                                        child: ColorFiltered(
+                                          colorFilter: ColorFilter.mode(
+                                            const Color.fromARGB(255, 148, 105, 90)
+                                                .withValues(alpha: 0.3),
+                                            BlendMode.darken,
                                           ),
-                                          errorWidget: (context, url, error) {
-                                            return Image.asset(
-                                              'assets/noimage.jpg',
-                                              fit: BoxFit.cover,
-                                              height: 150.w,
-                                              width: double.infinity,
-                                            );
-                                          },
+                                          child: CachedNetworkImage(
+                                            imageUrl: imageUrl,
+                                            fit: BoxFit.cover,
+                                            height: 150,
+                                            width: double.infinity,
+                                            placeholder: (context, url) =>
+                                                const Center(
+                                              child: CircularProgressIndicator(),
+                                            ),
+                                            errorWidget: (context, url, error) {
+                                              return Image.asset(
+                                                'assets/noimage.jpg',
+                                                fit: BoxFit.cover,
+                                                height: 150.w,
+                                                width: double.infinity,
+                                              );
+                                            },
+                                          ),
                                         ),
                                       ),
                                       SizedBox(height: 10.h),

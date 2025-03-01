@@ -538,9 +538,8 @@ class _ProductsScreenState extends State<ProductsScreen>
                                         tag: 'imageHero-${product.id}',
                                         child: ColorFiltered(
                                           colorFilter: ColorFilter.mode(
-                                            const Color.fromARGB(
-                                                    255, 121, 85, 72)
-                                                .withValues(alpha: 0.25),
+                                            const Color.fromARGB(255, 148, 105, 90)
+                                                .withValues(alpha: 0.3),
                                             BlendMode.darken,
                                           ),
                                           child: CachedNetworkImage(
