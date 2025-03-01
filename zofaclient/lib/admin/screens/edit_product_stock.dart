@@ -49,28 +49,6 @@ class _EditProductStockScreenState extends State<EditProductStockScreen> {
     }
   }
 
-  void _confirmDeleteProduct(int productId) {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('אישור מחיקה'),
-        content: const Text('האם אתה בטוח שברצונך למחוק מוצר זה?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('ביטול'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(ctx).pop();
-              _deleteProduct(productId);
-            },
-            child: const Text('מחק'),
-          ),
-        ],
-      ),
-    );
-  }
 
   // Fetch products from the API
   Future<void> _fetchProducts() async {

@@ -110,6 +110,34 @@ async function deleteBreadOrderById(id) {
   }
 }
 
+// Function to update the Bread Price by ID
+async function updateBreadPriceById(id, newPrice) {
+  try {
+    const [result] = await pool.query("UPDATE bread SET price = ? WHERE id = ?", [
+      newPrice,
+      id,
+    ]);
+    return result;
+  } catch (err) {
+    console.error("Error updating Bread Price:", err.message);
+    throw err;
+  }
+}
+
+// Function to delete Bread Type by ID
+async function deleteBreadTypeById(id) {
+  try {
+    const [result] = await pool.query("DELETE FROM bread WHERE id = ?", [
+      id,
+    ]);
+    return result;
+  } catch (err) {
+    console.error("Error deleting Bread Type:", err.message);
+    throw err;
+  }
+}
+
+
 module.exports = {
   updateBreadOrderStatus,
   getAllBreadOrders,
@@ -117,4 +145,6 @@ module.exports = {
   addNewBreadOrder,
   addNewBreadType,
   deleteBreadOrderById,
+  updateBreadPriceById,
+  deleteBreadTypeById,
 };

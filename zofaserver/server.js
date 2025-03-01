@@ -731,6 +731,44 @@ app.get("/api/checkAdmin/:phoneNumber", async (req, res) => {
   }
 });
 
+// Route to handle price update for a Bread Order using POST
+app.post("/api/updateBreadPrice/:id", async (req, res) => {
+  const { id } = req.params;
+  const { newPrice } = req.body; // assuming the new price is sent in the body
+
+  try {
+    const result = await breadDataHandler.updateBreadPriceById(id, newPrice);
+    if (result.affectedRows > 0) {
+      // Check if any rows were affected
+      res.status(200).json({ message: "Bread Price updated successfully" });
+    } else {
+      res.status(404).json({ error: "Bread Order not found" });
+    }
+  } catch (err) {
+    console.error("Error updating Bread Price:", err.message);
+    res.status(500).json({ error: "Error updating Bread Price" });
+  }
+});
+
+// Route to handle Bread Type Deletion using DELETE
+app.delete("/api/deleteBreadType/:id", async (req, res) => {
+  const { id } = req.params;  // Get bread ID from URL parameter
+
+  try {
+    const result = await breadDataHandler.deleteBreadTypeById(id);
+    if (result.affectedRows > 0) {
+      // Check if any rows were affected
+      res.status(200).json({ message: "Bread Type deleted successfully" });
+    } else {
+      res.status(404).json({ error: "Bread Type not found" });
+    }
+  } catch (err) {
+    console.error("Error deleting Bread Type:", err.message);
+    res.status(500).json({ error: "Error deleting Bread Type" });
+  }
+});
+
+
 connection.connect((err) => {
   if (err) {
     console.error("Error connecting to the database:", err);
