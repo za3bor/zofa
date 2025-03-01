@@ -30,6 +30,48 @@ class _EditProductStockScreenState extends State<EditProductStockScreen> {
     });
   }
 
+  Future<void> _deleteProduct(int productId) async {
+    try {
+      final response = await http
+          .delete(Uri.parse('http://$ipAddress/api/deleteProduct/$productId'));
+
+      if (response.statusCode == 200) {
+        setState(() {
+          _products.removeWhere((p) => p.id == productId);
+          _filteredProducts.removeWhere((p) => p.id == productId);
+        });
+        _showSnackbar('המוצר נמחק בהצלחה.');
+      } else {
+        throw Exception('Failed to delete product.');
+      }
+    } catch (e) {
+      _showSnackbar('שגיאה במחיקת המוצר.');
+    }
+  }
+
+  void _confirmDeleteProduct(int productId) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('אישור מחיקה'),
+        content: const Text('האם אתה בטוח שברצונך למחוק מוצר זה?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('ביטול'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              _deleteProduct(productId);
+            },
+            child: const Text('מחק'),
+          ),
+        ],
+      ),
+    );
+  }
+
   // Fetch products from the API
   Future<void> _fetchProducts() async {
     setState(() {
@@ -180,8 +222,8 @@ class _EditProductStockScreenState extends State<EditProductStockScreen> {
                               crossAxisSpacing: 10.w,
                               mainAxisSpacing: 10.h,
                               childAspectRatio: isFoldableDevice(context)
-                                  ? calculateAspectRatio(context) * 0.44.h
-                                  : calculateAspectRatio(context) * 0.47.h,
+                                  ? calculateAspectRatio(context) * 0.39.h
+                                  : calculateAspectRatio(context) * 0.42.h,
                             ),
                             itemCount: _filteredProducts.length,
                             itemBuilder: (ctx, index) {
@@ -275,7 +317,45 @@ class _EditProductStockScreenState extends State<EditProductStockScreen> {
                                                 : 'לא במלאי',
                                           ),
                                         ),
-                                      )
+                                      ),
+                                      SizedBox(height: 10.h),
+
+                                      // Delete button
+                                      Center(
+                                        child: IconButton(
+                                          icon: Icon(Icons.delete,
+                                              color: Colors.red),
+                                          onPressed: () async {
+                                            bool confirmDelete =
+                                                await showDialog(
+                                              context: context,
+                                              builder: (context) => AlertDialog(
+                                                title: Text('מחיקת מוצר'),
+                                                content: Text(
+                                                    'האם אתה בטוח שברצונך למחוק מוצר זה?'),
+                                                actions: [
+                                                  TextButton(
+                                                    onPressed: () =>
+                                                        Navigator.of(context)
+                                                            .pop(false),
+                                                    child: Text('ביטול'),
+                                                  ),
+                                                  TextButton(
+                                                    onPressed: () =>
+                                                        Navigator.of(context)
+                                                            .pop(true),
+                                                    child: Text('מחיקה'),
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+
+                                            if (confirmDelete) {
+                                              await _deleteProduct(product.id);
+                                            }
+                                          },
+                                        ),
+                                      ),
                                     ],
                                   ),
                                 ),
