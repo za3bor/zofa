@@ -211,6 +211,7 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
             SizedBox(
               height: double
                   .infinity, // Ensures the background image fills the whole screen
+              width: double.infinity,
               child: Image.asset(
                 'assets/background.jpg',
                 fit: BoxFit.cover,
