@@ -376,6 +376,40 @@ class TabsScreenState extends State<TabsScreen>
     }
   }
 
+  double convexAppBarTop(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    if (screenWidth >= 800) {
+      return -30.0.h;
+    } else if (screenWidth >= 700) {
+      return -28.0.h;
+    } else if (screenWidth >= 600) {
+      return -25.0.h;
+    } else if (screenWidth >= 500) {
+      return -20.0.h;
+    } else if (screenWidth >= 360) {
+      return -17.0.h;
+    } else {
+      return -15.0.h;
+    }
+  }
+
+  double convexAppBarcurveSize(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    if (screenWidth >= 800) {
+      return 180.0.w;
+    } else if (screenWidth >= 700) {
+      return 170.0.w;
+    } else if (screenWidth >= 600) {
+      return 170.0.w;
+    } else if (screenWidth >= 500) {
+      return 140.0.w;
+    } else if (screenWidth >= 360) {
+      return 130.0.w;
+    } else {
+      return 120.0.w;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     Widget activePage = const ProductsScreen();
@@ -485,10 +519,8 @@ class TabsScreenState extends State<TabsScreen>
       body: activePage,
       bottomNavigationBar: ConvexAppBar(
         elevation: 10.0, // Adjust the shadow beneath the convex shape
-        curveSize: 120.0.w, // Size of the convex shape
-        top: -15.0
-            .h, // Adjusts the height of the curve apex (negative moves it higher)
-
+        curveSize: convexAppBarcurveSize(context), // Adjust the size of the convex shape
+        top: convexAppBarTop(context), // Adjust the position of the convex shape
         style: TabStyle.flip,
         backgroundColor: Theme.of(context).primaryColor,
         color: Theme.of(context).colorScheme.secondary,

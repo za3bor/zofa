@@ -283,30 +283,19 @@ class _ProductsScreenState extends State<ProductsScreen>
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
-    // Adjust the multiplier (0.6) to fine-tune the aspect ratio based on the screen size
-    if (screenWidth < 360) {
-      // Small devices (e.g., phones with smaller screens)
-      return screenWidth / (screenHeight * 0.55);
-    } else if (screenWidth < 600) {
-      // Medium devices (e.g., standard phones)
-      return screenWidth / (screenHeight * 0.6);
+    if (screenWidth >= 800) {
+      return (screenWidth / (screenHeight * 0.8) * 0.35.h);
+    } else if (screenWidth >= 700) {
+      return (screenWidth / (screenHeight * 0.75) * 0.38.h);
+    } else if (screenWidth >= 600) {
+      return (screenWidth / (screenHeight * 0.75) * 0.42.h);
+    } else if (screenWidth >= 500) {
+      return (screenWidth / (screenHeight * 0.7) * 0.46.h);
+    } else if (screenWidth >= 360) {
+      return (screenWidth / (screenHeight * 0.6) * 0.45.h);
     } else {
-      // Large devices (e.g., phablets and tablets)
-      return screenWidth / (screenHeight * 0.65);
+      return (screenWidth / (screenHeight * 0.6) * 0.45.h);
     }
-  }
-
-  bool isFoldableDevice(BuildContext context) {
-    final mediaQuery = MediaQuery.of(context);
-    final screenWidth = mediaQuery.size.width;
-    final screenHeight = mediaQuery.size.height;
-
-    // Foldable devices tend to have a very wide aspect ratio when unfolded
-    final aspectRatio = screenWidth / screenHeight;
-
-    // Define a threshold for foldable device detection
-    print('Aspect ratio: $aspectRatio, Screen width: $screenWidth');
-    return aspectRatio > 2.0 || screenWidth > 500;
   }
 
   @override
@@ -496,14 +485,7 @@ class _ProductsScreenState extends State<ProductsScreen>
                             crossAxisCount: 2,
                             crossAxisSpacing: 10.w,
                             mainAxisSpacing: 10.h,
-                            childAspectRatio: isFoldableDevice(context)
-                                ? calculateAspectRatio(context) *
-                                    0.4.h // Foldable device adjustment
-                                : (MediaQuery.of(context).size.width < 360
-                                    ? calculateAspectRatio(context) *
-                                        0.47.h // Small devices
-                                    : calculateAspectRatio(context) *
-                                        0.45.h), // Default for medium & large
+                            childAspectRatio: calculateAspectRatio(context),
                           ),
                           itemCount: _filteredProducts.length,
                           itemBuilder: (ctx, index) {
@@ -538,7 +520,8 @@ class _ProductsScreenState extends State<ProductsScreen>
                                         tag: 'imageHero-${product.id}',
                                         child: ColorFiltered(
                                           colorFilter: ColorFilter.mode(
-                                            const Color.fromARGB(255, 148, 105, 90)
+                                            const Color.fromARGB(
+                                                    255, 148, 105, 90)
                                                 .withValues(alpha: 0.3),
                                             BlendMode.darken,
                                           ),
