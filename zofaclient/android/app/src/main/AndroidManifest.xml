@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.zofa_client">
+    package="com.zofa_client">
     <uses-permission android:name="android.permission.INTERNET"/>
     <application
         android:label="Zofa Health Shop"

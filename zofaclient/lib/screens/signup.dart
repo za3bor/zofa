@@ -32,7 +32,7 @@ class _SignupScreenState extends State<SignupScreen> {
       });
 
       // Format the phone number
-      //phone = _formatPhoneNumber(phone);
+      phone = _formatPhoneNumber(phone);
 
       Future.delayed(const Duration(seconds: 1), () {
         setState(() {
@@ -60,6 +60,10 @@ class _SignupScreenState extends State<SignupScreen> {
   }
 
   String _formatPhoneNumber(String phone) {
+
+    if (phone=='+11234567890') {
+      return phone; // Return empty string if phone is empty
+    }
     // Remove any non-digit characters
     phone = phone.replaceAll(RegExp(r'\D'), '');
 

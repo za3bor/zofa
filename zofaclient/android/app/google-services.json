@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1013991760042:android:8068d65f0df6f05ffe70d3",
+        "mobilesdk_app_id": "1:1013991760042:android:0b6bb3d406802b34fe70d3",
         "android_client_info": {
-          "package_name": "com.example.zofa_client"
+          "package_name": "com.zofa_client"
         }
       },
       "oauth_client": [],
