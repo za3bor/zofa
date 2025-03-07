@@ -3,6 +3,7 @@ import FirebaseCore
 import FirebaseMessaging
 import FirebaseAuth
 import Flutter
+import BackgroundTasks
 
 @main
 @objc class AppDelegate: FlutterAppDelegate, MessagingDelegate {
@@ -26,6 +27,14 @@ import Flutter
 
     // Set the Messaging delegate to self
     Messaging.messaging().delegate = self
+
+    BGTaskScheduler.shared.register(
+    forTaskWithIdentifier: "com.example.zofaClient.backgroundtask",
+    using: nil
+) { task in
+    self.handleBackgroundTask(task: task as! BGProcessingTask)
+}
+
 
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
@@ -68,5 +77,17 @@ import Flutter
             channel.invokeMethod("onTokenReceived", arguments: fcmToken)
         }
     }
+
+    func handleBackgroundTask(task: BGProcessingTask) {
+    task.expirationHandler = {
+        task.setTaskCompleted(success: false)
+    }
+
+    // Perform your background processing work here
+    print("Background task executed")
+
+    task.setTaskCompleted(success: true)
+}
+
 
 }

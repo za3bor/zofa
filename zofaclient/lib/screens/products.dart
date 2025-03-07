@@ -291,6 +291,8 @@ class _ProductsScreenState extends State<ProductsScreen>
       return (screenWidth / (screenHeight * 0.75) * 0.42.h);
     } else if (screenWidth >= 500) {
       return (screenWidth / (screenHeight * 0.7) * 0.46.h);
+    } else if (screenWidth >= 400) {
+      return (screenWidth / (screenHeight * 0.6) * 0.43.h);
     } else if (screenWidth >= 360) {
       return (screenWidth / (screenHeight * 0.6) * 0.45.h);
     } else {
