@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:zofa_client/screens/otp_signup.dart';
+import 'package:zofa_client/customer/otp_login.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class SignupScreen extends StatefulWidget {
-  const SignupScreen({super.key});
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
 
   @override
-  State<SignupScreen> createState() => _SignupScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _SignupScreenState extends State<SignupScreen> {
+class _LoginScreenState extends State<LoginScreen> {
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
   bool _isLoading = false; // Loading indicator for sending OTP
@@ -30,10 +30,8 @@ class _SignupScreenState extends State<SignupScreen> {
       setState(() {
         _isLoading = true;
       });
-
       // Format the phone number
       phone = _formatPhoneNumber(phone);
-
       Future.delayed(const Duration(seconds: 1), () {
         setState(() {
           _isLoading = false;
@@ -42,9 +40,8 @@ class _SignupScreenState extends State<SignupScreen> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => OtpSignupScreen(
+              builder: (context) => OtpLoginScreen(
                 phoneNumber: phone,
-                name: name,
               ),
             ),
           );
@@ -60,10 +57,6 @@ class _SignupScreenState extends State<SignupScreen> {
   }
 
   String _formatPhoneNumber(String phone) {
-
-    if (phone=='+11234567890') {
-      return phone; // Return empty string if phone is empty
-    }
     // Remove any non-digit characters
     phone = phone.replaceAll(RegExp(r'\D'), '');
 
@@ -89,7 +82,7 @@ class _SignupScreenState extends State<SignupScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('הרשמה'),
+        title: const Text('התחברות'),
       ),
       body: Directionality(
         textDirection: TextDirection.rtl,

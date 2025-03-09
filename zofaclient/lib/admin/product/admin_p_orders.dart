@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:zofa_client/admin/screens/admin_p_order_detail.dart'; // Import your details screen
+import 'package:zofa_client/admin/product/admin_p_order_detail.dart'; // Import your details screen
 import 'package:zofa_client/constant.dart';
 import 'package:zofa_client/models/product_orders.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

@@ -1,26 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:zofa_client/admin/screens/admin_main_page.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:firebase_messaging/firebase_messaging.dart'; // Import for FCM
+import 'package:flutter/services.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
-import 'package:zofa_client/screens/tabs.dart';
 import 'package:http/http.dart' as http;
 import 'package:zofa_client/constant.dart';
+import 'package:zofa_client/admin/admin_main_page.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:zofa_client/customer/tabs.dart';
 
-class OtpLoginScreen extends StatefulWidget {
+class OtpSignupScreen extends StatefulWidget {
   final String phoneNumber;
+  final String name;
 
-  const OtpLoginScreen({required this.phoneNumber, super.key});
+  const OtpSignupScreen(
+      {required this.phoneNumber, required this.name, super.key});
 
   @override
-  State<OtpLoginScreen> createState() => _OtpLoginScreenState();
+  State<OtpSignupScreen> createState() => _OtpSignupScreenState();
 }
 
-class _OtpLoginScreenState extends State<OtpLoginScreen> {
+class _OtpSignupScreenState extends State<OtpSignupScreen> {
   final _otpController = TextEditingController();
   String verificationId = ''; // Store the verification ID
   bool _isSendingOtp = false; // Loading indicator for sending OTP
   bool _isVerifyingOtp = false; // Loading indicator for verifying OTP
+  String? fcmToken; // Variable to store FCM token
+
 
   Future<bool> _checkAdmin(String phone) async {
     try {
@@ -36,6 +42,32 @@ class _OtpLoginScreenState extends State<OtpLoginScreen> {
       }
     } catch (e) {
       return false; // Return false if there's an error during the request
+    }
+  }
+
+  Future<void> _saveNewUser(String fcmToken) async {
+    try {
+      const String backendUrl =
+          'http://$ipAddress/api/addNewUser'; // Replace with your backend endpoint
+
+      final response = await http.post(
+        Uri.parse(backendUrl),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'name': widget.name,
+          'phoneNumber': widget.phoneNumber,
+          'FCMtoken': fcmToken,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        print('User data sent successfully!');
+      } else {
+        print('Failed to send user data: ${response.statusCode}');
+        print('Response: ${response.body}');
+      }
+    } catch (e) {
+      print('Error sending user data: $e');
     }
   }
 
@@ -81,7 +113,6 @@ class _OtpLoginScreenState extends State<OtpLoginScreen> {
   // Function to verify OTP
   Future<void> _verifyOtp() async {
     User? user = FirebaseAuth.instance.currentUser;
-
     String otp = _otpController.text.trim();
     if (otp.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -102,9 +133,17 @@ class _OtpLoginScreenState extends State<OtpLoginScreen> {
       await FirebaseAuth.instance.signInWithCredential(credential);
       print('OTP verified!');
 
+      // Get FCM token
+      String? fcmToken = await FirebaseMessaging.instance.getToken();
+      if (fcmToken != null) {
+        await _saveNewUser(fcmToken); // Send user data to the backend
+      } else {
+        print('Failed to retrieve FCM token');
+      }
+
       // Check if the phone number is an admin
       bool isAdmin = await _checkAdmin(user?.phoneNumber ?? '');
-      
+
       if (mounted) {
         Navigator.pushAndRemoveUntil(
           context,
@@ -135,6 +174,22 @@ class _OtpLoginScreenState extends State<OtpLoginScreen> {
   void initState() {
     super.initState();
     _sendOtp();
+        // Listen for the FCM token received from the iOS native side
+    FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
+      setState(() {
+        fcmToken = newToken; // Update the token when received
+      });
+    });
+
+    // Listen to MethodChannel to receive the token from iOS
+    const platform = MethodChannel('com.example.fcm');
+    platform.setMethodCallHandler((MethodCall call) async {
+      if (call.method == "onTokenReceived") {
+        setState(() {
+          fcmToken = call.arguments; // Update the FCM token
+        });
+      }
+    });
   }
 
   @override
@@ -147,7 +202,7 @@ class _OtpLoginScreenState extends State<OtpLoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('הזן את קוד האימות'),
+        title: const Text('הכנס קוד OTP'),
       ),
       body: Directionality(
         textDirection: TextDirection.rtl,
@@ -156,11 +211,8 @@ class _OtpLoginScreenState extends State<OtpLoginScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'קוד אימות נשלח למספר ${widget.phoneNumber}.',
-                style: Theme.of(context).textTheme.bodyMedium, // Text style
-              ),
-              SizedBox(height: 20.h),
+              Text('קוד אימות נשלח למספר ${widget.phoneNumber}.'),
+              SizedBox(height: 10.h),
               Directionality(
                 textDirection: TextDirection.ltr,
                 child: PinCodeTextField(
@@ -209,7 +261,7 @@ class _OtpLoginScreenState extends State<OtpLoginScreen> {
                   ? const Center(child: CircularProgressIndicator())
                   : ElevatedButton(
                       onPressed: _verifyOtp,
-                      child: const Text('אמת קוד'),
+                      child: const Text('אמת את הקוד'),
                     ),
             ],
           ),

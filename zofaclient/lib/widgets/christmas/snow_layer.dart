@@ -2,7 +2,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:zofa_client/widgets/star_painter.dart';
+import 'package:zofa_client/widgets/christmas/star_painter.dart';
 
 class SnowLayer extends StatefulWidget {
   const SnowLayer({super.key});

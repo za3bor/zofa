@@ -1,33 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:zofa_client/admin/screens/add_admin.dart';
-import 'package:zofa_client/admin/screens/bread_func.dart';
-import 'package:zofa_client/admin/screens/coupons.dart';
-import 'package:zofa_client/admin/screens/notes.dart';
-import 'package:zofa_client/admin/screens/products_func.dart';
-import 'package:zofa_client/admin/widgets/custom_elevated_but.dart';
-import 'package:zofa_client/screens/tabs.dart';
-import 'package:zofa_client/widgets/snow_layer.dart';
+import 'package:zofa_client/admin/product/add_new_product.dart';
+import 'package:zofa_client/admin/product/add_new_category.dart';
+import 'package:zofa_client/admin/product/admin_p_orders.dart';
+import 'package:zofa_client/admin/product/delete_category.dart';
+import 'package:zofa_client/admin/product/delete_product.dart';
+import 'package:zofa_client/admin/product/edit_existing_product.dart';
+import 'package:zofa_client/admin/product/edit_product_stock.dart';
+import 'package:zofa_client/widgets/custom_elevated_but.dart';
+import 'package:zofa_client/widgets/christmas/snow_layer.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class AdminMainPageScreen extends StatelessWidget {
-  const AdminMainPageScreen({super.key});
+class ProductFuncScreen extends StatelessWidget {
+  const ProductFuncScreen({super.key});
 
   bool isFoldableDevice(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
     final screenWidth = mediaQuery.size.width;
     final screenHeight = mediaQuery.size.height;
-    double width = View.of(context).physicalSize.width;
-    double height = View.of(context).physicalSize.height;
+
     // Foldable devices tend to have a very wide aspect ratio when unfolded
     final aspectRatio = screenWidth / screenHeight;
 
-    print('PHHH Screen width: $width'
-        'PHHH Screen height: $height');
-
     // Define a threshold for foldable device detection
-    print('Aspect ratio: $aspectRatio'
-        'Screen width: $screenWidth'
-        'Screen height: $screenHeight');
+    print('Aspect ratio: $aspectRatio' 'Screen width: $screenWidth' 'Screen height: $screenHeight');
     return aspectRatio > 2.0 || screenWidth > 500;
   }
 
@@ -38,7 +33,7 @@ class AdminMainPageScreen extends StatelessWidget {
         flexibleSpace:
             const SnowLayer(), // Directly use SnowLayer without Container
         title: const Text(
-          'לוח בקרה למנהל',
+          'לוח בקרה למוצרים',
         ),
       ),
       body: Directionality(
@@ -54,28 +49,32 @@ class AdminMainPageScreen extends StatelessWidget {
                 : 1.4.w, // Slightly adjusted aspect ratio
             children: const [
               CustomElevatedButton(
-                label: 'מוצרים',
-                targetPage: ProductFuncScreen(),
+                label: 'הוספת קטגוריה חדשה',
+                targetPage: AddNewCategory(),
               ),
               CustomElevatedButton(
-                label: 'לחם',
-                targetPage: BreadFuncScreen(),
+                label: 'הוספת מוצר חדש',
+                targetPage: AddNewProductScreen(),
               ),
               CustomElevatedButton(
-                label: 'לקוחות',
-                targetPage: TabsScreen(),
+                label: 'צפייה בהזמנות מוצרים',
+                targetPage: ProductOrdersScreen(),
               ),
               CustomElevatedButton(
-                label: 'הערות',
-                targetPage: NotesScreen(),
+                label: 'עריכת מוצר קיים',
+                targetPage: EditExistingProductScreen(),
               ),
               CustomElevatedButton(
-                label: 'קופונים',
-                targetPage: CouponsScreen(),
+                label: 'מחק מוצר קיים',
+                targetPage: DeleteProductScreen(),
               ),
               CustomElevatedButton(
-                label: 'מנהלים',
-                targetPage: AddAdminScreen(),
+                label: 'עריכת מלאי מוצר',
+                targetPage: EditProductStockScreen(),
+              ),
+              CustomElevatedButton(
+                label: 'מחיקת קטגוריה',
+                targetPage: DeleteCategory(),
               ),
             ],
           ),

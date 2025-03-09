@@ -1,19 +1,19 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:zofa_client/screens/about_app.dart';
-import 'package:zofa_client/screens/auth_service.dart';
-import 'package:zofa_client/screens/bread_order.dart';
-import 'package:zofa_client/screens/checkout_page.dart';
-import 'package:zofa_client/screens/contact_us.dart';
-import 'package:zofa_client/screens/login.dart';
-import 'package:zofa_client/screens/products.dart';
-import 'package:zofa_client/screens/rate_app.dart';
-import 'package:zofa_client/screens/share_app.dart';
-import 'package:zofa_client/screens/term_of_use.dart';
+import 'package:zofa_client/customer/about_app.dart';
+import 'package:zofa_client/firebase/auth_service.dart';
+import 'package:zofa_client/customer/bread/bread_order.dart';
+import 'package:zofa_client/customer/product/checkout_page.dart';
+import 'package:zofa_client/customer/contact_us.dart';
+import 'package:zofa_client/customer/login.dart';
+import 'package:zofa_client/customer/product/products.dart';
+import 'package:zofa_client/customer/rate_app.dart';
+import 'package:zofa_client/customer/share_app.dart';
+import 'package:zofa_client/customer/term_of_use.dart';
 import 'package:hive/hive.dart';
 import 'package:zofa_client/global.dart';
-import 'package:zofa_client/widgets/snow_layer.dart'; // Adjust the path accordingly
+import 'package:zofa_client/widgets/christmas/snow_layer.dart'; // Adjust the path accordingly
 import 'package:zofa_client/constant.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';

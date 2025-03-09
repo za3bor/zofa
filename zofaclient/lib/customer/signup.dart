@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:zofa_client/screens/otp_login.dart';
+import 'package:zofa_client/customer/otp_signup.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class SignupScreen extends StatefulWidget {
+  const SignupScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<SignupScreen> createState() => _SignupScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _SignupScreenState extends State<SignupScreen> {
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
   bool _isLoading = false; // Loading indicator for sending OTP
@@ -30,8 +30,10 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() {
         _isLoading = true;
       });
+
       // Format the phone number
       phone = _formatPhoneNumber(phone);
+
       Future.delayed(const Duration(seconds: 1), () {
         setState(() {
           _isLoading = false;
@@ -40,8 +42,9 @@ class _LoginScreenState extends State<LoginScreen> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => OtpLoginScreen(
+              builder: (context) => OtpSignupScreen(
                 phoneNumber: phone,
+                name: name,
               ),
             ),
           );
@@ -57,6 +60,10 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   String _formatPhoneNumber(String phone) {
+
+    if (phone=='+11234567890') {
+      return phone; // Return empty string if phone is empty
+    }
     // Remove any non-digit characters
     phone = phone.replaceAll(RegExp(r'\D'), '');
 
@@ -82,7 +89,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('התחברות'),
+        title: const Text('הרשמה'),
       ),
       body: Directionality(
         textDirection: TextDirection.rtl,

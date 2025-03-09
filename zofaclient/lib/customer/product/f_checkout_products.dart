@@ -4,8 +4,8 @@ import 'package:http/http.dart' as http;
 import 'package:zofa_client/constant.dart';
 import 'package:hive/hive.dart';
 import 'package:zofa_client/global.dart'; // Adjust the path accordingly
-import 'package:zofa_client/screens/tabs.dart';
-import 'package:zofa_client/widgets/snow_layer.dart';
+import 'package:zofa_client/customer/tabs.dart';
+import 'package:zofa_client/widgets/christmas/snow_layer.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ProductCheckoutPage extends StatefulWidget {
