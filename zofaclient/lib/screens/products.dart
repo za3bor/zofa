@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:zofa_client/models/category.dart';
@@ -41,6 +43,7 @@ class _ProductsScreenState extends State<ProductsScreen>
   late AnimationController _controller;
   late Animation<Offset> _animation;
   late IO.Socket _socket; // Declare the socket instance
+  int flag = 0;
 
   @override
   void initState() {
@@ -279,25 +282,48 @@ class _ProductsScreenState extends State<ProductsScreen>
     }
   }
 
-  double calculateAspectRatio(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
+  double _getChildAspectRatio() {
+    double width = ScreenUtil().screenWidth;
+    double height = ScreenUtil().screenHeight;
+    double aspectRatio = width / height;
 
-    if (screenWidth >= 800) {
-      return (screenWidth / (screenHeight * 0.8) * 0.35.h);
-    } else if (screenWidth >= 700) {
-      return (screenWidth / (screenHeight * 0.75) * 0.38.h);
-    } else if (screenWidth >= 600) {
-      return (screenWidth / (screenHeight * 0.75) * 0.42.h);
-    } else if (screenWidth >= 500) {
-      return (screenWidth / (screenHeight * 0.7) * 0.46.h);
-    } else if (screenWidth >= 400) {
-      return (screenWidth / (screenHeight * 0.6) * 0.43.h);
-    } else if (screenWidth >= 360) {
-      return (screenWidth / (screenHeight * 0.6) * 0.45.h);
+    // Fold phones
+    if (_isFoldable()) {
+      if (flag == 1) {
+        return 0.43;
+      } else {
+        return 0.41;
+      }
+    } else if (aspectRatio > 0.6) {
+      // Regular phones or tablets
+      return 0.5; // Large screens (tablets, large phones)
+    } else if (aspectRatio > 0.55) {
+      return 0.43; // Medium screens (like Pixel Fold in portrait mode)
     } else {
-      return (screenWidth / (screenHeight * 0.6) * 0.45.h);
+      return 0.51; // Small screens (smaller phones)
     }
+  }
+
+  bool _isFoldable() {
+    double width = ScreenUtil().screenWidth;
+    double height = ScreenUtil().screenHeight;
+    double aspectRatio = width / height;
+    return aspectRatio >= 0.75;
+  }
+
+  int _getCrossAxisCount() {
+    double width = ScreenUtil().screenWidth;
+
+    if (_isFoldable()) {
+      if (width > 650) {
+        flag = 1;
+        return 4;
+      } else {
+        flag = 0;
+        return 3;
+      }
+    }
+    return (ScreenUtil().screenWidth ~/ 200).clamp(2, 4);
   }
 
   @override
@@ -484,15 +510,10 @@ class _ProductsScreenState extends State<ProductsScreen>
                         child: GridView.builder(
                           gridDelegate:
                               SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount:
-                                (ScreenUtil().screenWidth ~/ 200).clamp(2, 4),
+                            crossAxisCount: _getCrossAxisCount(),
                             crossAxisSpacing: 10.w,
                             mainAxisSpacing: 10.h,
-                            childAspectRatio: (ScreenUtil().screenWidth /
-                                        ScreenUtil().screenHeight) >
-                                    0.6
-                                ? 0.5
-                                : 0.43,
+                            childAspectRatio: _getChildAspectRatio(),
                           ),
                           itemCount: _filteredProducts.length,
                           itemBuilder: (ctx, index) {

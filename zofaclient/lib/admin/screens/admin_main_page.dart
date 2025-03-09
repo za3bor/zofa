@@ -16,12 +16,18 @@ class AdminMainPageScreen extends StatelessWidget {
     final mediaQuery = MediaQuery.of(context);
     final screenWidth = mediaQuery.size.width;
     final screenHeight = mediaQuery.size.height;
-
+    double width = View.of(context).physicalSize.width;
+    double height = View.of(context).physicalSize.height;
     // Foldable devices tend to have a very wide aspect ratio when unfolded
     final aspectRatio = screenWidth / screenHeight;
 
+    print('PHHH Screen width: $width'
+        'PHHH Screen height: $height');
+
     // Define a threshold for foldable device detection
-    print('Aspect ratio: $aspectRatio' 'Screen width: $screenWidth');
+    print('Aspect ratio: $aspectRatio'
+        'Screen width: $screenWidth'
+        'Screen height: $screenHeight');
     return aspectRatio > 2.0 || screenWidth > 500;
   }
 
