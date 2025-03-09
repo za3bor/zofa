@@ -287,8 +287,11 @@ class _ProductsScreenState extends State<ProductsScreen>
     double height = ScreenUtil().screenHeight;
     double aspectRatio = width / height;
 
+    if (width > 1000) {
+      return 0.5;
+    }
     // Fold phones
-    if (_isFoldable()) {
+    else if (_isFoldable()) {
       if (flag == 1) {
         return 0.43;
       } else {
@@ -314,7 +317,10 @@ class _ProductsScreenState extends State<ProductsScreen>
   int _getCrossAxisCount() {
     double width = ScreenUtil().screenWidth;
 
-    if (_isFoldable()) {
+    if (width > 1000) {
+      return 5;
+    }
+    else if (_isFoldable()) {
       if (width > 650) {
         flag = 1;
         return 4;
