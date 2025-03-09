@@ -484,10 +484,15 @@ class _ProductsScreenState extends State<ProductsScreen>
                         child: GridView.builder(
                           gridDelegate:
                               SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
+                            crossAxisCount:
+                                (ScreenUtil().screenWidth ~/ 200).clamp(2, 4),
                             crossAxisSpacing: 10.w,
                             mainAxisSpacing: 10.h,
-                            childAspectRatio: calculateAspectRatio(context),
+                            childAspectRatio: (ScreenUtil().screenWidth /
+                                        ScreenUtil().screenHeight) >
+                                    0.6
+                                ? 0.5
+                                : 0.43,
                           ),
                           itemCount: _filteredProducts.length,
                           itemBuilder: (ctx, index) {

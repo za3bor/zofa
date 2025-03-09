@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zofa_client/screens/about_app.dart';
@@ -11,12 +10,10 @@ import 'package:zofa_client/screens/login.dart';
 import 'package:zofa_client/screens/products.dart';
 import 'package:zofa_client/screens/rate_app.dart';
 import 'package:zofa_client/screens/share_app.dart';
-import 'package:zofa_client/screens/signup.dart';
 import 'package:zofa_client/screens/term_of_use.dart';
 import 'package:hive/hive.dart';
 import 'package:zofa_client/global.dart';
 import 'package:zofa_client/widgets/snow_layer.dart'; // Adjust the path accordingly
-import 'package:http/http.dart' as http;
 import 'package:zofa_client/constant.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
@@ -253,8 +250,8 @@ class TabsScreenState extends State<TabsScreen>
       body: activePage,
       bottomNavigationBar: ConvexAppBar(
         elevation: 10.0, // Adjust the shadow beneath the convex shape
-        curveSize: convexAppBarcurveSize(context), // Adjust the size of the convex shape
-        top: convexAppBarTop(context), // Adjust the position of the convex shape
+        curveSize: 120.h, // Adjust the size of the convex shape
+        top: -15.h, // Adjust the position of the convex shape
         style: TabStyle.flip,
         backgroundColor: Theme.of(context).primaryColor,
         color: Theme.of(context).colorScheme.secondary,

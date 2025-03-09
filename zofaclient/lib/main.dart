@@ -40,7 +40,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
-      designSize: const Size(360, 690), // Base size of the design
+      designSize: Size(
+        MediaQuery.of(context).size.width,
+        MediaQuery.of(context).size.height,
+      ), // Base size of the design
       minTextAdapt: true, // Enable font scaling
       splitScreenMode: true, // Support for split screens
       builder: (context, child) {
