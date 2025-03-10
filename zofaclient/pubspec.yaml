@@ -109,6 +109,11 @@ flutter:
     - assets/easter/hat1.png
     - assets/easter/hat2.png
     - assets/easter/hat3.png
+    - assets/easter/easter.png
+    - assets/easter/easter-day.png
+    - assets/easter/rabbit.png
+    - assets/christmas/christmas-tree.png
+    - assets/christmas/candy-cane.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

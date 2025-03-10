@@ -6,7 +6,6 @@ import 'package:zofa_client/admin/notes.dart';
 import 'package:zofa_client/admin/product/products_func.dart';
 import 'package:zofa_client/widgets/custom_elevated_but.dart';
 import 'package:zofa_client/customer/tabs.dart';
-import 'package:zofa_client/widgets/christmas/snow_layer.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AdminMainPageScreen extends StatelessWidget {
@@ -35,11 +34,7 @@ class AdminMainPageScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        flexibleSpace:
-            const SnowLayer(), // Directly use SnowLayer without Container
-        title: const Text(
-          'לוח בקרה למנהל',
-        ),
+        title: const Text('לוח בקרה למנהל'),
       ),
       body: Directionality(
         textDirection: TextDirection.rtl,
