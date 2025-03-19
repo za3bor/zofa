@@ -18,7 +18,7 @@ class EasterEggParticle extends StatefulWidget {
   });
 
   @override
-  _EasterEggParticleState createState() => _EasterEggParticleState();
+  State<EasterEggParticle> createState() => _EasterEggParticleState();
 }
 
 class _EasterEggParticleState extends State<EasterEggParticle>

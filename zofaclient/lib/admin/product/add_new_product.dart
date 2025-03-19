@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:zofa_client/constant.dart';
 import 'package:zofa_client/models/category.dart';
@@ -269,8 +268,8 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('הוסף מוצר חדש'),
+      appBar: const CustomAppBar(
+        title: 'הוסף מוצר חדש',
       ),
       body: Directionality(
         textDirection: TextDirection.rtl,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:zofa_client/customer/otp_login.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:zofa_client/widgets/custom_appbar.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -81,8 +82,8 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('התחברות'),
+      appBar: const CustomAppBar(
+        title: 'התחברות',
       ),
       body: Directionality(
         textDirection: TextDirection.rtl,

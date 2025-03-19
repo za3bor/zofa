@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:zofa_client/constant.dart';
 
 class AboutAppScreen extends StatelessWidget {
   const AboutAppScreen({super.key});
@@ -45,8 +45,8 @@ class AboutAppScreen extends StatelessWidget {
     const String emailUrl = 'mailto:fadisrour.zarbor@gmail.com';
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('אודות האפליקציה'),
+      appBar: const CustomAppBar(
+        title: 'אודות האפליקציה',
       ),
       body: Directionality(
         textDirection: TextDirection.rtl,

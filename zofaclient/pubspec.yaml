@@ -52,6 +52,7 @@ dependencies:
   cached_network_image: ^3.4.1
   pin_code_fields: ^8.0.1
   convex_bottom_bar: ^3.2.0
+  hijri: ^3.0.0
 
 flutter_launcher_icons:
   android: true
@@ -105,7 +106,7 @@ flutter:
     - assets/background2.jpg
     - assets/noimage.jpg
     - assets/drawer.jpeg
-    - assets/icons/hat.png
+    - assets/christmas/hat.png
     - assets/easter/hat1.png
     - assets/easter/hat2.png
     - assets/easter/hat3.png
@@ -114,6 +115,17 @@ flutter:
     - assets/easter/rabbit.png
     - assets/christmas/christmas-tree.png
     - assets/christmas/candy-cane.png
+    - assets/ramadan/crescent.png
+    - assets/ramadan/star.png
+    - assets/ramadan/lantern.png
+    - assets/ramadan/default.png
+    - assets/ramadan/ramadan_drawer.png
+    - assets/ramadan/ramadan_cart.png
+    - assets/christmas/bread.png
+    - assets/christmas/market.png
+    - assets/easter/bread.png
+    - assets/easter/shopping-bag.png
+    - assets/ramadan/market.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

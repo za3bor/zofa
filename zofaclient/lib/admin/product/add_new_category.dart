@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:zofa_client/constant.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -69,8 +68,8 @@ class _AddNewCategoryState extends State<AddNewCategory> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('הוספת ניתונים חדשים'),
+      appBar: const CustomAppBar(
+        title: 'הוספת ניתונים חדשים',
       ),
       body: Directionality(
         textDirection: TextDirection.rtl,

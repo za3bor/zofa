@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:zofa_client/constant.dart';
 import 'package:zofa_client/models/bread.dart';
@@ -68,8 +67,8 @@ class _BreadDeleteScreenState extends State<BreadDeleteScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('מחיקת סוגי לחם'),
+      appBar: const CustomAppBar(
+        title: 'מחיקת סוגי לחם',
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())

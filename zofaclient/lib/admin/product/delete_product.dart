@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:zofa_client/constant.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -84,8 +83,8 @@ class _DeleteProductScreenState extends State<DeleteProductScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('מחיקת מוצר'),
+      appBar: const CustomAppBar(
+        title: 'מחיקת מוצר',
       ),
       body: Directionality(
         textDirection: TextDirection.rtl,

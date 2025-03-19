@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:hijri/hijri_calendar.dart';
 import 'package:zofa_client/customer/about_app.dart';
 import 'package:zofa_client/firebase/auth_service.dart';
 import 'package:zofa_client/customer/bread/bread_order.dart';
@@ -13,10 +13,12 @@ import 'package:zofa_client/customer/share_app.dart';
 import 'package:zofa_client/customer/term_of_use.dart';
 import 'package:hive/hive.dart';
 import 'package:zofa_client/global.dart';
-import 'package:zofa_client/widgets/christmas/snow_layer.dart'; // Adjust the path accordingly
+import 'package:zofa_client/widgets/christmas/snow_layer.dart';
 import 'package:zofa_client/constant.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
+import 'package:zofa_client/widgets/easter/easter_layer.dart';
+import 'package:zofa_client/widgets/ramadan/ramadan_layer.dart';
 
 class TabsScreen extends StatefulWidget {
   const TabsScreen({super.key});
@@ -106,7 +108,6 @@ class TabsScreenState extends State<TabsScreen>
     }
   }
 
-
   double convexAppBarTop(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     if (screenWidth >= 800) {
@@ -141,10 +142,26 @@ class TabsScreenState extends State<TabsScreen>
     }
   }
 
+  bool checkRamadan() {
+    // Get the current date in the Islamic calendar
+    HijriCalendar today = HijriCalendar.now();
+
+    // Check if the current month is Ramadan (the 9th month in the Hijri calendar)
+    if (today.hMonth == 8) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     Widget activePage = const ProductsScreen();
     var activePageTitle = 'מוצרים';
+    DateTime currentDate = DateTime.now();
+    bool isEaster = currentDate.month == 4;
+    bool isChristmas = currentDate.month == 12;
+    bool isRamadan = checkRamadan();
 
     if (_selectedPageIndex == 1) {
       // Active page for BreadOrderScreen (as an example)
@@ -155,8 +172,13 @@ class TabsScreenState extends State<TabsScreen>
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        flexibleSpace:
-            const SnowLayer(), // Directly use SnowLayer without Container
+        flexibleSpace: isEaster
+            ? const EasterLayer()
+            : isChristmas
+                ? const SnowLayer()
+                : isRamadan
+                    ? const RamadanLayer()
+                    : null,
         title: Text(
           activePageTitle,
         ),
@@ -167,16 +189,62 @@ class TabsScreenState extends State<TabsScreen>
                   return IconButton(
                     icon: Stack(
                       children: [
-                        AnimatedBuilder(
-                          animation: _rotation,
-                          builder: (context, child) {
-                            return Transform.rotate(
-                              angle: _rotation.value,
-                              child: child,
-                            );
-                          },
-                          child: const Icon(Icons.shopping_cart),
-                        ),
+                        if (isChristmas)
+                          AnimatedBuilder(
+                            animation: _rotation,
+                            builder: (context, child) {
+                              return Transform.rotate(
+                                angle: _rotation.value,
+                                child: child,
+                              );
+                            },
+                            child: Image.asset(
+                              'assets/christmas/candy-cane.png',
+                              width: 30,
+                              height: 30,
+                            ),
+                          )
+                        else if (isEaster)
+                          AnimatedBuilder(
+                            animation: _rotation,
+                            builder: (context, child) {
+                              return Transform.rotate(
+                                angle: _rotation.value,
+                                child: child,
+                              );
+                            },
+                            child: Image.asset(
+                              'assets/easter/easter.png',
+                              width: 30,
+                              height: 30,
+                            ),
+                          )
+                        else if (isRamadan)
+                          AnimatedBuilder(
+                            animation: _rotation,
+                            builder: (context, child) {
+                              return Transform.rotate(
+                                angle: _rotation.value,
+                                child: child,
+                              );
+                            },
+                            child: Image.asset(
+                              'assets/ramadan/ramadan_cart.png',
+                              width: 30,
+                              height: 30,
+                            ),
+                          )
+                        else
+                          AnimatedBuilder(
+                            animation: _rotation,
+                            builder: (context, child) {
+                              return Transform.rotate(
+                                angle: _rotation.value,
+                                child: child,
+                              );
+                            },
+                            child: const Icon(Icons.shopping_cart),
+                          ),
                         if (cartCount > 0)
                           Positioned(
                             top: 0,
@@ -184,13 +252,15 @@ class TabsScreenState extends State<TabsScreen>
                             child: CircleAvatar(
                               radius: 8,
                               backgroundColor: Colors.red,
-                              child: Text('$cartCount',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodySmall!
-                                      .copyWith(
-                                        color: Colors.white,
-                                      )),
+                              child: Text(
+                                '$cartCount',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall!
+                                    .copyWith(
+                                      color: Colors.white,
+                                    ),
+                              ),
                             ),
                           ),
                       ],
@@ -208,42 +278,66 @@ class TabsScreenState extends State<TabsScreen>
               )
             : null,
         actions: [
-          // Stack to overlay the hat image on the drawer icon
           Padding(
-            padding:
-                EdgeInsets.only(right: 8.0.w), // Adjust the padding as needed
-            child: Stack(
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.menu),
-                  onPressed: () {
-                    _scaffoldKey.currentState?.openEndDrawer();
-                  },
-                ),
-                // The hat image placed on top of the drawer icon
-                Positioned(
-                  top: -7, // Adjust the position of the hat image vertically
-                  right:
-                      10, // Move the hat a little bit to the left by increasing the right value
-                  child: GestureDetector(
-                    onTap: () {
-                      // Open the drawer when the hat is tapped
-                      _scaffoldKey.currentState?.openEndDrawer();
-                    },
-                    child: Transform(
-                      alignment: Alignment.center,
-                      transform: Matrix4.rotationZ(-0.1) // Rotate if needed
-                        ..scale(-1.0, 1.0, 1.0), // Horizontal flip if needed
-                      child: Image.asset(
-                        'assets/icons/hat.png', // Path to your hat image
-                        width: 40.0, // Adjust the size of the hat
-                        height: 35.0,
+            padding: EdgeInsets.only(right: 8.0.w), // Adjust padding if needed
+            child: isChristmas
+                ? Stack(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.menu),
+                        onPressed: () {
+                          _scaffoldKey.currentState?.openEndDrawer();
+                        },
                       ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+                      Positioned(
+                        top: -7, // Adjust the position of the hat image
+                        right: 10,
+                        child: GestureDetector(
+                          onTap: () {
+                            _scaffoldKey.currentState?.openEndDrawer();
+                          },
+                          child: Transform(
+                            alignment: Alignment.center,
+                            transform: Matrix4.rotationZ(-0.1)
+                              ..scale(-1.0, 1.0, 1.0),
+                            child: Image.asset(
+                              'assets/christmas/hat.png', // Christmas hat image
+                              width: 40.0,
+                              height: 35.0,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                : isEaster
+                    ? IconButton(
+                        icon: Image.asset(
+                          'assets/easter/easter.png', // Easter icon
+                          width: 30,
+                          height: 30,
+                        ),
+                        onPressed: () {
+                          _scaffoldKey.currentState?.openEndDrawer();
+                        },
+                      )
+                    : isRamadan
+                        ? IconButton(
+                            icon: Image.asset(
+                              'assets/ramadan/ramadan_drawer.png', // Ramadan icon
+                              width: 30,
+                              height: 30,
+                            ),
+                            onPressed: () {
+                              _scaffoldKey.currentState?.openEndDrawer();
+                            },
+                          )
+                        : IconButton(
+                            icon: const Icon(Icons.menu), // Default drawer icon
+                            onPressed: () {
+                              _scaffoldKey.currentState?.openEndDrawer();
+                            },
+                          ),
           ),
         ],
       ),
@@ -256,9 +350,41 @@ class TabsScreenState extends State<TabsScreen>
         backgroundColor: Theme.of(context).primaryColor,
         color: Theme.of(context).colorScheme.secondary,
         activeColor: Theme.of(context).colorScheme.secondary,
-        items: const [
-          TabItem(icon: Icons.storefront, title: 'מוצרים'),
-          TabItem(icon: FontAwesomeIcons.breadSlice, title: 'לחם'),
+        items: [
+          TabItem(
+            icon: isChristmas
+                ? Image.asset('assets/christmas/market.png',
+                    width: 24, height: 24)
+                : isEaster
+                    ? Image.asset('assets/easter/shopping-bag.png',
+                        width: 24, height: 24)
+                    : isRamadan
+                        ? Image.asset('assets/ramadan/market.png',
+                            width: 24, height: 24)
+                        : Icon(
+                            Icons.storefront,
+                            color: Theme.of(context).colorScheme.secondary,
+                            size: 30.sp,
+                          ),
+            title: 'מוצרים',
+          ),
+          TabItem(
+            icon: isChristmas
+                ? Image.asset('assets/christmas/bread.png',
+                    width: 24, height: 24)
+                : isEaster
+                    ? Image.asset('assets/easter/bread.png',
+                        width: 24, height: 24)
+                    : isRamadan
+                        ? Image.asset('assets/easter/bread.png',
+                            width: 24, height: 24)
+                        : Icon(
+                            FontAwesomeIcons.breadSlice,
+                            color: Theme.of(context).colorScheme.secondary,
+                            size: 30.sp,
+                          ),
+            title: 'לחם',
+          ),
         ],
         initialActiveIndex: _selectedPageIndex,
         onTap: _selectPage,
@@ -276,7 +402,8 @@ class TabsScreenState extends State<TabsScreen>
                   decoration: BoxDecoration(
                     image: DecorationImage(
                       image: AssetImage(
-                          'assets/drawer.jpeg'), // Use your image path
+                        'assets/drawer.jpeg',
+                      ), // Use your image path
                       fit: BoxFit
                           .cover, // Ensures the image fills the DrawerHeader
                     ),
@@ -333,7 +460,7 @@ class TabsScreenState extends State<TabsScreen>
                   leading: const Icon(Icons.delete),
                   title: Text('מחק חשבון',
                       style: Theme.of(context).textTheme.bodyLarge),
-                  onTap: () async{
+                  onTap: () async {
                     await authService.deleteAccount(context, ipAddress);
                   },
                 ),

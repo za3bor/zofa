@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:zofa_client/constant.dart';
 import 'package:zofa_client/models/category.dart';
@@ -107,8 +106,8 @@ class _DeleteCategoryState extends State<DeleteCategory> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('הסרת קטגוריה'),
+      appBar: const CustomAppBar(
+        title: 'הסרת קטגוריה',
       ),
       body: Directionality(
         textDirection: TextDirection.rtl,

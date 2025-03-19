@@ -13,9 +13,9 @@ class EggPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     Paint paint = Paint()
       ..shader = ui.Gradient.linear(
-        Offset(0, 0),
+        const Offset(0, 0),
         Offset(size.width, size.height),
-        [baseColor.withOpacity(0.9), baseColor.withOpacity(0.6)],
+        [baseColor.withValues(alpha: 0.9), baseColor.withValues(alpha: 0.6)],
       );
 
     Rect eggRect = Rect.fromLTWH(0, 0, size.width, size.height);
@@ -34,13 +34,17 @@ class EggPainter extends CustomPainter {
   }
 
   void _drawStripes(Canvas canvas, Size size, Paint paint) {
-    for (double y = size.height * 0.2; y < size.height; y += size.height * 0.2) {
+    for (double y = size.height * 0.2;
+        y < size.height;
+        y += size.height * 0.2) {
       canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
     }
   }
 
   void _drawDots(Canvas canvas, Size size, Paint paint) {
-    for (double y = size.height * 0.2; y < size.height; y += size.height * 0.2) {
+    for (double y = size.height * 0.2;
+        y < size.height;
+        y += size.height * 0.2) {
       for (double x = size.width * 0.2; x < size.width; x += size.width * 0.3) {
         canvas.drawCircle(Offset(x, y), size.width * 0.05, paint);
       }

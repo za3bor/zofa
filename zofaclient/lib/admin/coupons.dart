@@ -1,8 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:zofa_client/models/coupon.dart'; // Ensure your Coupon model is defined correctly
 import 'package:zofa_client/constant.dart';
-import 'package:zofa_client/widgets/christmas/snow_layer.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CouponsScreen extends StatefulWidget {
@@ -187,10 +185,8 @@ class _CouponsScreenState extends State<CouponsScreen> {
         'Current coupons: $_coupons'); // Check what coupons are available before rendering
 
     return Scaffold(
-      appBar: AppBar(
-        flexibleSpace:
-            const SnowLayer(), // Directly use SnowLayer without Container
-        title: const Text('קופונים'),
+      appBar: const CustomAppBar(
+        title: 'קופונים',
       ),
       body: Directionality(
         textDirection: TextDirection.rtl,

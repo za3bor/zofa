@@ -4,6 +4,7 @@ import 'package:zofa_client/admin/bread/bread_func.dart';
 import 'package:zofa_client/admin/coupons.dart';
 import 'package:zofa_client/admin/notes.dart';
 import 'package:zofa_client/admin/product/products_func.dart';
+import 'package:zofa_client/widgets/custom_appbar.dart';
 import 'package:zofa_client/widgets/custom_elevated_but.dart';
 import 'package:zofa_client/customer/tabs.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -33,8 +34,8 @@ class AdminMainPageScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('לוח בקרה למנהל'),
+      appBar: const CustomAppBar(
+        title: 'לוח בקרה למנהל',
       ),
       body: Directionality(
         textDirection: TextDirection.rtl,

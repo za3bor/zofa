@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:zofa_client/constant.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -143,8 +142,8 @@ class _AddAdminScreenState extends State<AddAdminScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        title: const Text('מנהלים'),
+      appBar: const CustomAppBar(
+        title: 'מנהלים',
       ),
       body: Directionality(
         textDirection: TextDirection.rtl,

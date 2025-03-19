@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:hijri/hijri_calendar.dart';
 import 'package:zofa_client/widgets/christmas/snow_layer.dart';
 import 'package:zofa_client/widgets/easter/easter_layer.dart';
+import 'package:zofa_client/widgets/ramadan/ramadan_layer.dart';
 
 class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   final String title;
@@ -8,7 +10,7 @@ class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   const CustomAppBar({super.key, required this.title});
 
   @override
-  _CustomAppBarState createState() => _CustomAppBarState();
+  State<CustomAppBar> createState() => _CustomAppBarState();
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
@@ -17,13 +19,27 @@ class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
 class _CustomAppBarState extends State<CustomAppBar> {
   final GlobalKey _textKey = GlobalKey();
   double _textWidth = 0.0;
-  final double _imageWidth = 40.0; // Width of each image
+  final double _imageWidth = 35.0; // Width of each image
+
+  bool checkRamadan() {
+    // Get the current date in the Islamic calendar
+    HijriCalendar today = HijriCalendar.now();
+
+    // Check if the current month is Ramadan (the 9th month in the Hijri calendar)
+    if (today.hMonth == 9) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     DateTime currentDate = DateTime.now();
-    bool isEaster = currentDate.month == 3;
+    bool isEaster = currentDate.month == 4;
     bool isChristmas = currentDate.month == 12;
+    bool isRamadan = checkRamadan();
+
     bool canPop = Navigator.of(context).canPop();
 
     return AppBar(
@@ -37,10 +53,13 @@ class _CustomAppBarState extends State<CustomAppBar> {
           ? const EasterLayer()
           : isChristmas
               ? const SnowLayer()
-              : null,
+              : isRamadan
+                  ? const RamadanLayer()
+                  : null,
       title: LayoutBuilder(
         builder: (context, constraints) {
-          double availableWidth = constraints.maxWidth - (canPop ? 56 : 0); // Account for back button
+          double availableWidth = constraints.maxWidth -
+              (canPop ? 56 : 0); // Account for back button
 
           WidgetsBinding.instance.addPostFrameCallback((_) {
             final RenderBox? renderBox =
@@ -53,7 +72,8 @@ class _CustomAppBarState extends State<CustomAppBar> {
           });
 
           // Check if images fit
-          bool showImages = _textWidth + (_imageWidth * 2) < availableWidth - 32;
+          bool showImages =
+              _textWidth + (_imageWidth * 2) < availableWidth - 32;
 
           return Row(
             mainAxisSize: MainAxisSize.min,

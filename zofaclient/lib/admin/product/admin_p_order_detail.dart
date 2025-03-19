@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:zofa_client/models/product_orders.dart'; // Import your model
@@ -199,8 +198,8 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('פרטי הזמנה ${widget.order.id}'),
+      appBar: CustomAppBar(
+        title: 'פרטי הזמנה ${widget.order.id}',
       ),
       body: Directionality(
         textDirection: TextDirection.rtl,

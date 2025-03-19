@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:zofa_client/constant.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -84,8 +83,8 @@ class _AddNewBreadState extends State<AddNewBread> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('הוספת סוג לחם חדש'),
+      appBar: const CustomAppBar(
+        title: 'הוספת סוג לחם חדש',
       ),
       body: Directionality(
         textDirection: TextDirection.rtl,

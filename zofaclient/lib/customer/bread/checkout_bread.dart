@@ -1,9 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 import 'package:zofa_client/models/bread.dart';
 import 'package:http/http.dart' as http;
 import 'package:zofa_client/constant.dart';
-import 'package:zofa_client/widgets/christmas/snow_layer.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CheckoutBreadScreen extends StatefulWidget {
@@ -105,11 +103,8 @@ class _CheckoutBreadScreenState extends State<CheckoutBreadScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false, // Prevent resizing when keyboard appears
-      appBar: AppBar(
-        flexibleSpace: const SnowLayer(), // Snow falling in the appBar
-        title: const Text(
-          'ביקורת הזמנה',
-        ),
+      appBar: const CustomAppBar(
+        title: 'ביקורת הזמנה',
       ),
       body: Directionality(
         textDirection: TextDirection.rtl,

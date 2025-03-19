@@ -1,5 +1,4 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:zofa_client/models/product.dart';
 import 'package:zofa_client/constant.dart';
@@ -158,8 +157,8 @@ class _EditProductStockScreenState extends State<EditProductStockScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('ערוך מלאי מוצרים'),
+      appBar: const CustomAppBar(
+        title: 'ערוך מלאי מוצרים',
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())

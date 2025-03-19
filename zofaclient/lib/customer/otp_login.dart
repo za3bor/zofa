@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:zofa_client/admin/admin_main_page.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -104,7 +103,7 @@ class _OtpLoginScreenState extends State<OtpLoginScreen> {
 
       // Check if the phone number is an admin
       bool isAdmin = await _checkAdmin(user?.phoneNumber ?? '');
-      
+
       if (mounted) {
         Navigator.pushAndRemoveUntil(
           context,
@@ -146,8 +145,8 @@ class _OtpLoginScreenState extends State<OtpLoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('הזן את קוד האימות'),
+      appBar: const CustomAppBar(
+        title: 'הזן את קוד האימות',
       ),
       body: Directionality(
         textDirection: TextDirection.rtl,

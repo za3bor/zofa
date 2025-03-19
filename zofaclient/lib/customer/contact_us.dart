@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:zofa_client/widgets/custom_appbar.dart';
 
 class ContactUsScreen extends StatelessWidget {
   ContactUsScreen({super.key});
@@ -46,15 +47,15 @@ class ContactUsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("צור קשר"),
+      appBar: const CustomAppBar(
+        title: "צור קשר",
       ),
       body: Stack(
         children: [
           SizedBox(
             height: double
                 .infinity, // Ensures the background image fills the whole screen
-                width: double.infinity,
+            width: double.infinity,
             child: Image.asset(
               'assets/background.jpg',
               fit: BoxFit.cover,

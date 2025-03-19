@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:zofa_client/constant.dart';
 import 'package:zofa_client/models/category.dart';
@@ -238,8 +237,8 @@ class _TextFieldDropdownPageState extends State<EditExistingProductScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('עריכת מוצר'),
+      appBar: const CustomAppBar(
+        title: 'עריכת מוצר',
       ),
       body: Directionality(
         textDirection: TextDirection.rtl,

@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart'; // Import for FCM
 import 'package:flutter/services.dart';
@@ -201,8 +200,8 @@ class _OtpSignupScreenState extends State<OtpSignupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('הכנס קוד OTP'),
+      appBar: const CustomAppBar(
+        title: 'הכנס קוד OTP',
       ),
       body: Directionality(
         textDirection: TextDirection.rtl,

@@ -6,8 +6,8 @@ import 'package:zofa_client/admin/product/delete_category.dart';
 import 'package:zofa_client/admin/product/delete_product.dart';
 import 'package:zofa_client/admin/product/edit_existing_product.dart';
 import 'package:zofa_client/admin/product/edit_product_stock.dart';
+import 'package:zofa_client/widgets/custom_appbar.dart';
 import 'package:zofa_client/widgets/custom_elevated_but.dart';
-import 'package:zofa_client/widgets/christmas/snow_layer.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ProductFuncScreen extends StatelessWidget {
@@ -29,12 +29,10 @@ class ProductFuncScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        flexibleSpace:
-            const SnowLayer(), // Directly use SnowLayer without Container
-        title: const Text(
+      appBar: const CustomAppBar(
+        title:
           'לוח בקרה למוצרים',
-        ),
+        
       ),
       body: Directionality(
         textDirection: TextDirection.rtl,

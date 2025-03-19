@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:zofa_client/admin/product/admin_p_order_detail.dart'; // Import your details screen
 import 'package:zofa_client/constant.dart';
@@ -66,8 +65,8 @@ class _ProductOrdersScreenState extends State<ProductOrdersScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('הזמנות'),
+      appBar: const CustomAppBar(
+        title: 'הזמנות',
       ),
       body: Directionality(
         textDirection: TextDirection.rtl,

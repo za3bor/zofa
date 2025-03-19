@@ -1,7 +1,4 @@
-import 'dart:math';
-
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/material.dart';
 import 'package:zofa_client/models/category.dart';
 import 'package:zofa_client/models/product.dart';
 import 'package:http/http.dart' as http;

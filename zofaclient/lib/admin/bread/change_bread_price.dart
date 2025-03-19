@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:zofa_client/constant.dart';
 import 'package:zofa_client/models/bread.dart';
@@ -76,8 +75,8 @@ class _BreadPriceUpdateScreenState extends State<BreadPriceUpdateScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('עדכון מחירים'),
+      appBar: const CustomAppBar(
+        title: 'עדכון מחירים',
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())

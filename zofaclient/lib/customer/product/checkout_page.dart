@@ -1,10 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:zofa_client/constant.dart';
 import 'package:zofa_client/customer/product/f_checkout_products.dart';
-import 'package:zofa_client/global.dart'; // Adjust the path accordingly
-import 'package:zofa_client/widgets/christmas/snow_layer.dart';
+import 'package:zofa_client/global.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CheckoutPageScreen extends StatefulWidget {
@@ -137,9 +135,8 @@ class _CheckoutPageScreenState extends State<CheckoutPageScreen> {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: AppBar(
-        flexibleSpace: const SnowLayer(),
-        title: const Text('העגלה שלי'),
+      appBar: const CustomAppBar(
+        title: 'העגלה שלי',
       ),
       body: cartItems.isEmpty
           ? Directionality(
@@ -294,13 +291,19 @@ class _CheckoutPageScreenState extends State<CheckoutPageScreen> {
                           children: [
                             Text(
                               'סה״כ:',
-                              style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge!
+                                  .copyWith(
                                     fontWeight: FontWeight.bold,
                                   ),
                             ),
                             Text(
                               '₪${getTotalPrice().toStringAsFixed(2)}',
-                              style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge!
+                                  .copyWith(
                                     fontWeight: FontWeight.bold,
                                   ),
                             ),

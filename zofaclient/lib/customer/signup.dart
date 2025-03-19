@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:zofa_client/customer/otp_signup.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:zofa_client/widgets/custom_appbar.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -60,8 +61,7 @@ class _SignupScreenState extends State<SignupScreen> {
   }
 
   String _formatPhoneNumber(String phone) {
-
-    if (phone=='+11234567890') {
+    if (phone == '+11234567890') {
       return phone; // Return empty string if phone is empty
     }
     // Remove any non-digit characters
@@ -88,8 +88,8 @@ class _SignupScreenState extends State<SignupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('הרשמה'),
+      appBar: const CustomAppBar(
+        title: 'הרשמה',
       ),
       body: Directionality(
         textDirection: TextDirection.rtl,

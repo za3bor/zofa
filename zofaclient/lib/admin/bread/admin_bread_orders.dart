@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:zofa_client/models/bread_orders.dart';
 import 'package:zofa_client/constant.dart';
@@ -212,10 +211,8 @@ class _AdminBreadOrdersScreenState extends State<AdminBreadOrdersScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'הזמנות לחם ליום ${widget.day} ',
-        ),
+      appBar: CustomAppBar(
+        title: 'הזמנות לחם ליום ${widget.day} ',
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
