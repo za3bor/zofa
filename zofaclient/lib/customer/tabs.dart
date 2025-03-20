@@ -99,10 +99,11 @@ class TabsScreenState extends State<TabsScreen>
         );
       }
     } catch (e) {
-      print('Error logging out: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Error logging out: ${e.toString()}")),
+          SnackBar(
+            content: Text("Error logging out: ${e.toString()}"),
+          ),
         );
       }
     }

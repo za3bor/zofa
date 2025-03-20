@@ -46,7 +46,14 @@ class _DeleteCategoryState extends State<DeleteCategory> {
         throw Exception('Failed to load categories');
       }
     } catch (e) {
-      print('Error fetching categories: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error fetching categories: $e'),
+          ),
+        );
+      }
+      
     }
   }
 

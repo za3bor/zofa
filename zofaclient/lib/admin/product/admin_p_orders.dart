@@ -39,16 +39,22 @@ class _ProductOrdersScreenState extends State<ProductOrdersScreen> {
           }).toList();
         });
       } else {
-        print('Failed to load orders. Status code: ${response.statusCode}');
-        print('Response body: ${response.body}');
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                  'Failed to load orders. Status code: ${response.statusCode}, Response body: ${response.body}'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
         throw Exception('Failed to load orders');
       }
     } catch (error) {
-      print('Error: $error');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('שגיאה בטעינת ההזמנות. אנא נסה שוב מאוחר יותר.'),
+          SnackBar(
+            content: Text('Error: $error'),
             backgroundColor: Colors.red,
           ),
         );

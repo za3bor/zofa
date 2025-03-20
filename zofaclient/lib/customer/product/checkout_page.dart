@@ -46,7 +46,13 @@ class _CheckoutPageScreenState extends State<CheckoutPageScreen> {
           });
         }
       } catch (e) {
-        print('Error loading cart item: $e');
+              if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error loading cart item: $e'),
+          ),
+        );
+      }
       }
     }
 
@@ -69,7 +75,13 @@ class _CheckoutPageScreenState extends State<CheckoutPageScreen> {
         };
       }
     } catch (e) {
-      print('Error fetching product details: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error fetching product details: $e'),
+          ),
+        );
+      }
     }
     return null;
   }
@@ -100,7 +112,13 @@ class _CheckoutPageScreenState extends State<CheckoutPageScreen> {
         _updateCartItemCount();
       }
     } catch (e) {
-      print('Error deleting item from cart: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error deleting item from cart: $e'),
+          ),
+        );
+      }
     }
   }
 
@@ -126,7 +144,6 @@ class _CheckoutPageScreenState extends State<CheckoutPageScreen> {
     final aspectRatio = screenWidth / screenHeight;
 
     // Define a threshold for foldable device detection
-    print('Aspect ratio: $aspectRatio' 'Screen width: $screenWidth');
     return aspectRatio > 2.0 || screenWidth > 500;
   }
 

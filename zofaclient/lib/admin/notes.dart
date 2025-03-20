@@ -30,8 +30,6 @@ class _NotesScreenState extends State<NotesScreen> {
     try {
       final response =
           await http.get(Uri.parse('http://$ipAddress/api/getAllNotes'));
-      print('Response Status: ${response.statusCode}');
-      print('Response Body: ${response.body}');
       if (response.statusCode == 200) {
         final responseData =
             jsonDecode(response.body); // Parse the response as dynamic
@@ -64,10 +62,9 @@ class _NotesScreenState extends State<NotesScreen> {
         }
       }
     } catch (error) {
-      print('Error: $error');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Error fetching notes')),
+          SnackBar(content: Text('Error fetching notes: $error')),
         );
       }
     } finally {
@@ -95,8 +92,7 @@ class _NotesScreenState extends State<NotesScreen> {
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'content': _controller.text}),
       );
-      print('Response Status: ${response.statusCode}');
-      print('Response Body: ${response.body}');
+
       if (response.statusCode == 201) {
         final newNote = Note(
           id: jsonDecode(response.body)['id'],
@@ -121,10 +117,9 @@ class _NotesScreenState extends State<NotesScreen> {
         }
       }
     } catch (error) {
-      print('Error: $error');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Error adding note')),
+          SnackBar(content: Text('Error adding note: $error')),
         );
       }
     }
@@ -135,11 +130,6 @@ class _NotesScreenState extends State<NotesScreen> {
       final response = await http.delete(
         Uri.parse('http://$ipAddress/api/deleteNote/$id'),
       );
-
-      // Log the response status and body for debugging
-      print('Response Status: ${response.statusCode}');
-      print('Response Body: ${response.body}');
-
       if (response.statusCode == 200) {
         // Only update UI and show snack bar if the widget is still mounted
         if (mounted) {
@@ -161,10 +151,9 @@ class _NotesScreenState extends State<NotesScreen> {
         }
       }
     } catch (error) {
-      print('Error: $error');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Error deleting note')),
+          SnackBar(content: Text('Error deleting note: $error')),
         );
       }
     }

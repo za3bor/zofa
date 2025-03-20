@@ -38,14 +38,8 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
       String cleanedOrderDetails =
           widget.order.orderDetails.replaceAll('\n', ' ').trim();
 
-      // Log cleaned order details
-      print('Cleaned Order Details: $cleanedOrderDetails');
-
       // Split the cleaned order details string
       List<String> orderItems = cleanedOrderDetails.split(' ');
-
-      // Log parsed items
-      print('Parsed Order Items: $orderItems');
 
       // Create a list of futures to fetch all product details
       List<Future<Map<String, dynamic>>> fetchFutures = [];
@@ -55,15 +49,9 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
           int productId = int.parse(productData[0]);
           String quantity = productData[1];
 
-          // Log each product ID and quantity
-          print('Product ID: $productId, Quantity: $quantity');
-
           // Fetch product details
           fetchFutures
               .add(fetchProductDetails(productId).then((productDetails) {
-            // Log fetched product details
-            print('Fetched details for product ID $productId: $productDetails');
-
             return {
               'id': productId,
               'name': productDetails['name'],
@@ -71,7 +59,13 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
             };
           }));
         } catch (e) {
-          print('Error parsing product item: $item, Error: $e');
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                  content:
+                      Text('Error parsing product item: $item, Error: $e')),
+            );
+          }
         }
       }
 
@@ -85,13 +79,11 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
       });
 
       // Log final product details list
-      print('Final Product Details List: $productDetailsList');
     } catch (error) {
-      print('Error fetching product details: $error');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('שגיאה בטעינת פרטי המוצרים. אנא נסה שוב מאוחר יותר.'),
+          SnackBar(
+            content: Text('Error fetching product details: $error'),
             backgroundColor: Colors.red,
           ),
         );

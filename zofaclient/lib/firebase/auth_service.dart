@@ -178,9 +178,8 @@ Future<bool> reauthenticateUser(BuildContext context) async {
   Future<void> deleteFcmToken() async {
     try {
       await FirebaseMessaging.instance.deleteToken();
-      print("FCM token deleted successfully.");
+    // ignore: empty_catches
     } catch (e) {
-      print("Error deleting FCM token: $e");
     }
   }
 
@@ -247,9 +246,8 @@ Future<bool> reauthenticateUser(BuildContext context) async {
 
       // If you want to delete the box completely, use:
       await Hive.deleteBoxFromDisk('cart');
-      print('Hive data deleted successfully.');
+    // ignore: empty_catches
     } catch (e) {
-      print('Error deleting Hive data: $e');
     }
   }
 }

@@ -179,7 +179,6 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
           ),
         );
       }
-      print(response.body);
     }
   }
 

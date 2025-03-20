@@ -89,7 +89,6 @@ class _CheckoutBreadScreenState extends State<CheckoutBreadScreen> {
                   Text('יש בעיה נא להתקשר', textDirection: TextDirection.rtl)),
         );
       }
-      print(response.body);
     }
   }
 

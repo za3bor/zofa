@@ -76,8 +76,11 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
       if (pickedFile != null) {
         _image = File(pickedFile.path);
       } else {
-        // Handle the case where no image was selected
-        print('No image selected.');
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('No image selected.')),
+          );
+        }
       }
     });
   }
@@ -100,29 +103,44 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
 
     try {
       final response = await request.send();
-      if (response.statusCode == 200) {
+      if (response.statusCode != 200) {
         final responseBody = await http.Response.fromStream(response);
-        print('File uploaded successfully: ${responseBody.body}');
-        // You can use the responseBody to show success or to do further actions
-      } else {
-        final responseBody = await http.Response.fromStream(response);
-        print(
-            'File upload failed with status: ${response.statusCode}, body: ${responseBody.body}');
-        // Handle specific status codes and provide feedback
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content: Text(
+                    'File upload failed with status: ${response.statusCode}, body: ${responseBody.body}')),
+          );
+        }
         if (response.statusCode == 400) {
           // Bad request
-          print('Bad request: ${responseBody.body}');
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Bad request: ${responseBody.body}')),
+            );
+          }
         } else if (response.statusCode == 500) {
           // Server error
-          print('Server error: ${responseBody.body}');
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Server error: ${responseBody.body}')),
+            );
+          }
         } else {
           // Other errors
-          print('Error: ${responseBody.body}');
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Error: ${responseBody.body}')),
+            );
+          }
         }
       }
     } catch (e) {
-      print('Error uploading file: $e');
-      // Show a user-friendly message or log the error
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error uploading file: $e')),
+        );
+      }
     }
   }
 
@@ -151,7 +169,11 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
         throw Exception('Failed to load categories');
       }
     } catch (e) {
-      print('Error fetching categories: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error fetching categories: $e')),
+        );
+      }
     }
   }
 
@@ -386,7 +408,7 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
 
                 // Categories as SwitchListTiles
                 Padding(
-                  padding: EdgeInsets.symmetric(vertical: 10.0),
+                  padding: EdgeInsets.symmetric(vertical: 10.0.h),
                   child: Text(
                     'קטגוריות',
                     style: Theme.of(context).textTheme.bodyLarge!.copyWith(

@@ -49,10 +49,14 @@ class _OtpLoginScreenState extends State<OtpLoginScreen> {
         phoneNumber: widget.phoneNumber,
         verificationCompleted: (PhoneAuthCredential credential) async {
           await FirebaseAuth.instance.signInWithCredential(credential);
-          print('Verified and signed in automatically!');
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                  content: Text('Verified and signed in automatically!')),
+            );
+          }
         },
         verificationFailed: (FirebaseAuthException e) {
-          print('Verification failed: ${e.message}');
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Failed to send OTP: ${e.message}')),
           );
@@ -61,13 +65,11 @@ class _OtpLoginScreenState extends State<OtpLoginScreen> {
           setState(() {
             verificationId = verId;
           });
-          print('OTP sent to ${widget.phoneNumber}');
         },
         codeAutoRetrievalTimeout: (String verId) {
           setState(() {
             verificationId = verId;
           });
-          print('Auto retrieval timeout');
         },
       );
     } finally {
@@ -99,7 +101,6 @@ class _OtpLoginScreenState extends State<OtpLoginScreen> {
         smsCode: otp,
       );
       await FirebaseAuth.instance.signInWithCredential(credential);
-      print('OTP verified!');
 
       // Check if the phone number is an admin
       bool isAdmin = await _checkAdmin(user?.phoneNumber ?? '');
@@ -122,7 +123,11 @@ class _OtpLoginScreenState extends State<OtpLoginScreen> {
           const SnackBar(content: Text('Invalid OTP. Please try again.')),
         );
       }
-      print('Error verifying OTP: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error verifying OTP: $e')),
+        );
+      }
     } finally {
       setState(() {
         _isVerifyingOtp = false;
@@ -197,10 +202,7 @@ class _OtpLoginScreenState extends State<OtpLoginScreen> {
                   onChanged: (value) {
                     // Handle input changes
                   },
-                  onCompleted: (value) {
-                    // Optionally handle OTP complete
-                    print("Completed OTP: $value");
-                  },
+                  onCompleted: (value) {},
                 ),
               ),
               SizedBox(height: 20.h),

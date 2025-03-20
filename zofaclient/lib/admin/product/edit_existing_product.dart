@@ -69,7 +69,13 @@ class _TextFieldDropdownPageState extends State<EditExistingProductScreen> {
         throw Exception('Failed to load categories');
       }
     } catch (e) {
-      print('Error fetching categories: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error fetching categories: $e'),
+          ),
+        );
+      }
     }
   }
 
@@ -81,9 +87,6 @@ class _TextFieldDropdownPageState extends State<EditExistingProductScreen> {
 
       if (response.statusCode == 200) {
         final List<dynamic> productCategories = jsonDecode(response.body);
-        print(
-            'Product Categories: $productCategories'); // Debug print for response
-
         setState(() {
           // Loop through each category and check if it matches with _categorySelections
           for (var categoryName in productCategories) {
@@ -110,10 +113,9 @@ class _TextFieldDropdownPageState extends State<EditExistingProductScreen> {
         }
       }
     } catch (e) {
-      print('Error fetching product categories: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Error fetching product categories')),
+          SnackBar(content: Text('Error fetching product categories: $e')),
         );
       }
     }
@@ -212,10 +214,9 @@ class _TextFieldDropdownPageState extends State<EditExistingProductScreen> {
         );
       }
     } catch (e) {
-      print('Error saving categories: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Error saving categories')),
+          SnackBar(content: Text('Error saving categories: $e')),
         );
       }
     }

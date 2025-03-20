@@ -170,7 +170,11 @@ class _CouponsScreenState extends State<CouponsScreen> {
       }
     } catch (error) {
       // Catch and handle any errors
-      print('Error: $error');
+            if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+           SnackBar(content: Text('Error: $error')),
+        );
+      }
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Error occurred while deleting coupon')),
@@ -181,9 +185,6 @@ class _CouponsScreenState extends State<CouponsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print(
-        'Current coupons: $_coupons'); // Check what coupons are available before rendering
-
     return Scaffold(
       appBar: const CustomAppBar(
         title: 'קופונים',

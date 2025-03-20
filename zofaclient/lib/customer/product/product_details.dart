@@ -25,7 +25,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   Future<Map<String, dynamic>> fetchProductDetails(int productId) async {
     final response = await http
         .get(Uri.parse('http://$ipAddress/api/getProductDetails/$productId'));
-    print(response.body);
     if (response.statusCode == 200) {
       return json.decode(response.body); // Return product details as a Map
     } else {

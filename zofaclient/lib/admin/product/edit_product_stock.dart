@@ -150,7 +150,6 @@ class _EditProductStockScreenState extends State<EditProductStockScreen> {
     final aspectRatio = screenWidth / screenHeight;
 
     // Define a threshold for foldable device detection
-    print('Aspect ratio: $aspectRatio' 'Screen width: $screenWidth');
     return aspectRatio > 2.0 || screenWidth > 500;
   }
 
@@ -307,28 +306,28 @@ class _EditProductStockScreenState extends State<EditProductStockScreen> {
                                       // Delete button
                                       Center(
                                         child: IconButton(
-                                          icon: Icon(Icons.delete,
+                                          icon: const Icon(Icons.delete,
                                               color: Colors.red),
                                           onPressed: () async {
                                             bool confirmDelete =
                                                 await showDialog(
                                               context: context,
                                               builder: (context) => AlertDialog(
-                                                title: Text('מחיקת מוצר'),
-                                                content: Text(
+                                                title: const Text('מחיקת מוצר'),
+                                                content: const Text(
                                                     'האם אתה בטוח שברצונך למחוק מוצר זה?'),
                                                 actions: [
                                                   TextButton(
                                                     onPressed: () =>
                                                         Navigator.of(context)
                                                             .pop(false),
-                                                    child: Text('ביטול'),
+                                                    child: const Text('ביטול'),
                                                   ),
                                                   TextButton(
                                                     onPressed: () =>
                                                         Navigator.of(context)
                                                             .pop(true),
-                                                    child: Text('מחיקה'),
+                                                    child: const Text('מחיקה'),
                                                   ),
                                                 ],
                                               ),

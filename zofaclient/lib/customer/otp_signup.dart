@@ -26,7 +26,6 @@ class _OtpSignupScreenState extends State<OtpSignupScreen> {
   bool _isVerifyingOtp = false; // Loading indicator for verifying OTP
   String? fcmToken; // Variable to store FCM token
 
-
   Future<bool> _checkAdmin(String phone) async {
     try {
       final response = await http.get(
@@ -60,13 +59,21 @@ class _OtpSignupScreenState extends State<OtpSignupScreen> {
       );
 
       if (response.statusCode == 200) {
-        print('User data sent successfully!');
       } else {
-        print('Failed to send user data: ${response.statusCode}');
-        print('Response: ${response.body}');
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content: Text(
+                    'Failed to send user data: ${response.statusCode} \n Response: ${response.body}')),
+          );
+        }
       }
     } catch (e) {
-      print('Error sending user data: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error sending user data: $e')),
+        );
+      }
     }
   }
 
@@ -81,10 +88,8 @@ class _OtpSignupScreenState extends State<OtpSignupScreen> {
         phoneNumber: widget.phoneNumber,
         verificationCompleted: (PhoneAuthCredential credential) async {
           await FirebaseAuth.instance.signInWithCredential(credential);
-          print('Verified and signed in automatically!');
         },
         verificationFailed: (FirebaseAuthException e) {
-          print('Verification failed: ${e.message}');
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Failed to send OTP: ${e.message}')),
           );
@@ -93,13 +98,11 @@ class _OtpSignupScreenState extends State<OtpSignupScreen> {
           setState(() {
             verificationId = verId;
           });
-          print('OTP sent to ${widget.phoneNumber}');
         },
         codeAutoRetrievalTimeout: (String verId) {
           setState(() {
             verificationId = verId;
           });
-          print('Auto retrieval timeout');
         },
       );
     } finally {
@@ -130,14 +133,17 @@ class _OtpSignupScreenState extends State<OtpSignupScreen> {
         smsCode: otp,
       );
       await FirebaseAuth.instance.signInWithCredential(credential);
-      print('OTP verified!');
 
       // Get FCM token
       String? fcmToken = await FirebaseMessaging.instance.getToken();
       if (fcmToken != null) {
         await _saveNewUser(fcmToken); // Send user data to the backend
       } else {
-        print('Failed to retrieve FCM token');
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Failed to retrieve FCM token')),
+          );
+        }
       }
 
       // Check if the phone number is an admin
@@ -161,7 +167,11 @@ class _OtpSignupScreenState extends State<OtpSignupScreen> {
           const SnackBar(content: Text('Invalid OTP. Please try again.')),
         );
       }
-      print('Error verifying OTP: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error verifying OTP: $e')),
+        );
+      }
     } finally {
       setState(() {
         _isVerifyingOtp = false;
@@ -173,7 +183,7 @@ class _OtpSignupScreenState extends State<OtpSignupScreen> {
   void initState() {
     super.initState();
     _sendOtp();
-        // Listen for the FCM token received from the iOS native side
+    // Listen for the FCM token received from the iOS native side
     FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
       setState(() {
         fcmToken = newToken; // Update the token when received
@@ -249,10 +259,7 @@ class _OtpSignupScreenState extends State<OtpSignupScreen> {
                   onChanged: (value) {
                     // Handle input changes
                   },
-                  onCompleted: (value) {
-                    // Optionally handle OTP complete
-                    print("Completed OTP: $value");
-                  },
+                  onCompleted: (value) {},
                 ),
               ),
               SizedBox(height: 20.h),

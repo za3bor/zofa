@@ -80,11 +80,6 @@ class _BreadOrderScreenState extends State<BreadOrderScreen> {
         isButtonEnabled = false;
         buttonText = 'הזמנה אינה זמינה כעת';
       }
-
-      // Debugging prints to verify each variable's state
-      print('Day set to: $day');
-      print('Button Enabled: $isButtonEnabled');
-      print('Button Text: $buttonText');
     });
   }
 
@@ -111,7 +106,13 @@ class _BreadOrderScreenState extends State<BreadOrderScreen> {
         throw Exception('Failed to load bread data');
       }
     } catch (e) {
-      print('Error fetching bread data: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error fetching bread data: $e'),
+          ),
+        );
+      }
       setState(() {
         errorMessage =
             'שגיאה בטעינת נתונים. נסה שוב מאוחר יותר'; // Error message in Hebrew

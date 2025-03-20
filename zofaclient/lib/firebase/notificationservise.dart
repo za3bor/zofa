@@ -12,19 +12,16 @@ class NotificationService {
         await _firebaseMessaging.requestPermission();
 
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      print('Permission granted');
       if (context.mounted) {
         _showSnackbar(context, 'ההיתר להודעות ניתן');
       }
     } else if (settings.authorizationStatus ==
         AuthorizationStatus.provisional) {
-      print('Provisional permission granted');
       if (context.mounted) {
         _showSnackbar(context, 'ההיתר הזמני להודעות ניתן');
       }
     } else {
       // Permission denied, prompt user to open settings
-      print('Permission denied');
       if (context.mounted) {
         _showSnackbar(context, 'לא ניתן היתר להודעות');
         _askUserToEnableNotifications(context);
@@ -58,13 +55,9 @@ class NotificationService {
   }
 
   void _initializeFirebaseMessaging() {
-  // Foreground message handler
-  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    if (message.notification != null) {
-      print('Message received: ${message.notification!.title}, ${message.notification!.body}');
-      // You can show a local notification or update UI accordingly
-    }
-  });
-}
-
+    // Foreground message handler
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      if (message.notification != null) {}
+    });
+  }
 }

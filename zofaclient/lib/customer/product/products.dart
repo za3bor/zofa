@@ -77,9 +77,7 @@ class _ProductsScreenState extends State<ProductsScreen>
     );
 
     // Listen for connection
-    _socket.onConnect((_) {
-      print('Connected to socket server');
-    });
+    _socket.onConnect((_) {});
 
     _socket.on('orderUpdate', (data) {
       int productId = int.tryParse(data['productId'].toString()) ?? 0;
@@ -95,9 +93,7 @@ class _ProductsScreenState extends State<ProductsScreen>
     });
 
     // Handle socket disconnection
-    _socket.onDisconnect((_) {
-      print('Disconnected from socket server');
-    });
+    _socket.onDisconnect((_) {});
   }
 
   @override
@@ -145,7 +141,11 @@ class _ProductsScreenState extends State<ProductsScreen>
       setState(() {
         _categoriesError = true; // Set error state
       });
-      print('Error fetching categories: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error fetching categories: $e')),
+        );
+      }
     }
   }
 
@@ -163,7 +163,6 @@ class _ProductsScreenState extends State<ProductsScreen>
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'categoryIds': selectedCategoryIds}),
       );
-      print(response.body);
       if (response.statusCode == 200) {
         final jsonData = jsonDecode(response.body) as List;
         setState(() {
@@ -190,7 +189,11 @@ class _ProductsScreenState extends State<ProductsScreen>
       setState(() {
         _categoriesError = true; // Set error state
       });
-      print('Error fetching products: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error fetching products: $e')),
+        );
+      }
     }
   }
 
@@ -316,8 +319,7 @@ class _ProductsScreenState extends State<ProductsScreen>
 
     if (width > 1000) {
       return 5;
-    }
-    else if (_isFoldable()) {
+    } else if (_isFoldable()) {
       if (width > 650) {
         flag = 1;
         return 4;
