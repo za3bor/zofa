@@ -49,6 +49,14 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount), // Authenticate using service account
 });
 
+app.get("/api/checkVersion", (req, res) => {
+  res.json({
+    latestVersion: "1.1.0",
+    forceUpdate: true,  // Set to false if update is optional
+  });
+});
+
+
 app.post("/api/uploadPicture", upload.single("file"), async (req, res) => {
   try {
     const file = req.file;
