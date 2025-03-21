@@ -40,6 +40,15 @@ class DefaultFirebaseOptions {
     }
   }
 
+  static const FirebaseOptions ios = FirebaseOptions(
+    apiKey: 'AIzaSyBOfRnQPOspu5kromi8lKqzDmOEInT_pNY',
+    appId: '1:1013991760042:ios:7fc326e6bc6becb6fe70d3',
+    messagingSenderId: '1013991760042',
+    projectId: 'zofa-5c07c',
+    storageBucket: 'zofa-5c07c.firebasestorage.app',
+    iosBundleId: 'com.example.zofaClient',
+  );
+
   static const FirebaseOptions web = FirebaseOptions(
     apiKey: 'AIzaSyDbwSkC3fr6SIBt1FlHo8zG6nZrpkbiLBs',
     appId: '1:1013991760042:web:5aee9cdd3cd65af2fe70d3',
@@ -48,23 +57,6 @@ class DefaultFirebaseOptions {
     authDomain: 'zofa-5c07c.firebaseapp.com',
     storageBucket: 'zofa-5c07c.firebasestorage.app',
     measurementId: 'G-VTFXJF51GR',
-  );
-
-  static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAxIvTOueEVVqgmHI6eX10w3OaZxUkYuDo',
-    appId: '1:1013991760042:android:8068d65f0df6f05ffe70d3',
-    messagingSenderId: '1013991760042',
-    projectId: 'zofa-5c07c',
-    storageBucket: 'zofa-5c07c.firebasestorage.app',
-  );
-
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBOfRnQPOspu5kromi8lKqzDmOEInT_pNY',
-    appId: '1:1013991760042:ios:7fc326e6bc6becb6fe70d3',
-    messagingSenderId: '1013991760042',
-    projectId: 'zofa-5c07c',
-    storageBucket: 'zofa-5c07c.firebasestorage.app',
-    iosBundleId: 'com.example.zofaClient',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
@@ -76,6 +68,14 @@ class DefaultFirebaseOptions {
     iosBundleId: 'com.example.zofaClient',
   );
 
+  static const FirebaseOptions android = FirebaseOptions(
+    apiKey: 'AIzaSyCBSn9Uxko7tP5xiT6KggUmKrbE6eoc6oM',
+    appId: '1:1013991760042:android:0b6bb3d406802b34fe70d3',
+    messagingSenderId: '1013991760042',
+    projectId: 'zofa-5c07c',
+    storageBucket: 'zofa-5c07c.firebasestorage.app',
+  );
+
   static const FirebaseOptions windows = FirebaseOptions(
     apiKey: 'AIzaSyDbwSkC3fr6SIBt1FlHo8zG6nZrpkbiLBs',
     appId: '1:1013991760042:web:c2693eb0f8b073f7fe70d3',
@@ -85,4 +85,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'zofa-5c07c.firebasestorage.app',
     measurementId: 'G-CRR4M9FB5S',
   );
+
 }

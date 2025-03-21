@@ -6,10 +6,10 @@ import 'package:zofa_client/admin/admin_main_page.dart';
 import 'package:zofa_client/firebase/notificationservise.dart';
 import 'package:zofa_client/customer/signup.dart';
 import 'package:zofa_client/customer/tabs.dart';
+import 'package:zofa_client/firebase_options.dart';
 import 'package:zofa_client/theme_data.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:zofa_client/update_checker.dart';
-import 'firebase/firebase_options.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
 import 'package:zofa_client/constant.dart';
@@ -70,7 +70,7 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     super.initState();
-    checkServerVersion(context); // Check for updates when the app starts
+    //checkServerVersion(context); // Check for updates when the app starts
   }
 
   Future<bool> _checkAdmin(String phone) async {
