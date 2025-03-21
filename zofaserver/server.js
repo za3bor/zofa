@@ -51,7 +51,7 @@ admin.initializeApp({
 
 app.get("/api/checkVersion", (req, res) => {
   res.json({
-    latestVersion: "1.0.9",
+    latestVersion: "1.1.0",
     forceUpdate: true,  // Set to false if update is optional
   });
 });
