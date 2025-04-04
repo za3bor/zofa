@@ -126,7 +126,7 @@ class TabsScreenState extends State<TabsScreen>
     HijriCalendar today = HijriCalendar.now();
 
     // Check if the current month is Ramadan (the 9th month in the Hijri calendar)
-    if (today.hMonth == 8) {
+    if (today.hMonth == 9) {
       return true;
     } else {
       return false;

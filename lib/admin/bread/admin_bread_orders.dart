@@ -175,6 +175,7 @@ class _AdminBreadOrdersScreenState extends State<AdminBreadOrdersScreen> {
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri);
     } else {
+      _showSnackbar('Could not launch WhatsApp');
       throw 'Could not send WhatsApp message';
     }
   }
