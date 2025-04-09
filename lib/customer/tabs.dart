@@ -202,7 +202,7 @@ class TabsScreenState extends State<TabsScreen>
     Widget activePage = const ProductsScreen();
     var activePageTitle = 'מוצרים';
     DateTime currentDate = DateTime.now();
-    bool isEaster = currentDate.month == 4;
+    bool isEaster = currentDate.month == 3;
     bool isChristmas = currentDate.month == 12;
     bool isRamadan = checkRamadan();
 
