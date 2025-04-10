@@ -114,7 +114,6 @@ class _CheckoutBreadScreenState extends State<CheckoutBreadScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false, // Prevent resizing when keyboard appears
       appBar: const CustomAppBar(title: 'פרטי ההזמנה'),
       body: Directionality(
         textDirection: TextDirection.rtl,

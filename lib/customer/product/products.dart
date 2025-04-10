@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:zofa/models/category.dart';
 import 'package:zofa/models/product.dart';
 import 'package:http/http.dart' as http;
@@ -283,7 +284,6 @@ class _ProductsScreenState extends State<ProductsScreen>
       }
     }
   }
-  
 
   double _getChildAspectRatio() {
     double width = ScreenUtil().screenWidth;
@@ -291,22 +291,18 @@ class _ProductsScreenState extends State<ProductsScreen>
     double aspectRatio = width / height;
 
     if (width > 1000) {
-      return 0.49;
+      return 0.5;
     }
-    // Fold phones
-    else if (_isFoldable()) {
-      if (flag == 1) {
-        return 0.42;
-      } else {
-        return 0.4;
-      }
-    } else if (aspectRatio > 0.6) {
-      // Regular phones or tablets
-      return 0.49; // Large screens (tablets, large phones)
+    // Foldable devices logic
+    if (_isFoldable()) {
+      return flag == 1 ? 0.42 : 0.4;
+    } // Regular phones or tablets
+    if (aspectRatio > 0.6) {
+      return 0.51; // Landscape phones or tablets
     } else if (aspectRatio > 0.55) {
-      return 0.38; // Medium screens (like Pixel Fold in portrait mode)
+      return 0.45; // Medium devices like Pixel Fold in portrait
     } else {
-      return 0.5; // Small screens (smaller phones)
+      return 0.45; // Small phones or narrow screens
     }
   }
 
@@ -530,164 +526,197 @@ class _ProductsScreenState extends State<ProductsScreen>
                         )
                         : Padding(
                           padding: EdgeInsets.all(8.0.w),
-                          child: GridView.builder(
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: _getCrossAxisCount(),
-                                  crossAxisSpacing: 10.w,
-                                  mainAxisSpacing: 10.h,
-                                  childAspectRatio: _getChildAspectRatio().h,
-                                ),
-                            itemCount: _filteredProducts.length,
-                            itemBuilder: (ctx, index) {
-                              final product = _filteredProducts[index];
-                              final imageUrl =
-                                  'https://d1qq705dywrog2.cloudfront.net/images/${product.id}.jpeg';
+                          child: SingleChildScrollView(
+                            child: LayoutGrid(
+                              columnSizes: List.generate(
+                                _getCrossAxisCount(),
+                                (_) => 1.fr,
+                              ), // Define column sizes
+                              rowSizes: List.generate(
+                                (_filteredProducts.length /
+                                        _getCrossAxisCount())
+                                    .ceil(),
+                                (_) => auto, // Define row sizes
+                              ),
+                              rowGap: 10.h,
+                              columnGap: 10.w,
+                              children:
+                                  _filteredProducts.map((product) {
+                                    final imageUrl =
+                                        'https://d1qq705dywrog2.cloudfront.net/images/${product.id}.jpeg';
 
-                              return GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder:
-                                          (context) => ProductDetailsScreen(
-                                            productId: product.id,
+                                    return GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder:
+                                                (context) =>
+                                                    ProductDetailsScreen(
+                                                      productId: product.id,
+                                                    ),
                                           ),
-                                    ),
-                                  );
-                                },
-                                child: Card(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(15.r),
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(15.r),
-                                          topRight: Radius.circular(15.r),
-                                        ),
-                                        child: Hero(
-                                          tag: 'imageHero-${product.id}',
-                                          child: ColorFiltered(
-                                            colorFilter: ColorFilter.mode(
-                                              const Color.fromARGB(
-                                                255,
-                                                148,
-                                                105,
-                                                90,
-                                              ).withValues(alpha: 0.3),
-                                              BlendMode.darken,
-                                            ),
-                                            child: CachedNetworkImage(
-                                              imageUrl: imageUrl,
-                                              fit: BoxFit.cover,
-                                              height: 150.w,
-                                              width: double.infinity,
-                                              placeholder:
-                                                  (context, url) =>
-                                                      const CircularProgressIndicator(),
-                                              errorWidget: (
-                                                context,
-                                                url,
-                                                error,
-                                              ) {
-                                                return Image.asset(
-                                                  'assets/noimage.jpg',
-                                                  fit: BoxFit.cover,
-                                                  height: 150.w,
-                                                  width: double.infinity,
-                                                );
-                                              },
-                                            ),
+                                        );
+                                      },
+                                      child: Card(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            15.r,
                                           ),
                                         ),
-                                      ),
-                                      SizedBox(height: 10.h),
-                                      Padding(
-                                        padding: EdgeInsets.only(
-                                          left: 12.0.w,
-                                          right: 12.0.w,
-                                          bottom: 8.0.h,
-                                          top: 4.0.h,
-                                        ),
-                                        child: Text(
-                                          product.name,
-                                          style:
-                                              Theme.of(
-                                                context,
-                                              ).textTheme.bodyMedium,
-                                          overflow: TextOverflow.ellipsis,
-                                          maxLines: 2,
-                                        ),
-                                      ),
-                                      SizedBox(height: 2.h),
-                                      Center(
-                                        child: Text(
-                                          '₪ ${product.price.toStringAsFixed(1)}',
-                                          style:
-                                              Theme.of(
-                                                context,
-                                              ).textTheme.bodyMedium,
-                                        ),
-                                      ),
-                                      const Spacer(),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          IconButton(
-                                            icon: const Icon(Icons.add),
-                                            onPressed:
-                                                () => _incrementQuantity(
-                                                  product.id,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            ClipRRect(
+                                              borderRadius: BorderRadius.only(
+                                                topLeft: Radius.circular(15.r),
+                                                topRight: Radius.circular(15.r),
+                                              ),
+                                              child: Hero(
+                                                tag: 'imageHero-${product.id}',
+                                                child: ColorFiltered(
+                                                  colorFilter: ColorFilter.mode(
+                                                    const Color.fromARGB(
+                                                      255,
+                                                      148,
+                                                      105,
+                                                      90,
+                                                    ).withAlpha(75),
+                                                    BlendMode.darken,
+                                                  ),
+                                                  child: CachedNetworkImage(
+                                                    imageUrl: imageUrl,
+                                                    fit: BoxFit.cover,
+                                                    height: 150.w,
+                                                    width: double.infinity,
+                                                    placeholder:
+                                                        (context, url) =>
+                                                            const CircularProgressIndicator(),
+                                                    errorWidget:
+                                                        (
+                                                          context,
+                                                          url,
+                                                          error,
+                                                        ) => Image.asset(
+                                                          'assets/noimage.jpg',
+                                                          fit: BoxFit.cover,
+                                                          height: 150.w,
+                                                          width:
+                                                              double.infinity,
+                                                        ),
+                                                  ),
                                                 ),
-                                          ),
-                                          Text(
-                                            '${_productQuantities[product.id] ?? 0}',
-                                            style:
-                                                Theme.of(
-                                                  context,
-                                                ).textTheme.bodyMedium,
-                                          ),
-                                          IconButton(
-                                            icon: const Icon(Icons.remove),
-                                            onPressed:
-                                                () => _decrementQuantity(
-                                                  product.id,
+                                              ),
+                                            ),
+                                            SizedBox(height: 8.h),
+                                            Expanded(
+                                              child: Padding(
+                                                padding: EdgeInsets.symmetric(
+                                                  horizontal: 12.w,
+                                                  vertical: 4.h,
                                                 ),
-                                          ),
-                                        ],
-                                      ),
-                                      SizedBox(height: 5.h),
-                                      Center(
-                                        child: ElevatedButton(
-                                          onPressed:
-                                              product.stock
-                                                  ? () => _addToCart(product.id)
-                                                  : null,
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor:
-                                                product.stock
-                                                    ? Colors.brown
-                                                    : Colors.grey,
-                                          ),
-                                          child: Text(
-                                            product.stock
-                                                ? 'הוסף לסל'
-                                                : 'אזל מהמלאי',
-                                            style: TextStyle(fontSize: 14.sp),
-                                          ),
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment
+                                                          .stretch,
+                                                  children: [
+                                                    Text(
+                                                      product.name,
+                                                      style:
+                                                          Theme.of(context)
+                                                              .textTheme
+                                                              .bodyMedium,
+                                                      maxLines: 2,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
+                                                    const Spacer(),
+                                                    Column(
+                                                      children: [
+                                                        Text(
+                                                          '₪ ${product.price.toStringAsFixed(1)}',
+                                                          style:
+                                                              Theme.of(context)
+                                                                  .textTheme
+                                                                  .bodyMedium,
+                                                        ),
+                                                        Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .center,
+                                                          children: [
+                                                            IconButton(
+                                                              icon: const Icon(
+                                                                Icons.add,
+                                                              ),
+                                                              onPressed:
+                                                                  () =>
+                                                                      _incrementQuantity(
+                                                                        product
+                                                                            .id,
+                                                                      ),
+                                                            ),
+                                                            Text(
+                                                              '${_productQuantities[product.id] ?? 0}',
+                                                              style:
+                                                                  Theme.of(
+                                                                        context,
+                                                                      )
+                                                                      .textTheme
+                                                                      .bodyMedium,
+                                                            ),
+                                                            IconButton(
+                                                              icon: const Icon(
+                                                                Icons.remove,
+                                                              ),
+                                                              onPressed:
+                                                                  () =>
+                                                                      _decrementQuantity(
+                                                                        product
+                                                                            .id,
+                                                                      ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    ElevatedButton(
+                                                      onPressed:
+                                                          product.stock
+                                                              ? () =>
+                                                                  _addToCart(
+                                                                    product.id,
+                                                                  )
+                                                              : null,
+                                                      style:
+                                                          ElevatedButton.styleFrom(
+                                                            backgroundColor:
+                                                                product.stock
+                                                                    ? Colors
+                                                                        .brown
+                                                                    : Colors
+                                                                        .grey,
+                                                          ),
+                                                      child: Text(
+                                                        product.stock
+                                                            ? 'הוסף לסל'
+                                                            : 'אזל מהמלאי',
+                                                        style: TextStyle(
+                                                          fontSize: 14.sp,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
-                                      SizedBox(height: 5.h),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            },
+                                    );
+                                  }).toList(),
+                            ),
                           ),
                         ),
               ),
@@ -698,3 +727,6 @@ class _ProductsScreenState extends State<ProductsScreen>
     );
   }
 }
+
+
+

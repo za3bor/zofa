@@ -142,7 +142,6 @@ class _AddAdminScreenState extends State<AddAdminScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
       appBar: const CustomAppBar(
         title: 'מנהלים',
       ),

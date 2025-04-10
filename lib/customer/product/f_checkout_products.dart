@@ -147,7 +147,7 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
         'orderDetails': orderDetails,
         'totalPrice': _discountedPrice,
         'status': 'Received',
-        'email': _emailController.text,
+        'email': 'EMPTY',
         'couponCode': _couponController.text,
       }),
     );
@@ -199,7 +199,6 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false, // Prevent resizing when keyboard appears
       appBar: const CustomAppBar(title: 'Checkout'),
       body: Directionality(
         textDirection: TextDirection.rtl,
@@ -240,15 +239,6 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
                       controller: _nameController,
                       label: 'שם',
                       icon: Icons.person,
-                    ),
-                    SizedBox(height: 16.h),
-
-                    // Email Input
-                    _buildInputField(
-                      controller: _emailController,
-                      label: 'אימייל',
-                      icon: Icons.email,
-                      inputType: TextInputType.emailAddress,
                     ),
                     SizedBox(height: 16.h),
 
