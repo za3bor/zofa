@@ -20,8 +20,9 @@ class ContactUsScreen extends StatelessWidget {
   );
 
   final Uri wazeAppUrl = Uri.parse("waze://?ll=32.83603,35.36668&navigate=yes");
+
   final Uri wazeWebUrl = Uri.parse(
-    "https://waze.com/ul?ll=32.83603,35.36668&navigate=yes",
+    "https://www.waze.com/live-map/directions/zofa-zwfa-%D7%96%D7%95%D7%A4%D7%90-%D7%A2%D7%99%D7%99%D7%9C%D7%91%D7%95%D7%9F?navigate=yes&to=place.w.23200072.232000724.577786",
   );
 
   final Uri googleMapsAppUrl = Uri.parse(

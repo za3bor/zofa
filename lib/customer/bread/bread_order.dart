@@ -25,12 +25,23 @@ class _BreadOrderScreenState extends State<BreadOrderScreen> {
   String buttonText = 'הוסף לסל'; // Button text
   bool isLoading = true; // Added variable for loading state
   String? errorMessage; // New variable for error handling
+  Timer? _timer;
 
   @override
   void initState() {
     super.initState();
     fetchBreadData(); // Call the function to fetch bread data when the screen loads
     checkTime();
+    // Re-check time every 30 seconds
+    _timer = Timer.periodic(Duration(seconds: 30), (timer) {
+      checkTime();
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
   }
 
   void checkTime() {
@@ -90,18 +101,23 @@ class _BreadOrderScreenState extends State<BreadOrderScreen> {
       errorMessage = null; // Reset error message before fetching data
     });
     try {
-      final response =
-          await http.get(Uri.parse('http://$ipAddress/api/showAllBreadTypes'));
+      final response = await http.get(
+        Uri.parse('http://$ipAddress/api/showAllBreadTypes'),
+      );
       if (response.statusCode == 200) {
         final jsonData = jsonDecode(response.body) as List;
         setState(() {
-          breadList = jsonData
-              .map((item) => Bread(
-                  id: item['id'],
-                  name: item['name'],
-                  price: double.parse(item['price'].toString()),
-                  quantity: int.parse(item['quantity'].toString())))
-              .toList();
+          breadList =
+              jsonData
+                  .map(
+                    (item) => Bread(
+                      id: item['id'],
+                      name: item['name'],
+                      price: double.parse(item['price'].toString()),
+                      quantity: int.parse(item['quantity'].toString()),
+                    ),
+                  )
+                  .toList();
         });
       } else {
         throw Exception('Failed to load bread data');
@@ -109,9 +125,7 @@ class _BreadOrderScreenState extends State<BreadOrderScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error fetching bread data: $e'),
-          ),
+          SnackBar(content: Text('Error fetching bread data: $e')),
         );
       }
       setState(() {
@@ -146,10 +160,11 @@ class _BreadOrderScreenState extends State<BreadOrderScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => CheckoutBreadScreen(
-          selectedItems: selectedItemsWithQuantity,
-          day: day,
-        ),
+        builder:
+            (context) => CheckoutBreadScreen(
+              selectedItems: selectedItemsWithQuantity,
+              day: day,
+            ),
       ),
     );
   }
@@ -168,81 +183,79 @@ class _BreadOrderScreenState extends State<BreadOrderScreen> {
           ),
           isLoading
               ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const CircularProgressIndicator(), // Spinner
-                      SizedBox(height: 16.h),
-                      Text(
-                        'טוען נתונים, אנא המתן...', // "Loading data, please wait..."
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                    ],
-                  ),
-                )
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const CircularProgressIndicator(), // Spinner
+                    SizedBox(height: 16.h),
+                    Text(
+                      'טוען נתונים, אנא המתן...', // "Loading data, please wait..."
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ],
+                ),
+              )
               : Directionality(
-                  textDirection: TextDirection.rtl,
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: SingleChildScrollView(
-                          padding: EdgeInsets.all(16.0.w),
-                          child: Column(
-                            children: [
-                              Text(
-                                'הזמנת לחם ליום $day', // "Bread order for $day"
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyLarge!
-                                    .copyWith(
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                textDirection: TextDirection.rtl,
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: SingleChildScrollView(
+                        padding: EdgeInsets.all(16.0.w),
+                        child: Column(
+                          children: [
+                            Text(
+                              'הזמנת לחם ליום $day', // "Bread order for $day"
+                              style: Theme.of(context).textTheme.bodyLarge!
+                                  .copyWith(fontWeight: FontWeight.bold),
+                            ),
+                            SizedBox(height: 16.h),
+                            // Display the bread list with quantity rows
+                            ...breadList.map((bread) {
+                              return Column(
+                                children: [
+                                  BreadQuantityRow(
+                                    name: bread.name,
+                                    price: bread.price,
+                                    onQuantitySelected: (int quantity) {
+                                      onQuantitySelected(bread, quantity);
+                                    },
+                                    quantity: bread.quantity,
+                                  ),
+                                  SizedBox(height: 7.h),
+                                ],
+                              );
+                            }),
+                            Padding(
+                              padding: EdgeInsets.only(
+                                top: 6.h,
+                                left: 8.w,
+                                right: 8.w,
                               ),
-                              SizedBox(height: 16.h),
-                              // Display the bread list with quantity rows
-                              ...breadList.map((bread) {
-                                return Column(
-                                  children: [
-                                    BreadQuantityRow(
-                                      name: bread.name,
-                                      price: bread.price,
-                                      onQuantitySelected: (int quantity) {
-                                        onQuantitySelected(bread, quantity);
-                                      },
-                                      quantity: bread.quantity,
-                                    ),
-                                    SizedBox(height: 7.h),
-                                  ],
-                                );
-                              }),
-                              Padding(
-                                padding: EdgeInsets.only(
-                                  top: 6.h,
-                                  left: 8.w,
-                                  right: 8.w,
-                                ),
-                                child: SizedBox(
-                                  width: double
-                                      .infinity, // Makes the button full-width
-                                  child: ElevatedButton(
-                                    onPressed: isButtonEnabled
-                                        ? () {
+                              child: SizedBox(
+                                width:
+                                    double
+                                        .infinity, // Makes the button full-width
+                                child: ElevatedButton(
+                                  onPressed:
+                                      isButtonEnabled
+                                          ? () {
                                             addToCart(context);
                                           }
-                                        : null,
-                                    child: Text(
-                                      buttonText, // Button text based on the time restriction
-                                    ),
+                                          : null,
+                                  child: Text(
+                                    buttonText, // Button text based on the time restriction
                                   ),
                                 ),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
+              ),
         ],
       ),
     );
