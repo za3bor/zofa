@@ -79,16 +79,16 @@ class ContactUsScreen extends StatelessWidget {
                       onTap:
                           () => _launchUrl(
                             context,
-                            Uri.parse("tel:+123456789"),
-                            Uri.parse("tel:+123456789"),
+                            Uri.parse("tel:0508368403"),
+                            Uri.parse("tel:0508368403"),
                           ),
                       child: Text(
-                        "+123 456 789",
+                        "0508368403",
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
                     ),
                   ),
-                  SizedBox(height: 24.h),
+                  SizedBox(height: 10.h),
 
                   // Follow Us Section
                   _buildSectionTitle("עקוב אחרינו"),
@@ -120,7 +120,7 @@ class ContactUsScreen extends StatelessWidget {
                       ],
                     ),
                   ),
-                  SizedBox(height: 24.h),
+                  SizedBox(height: 10.h),
 
                   // Location Section
                   _buildSectionTitle("המיקום שלנו"),
@@ -148,24 +148,88 @@ class ContactUsScreen extends StatelessWidget {
                       ],
                     ),
                   ),
-                  SizedBox(height: 24.h),
+                  SizedBox(height: 10.h),
 
                   // Opening Hours Section
+                  // Opening Hours Section
                   _buildSectionTitle("שעות עבודה"),
-                  SizedBox(height: 4.h),
-                  Directionality(
-                    textDirection: TextDirection.rtl,
-                    child: _buildCard(
-                      child: Text(
-                        "ראשון: סגור\n"
-                        "שני - חמישי:\n"
-                        "10:00 - 15:00\n"
-                        "16:00 - 20:00\n"
-                        "שישי - שבת:\n"
-                        "20:00 - 10:00",
-                        style: Theme.of(
-                          context,
-                        ).textTheme.bodyMedium!.copyWith(fontSize: 16.sp),
+                  SizedBox(height: 8.h),
+                  _buildCard(
+                    child: Directionality(
+                      textDirection: TextDirection.rtl,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Icon(
+                                Icons.close,
+                                color: Colors.brown,
+                                size: 20.sp,
+                              ),
+                              SizedBox(width: 8.w),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "ראשון:",
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.bodyMedium!.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16.sp,
+                                    ),
+                                  ),
+                                  Text(
+                                    "סגור",
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium!
+                                        .copyWith(fontSize: 16.sp),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+
+                          Divider(height: 20.h, thickness: 1),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Icon(
+                                Icons.access_time_filled,
+                                color: Colors.brown,
+                                size: 20.sp,
+                              ),
+                              SizedBox(width: 8.w),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "שני - שבת:",
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.bodyMedium!.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16.sp,
+                                      ),
+                                    ),
+                                    SizedBox(height: 4.h),
+                                    Text(
+                                      "10:00 - 15:00\n16:30 - 20:00",
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium!
+                                          .copyWith(fontSize: 16.sp),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -181,7 +245,7 @@ class ContactUsScreen extends StatelessWidget {
   Widget _buildSectionTitle(String title) {
     return Text(
       title,
-      style: TextStyle(fontSize: 21.sp, fontWeight: FontWeight.bold),
+      style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.bold),
     );
   }
 

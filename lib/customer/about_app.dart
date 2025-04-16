@@ -43,7 +43,7 @@ class AboutAppScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     // Replace with your actual URLs
     const String linkedinUrl = 'https://www.linkedin.com/in/fadi-srour';
-    const String emailUrl = 'mailto:fadisrour.zarbor@gmail.com';
+    const String emailUrl = 'mailto:fadisrour.za3bor@gmail.com';
 
     return Scaffold(
       appBar: const CustomAppBar(
@@ -77,7 +77,9 @@ class AboutAppScreen extends StatelessWidget {
               // Contact section title
               Text(
                 'צור קשר:',
-                style: Theme.of(context).textTheme.bodyMedium,
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               SizedBox(height: 20.h),
               // LinkedIn link

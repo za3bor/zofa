@@ -134,68 +134,72 @@ class TabsScreenState extends State<TabsScreen>
   }
 
   Future<void> deleteUserAccount(BuildContext context) async {
-  if (!context.mounted) return; // Ensure widget is still in the tree before showing the dialog
-  final shouldDelete = await showDialog<bool>(
-    context: context,
-    builder: (dialogContext) => AlertDialog(
-      title: const Text("אישור מחיקה"),
-      content: const Text("האם אתה בטוח שברצונך למחוק את החשבון שלך?"),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(dialogContext).pop(false),
-          child: const Text("ביטול"),
-        ),
-        TextButton(
-          onPressed: () => Navigator.of(dialogContext).pop(true),
-          child: const Text("מחק"),
-        ),
-      ],
-    ),
-  );
+    if (!context.mounted)
+      return; // Ensure widget is still in the tree before showing the dialog
+    final shouldDelete = await showDialog<bool>(
+      context: context,
+      builder:
+          (dialogContext) => AlertDialog(
+            title: const Text("אישור מחיקה"),
+            content: const Text("האם אתה בטוח שברצונך למחוק את החשבון שלך?"),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop(false),
+                child: const Text("ביטול"),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop(true),
+                child: const Text("מחק"),
+              ),
+            ],
+          ),
+    );
 
-  if (!context.mounted || shouldDelete != true) return; // Double check after user interaction
+    if (!context.mounted || shouldDelete != true)
+      return; // Double check after user interaction
 
     var box = await Hive.openBox('userStatus');
     String? phoneNumber = box.get(
       'phoneNumber',
     ); // Fetch the stored phone number
-  try {
-    final response = await http.delete(
-      Uri.parse("http://$ipAddress/api/deleteUser/$phoneNumber"),
-    );
-
-    if (!context.mounted) return; // Check before updating UI
-
-    if (response.statusCode == 200) {
-      // Clear Hive data
-      final userStatusBox = Hive.box('userStatus');
-      await userStatusBox.clear(); // Removes all user-related data
-
-      if (!context.mounted) return; // Make sure widget is still in the tree
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('החשבון נמחק בהצלחה!')),
+    try {
+      final response = await http.delete(
+        Uri.parse("http://$ipAddress/api/deleteUser/$phoneNumber"),
       );
 
-      // Navigate to login/welcome screen
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => const SignupScreen()), // Replace with your login/welcome screen
-        (Route<dynamic> route) => false,
-      );
-    } else {
+      if (!context.mounted) return; // Check before updating UI
+
+      if (response.statusCode == 200) {
+        // Clear Hive data
+        final userStatusBox = Hive.box('userStatus');
+        await userStatusBox.clear(); // Removes all user-related data
+
+        if (!context.mounted) return; // Make sure widget is still in the tree
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('החשבון נמחק בהצלחה!')));
+
+        // Navigate to login/welcome screen
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const SignupScreen(),
+          ), // Replace with your login/welcome screen
+          (Route<dynamic> route) => false,
+        );
+      } else {
+        if (!context.mounted) return; // Final mounted check
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('שגיאה במחיקת החשבון: ${response.body}')),
+        );
+      }
+    } catch (e) {
       if (!context.mounted) return; // Final mounted check
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('שגיאה במחיקת החשבון: ${response.body}')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('שגיאה: $e')));
     }
-  } catch (e) {
-    if (!context.mounted) return; // Final mounted check
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('שגיאה: $e')),
-    );
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
@@ -470,13 +474,44 @@ class TabsScreenState extends State<TabsScreen>
                   child: Align(),
                 ),
                 ListTile(
-                  leading: const Icon(Icons.home),
+                  leading: const Icon(Icons.phone),
                   title: Text(
                     'צור קשר',
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   onTap: () {
                     _navigateToDrawerPage(ContactUsScreen());
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.star),
+                  title: Text(
+                    'דרג את האפליקציה',
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                  onTap: () {
+                    _navigateToDrawerPage(const RateAppScreen());
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.share),
+                  title: Text(
+                    'שתף את האפליקציה',
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                  onTap: () {
+                    _navigateToDrawerPage(const ShareAppScreen());
+                  },
+                ),
+
+                ListTile(
+                  leading: const Icon(Icons.info),
+                  title: Text(
+                    'תנאי שימוש',
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                  onTap: () {
+                    _navigateToDrawerPage(const TermOfUseScreen());
                   },
                 ),
                 ListTile(
@@ -489,37 +524,6 @@ class TabsScreenState extends State<TabsScreen>
                     _navigateToDrawerPage(const AboutAppScreen());
                   },
                 ),
-                ListTile(
-                  leading: const Icon(Icons.settings),
-                  title: Text(
-                    'הגדרות',
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
-                  onTap: () {
-                    _navigateToDrawerPage(const ShareAppScreen());
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.notifications),
-                  title: Text(
-                    'הערות',
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
-                  onTap: () {
-                    _navigateToDrawerPage(const RateAppScreen());
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.info),
-                  title: Text(
-                    'תנאי שימוש',
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
-                  onTap: () {
-                    _navigateToDrawerPage(const TermOfUseScreen());
-                  },
-                ),
-
                 ListTile(
                   leading: const Icon(Icons.delete),
                   title: Text(
