@@ -36,7 +36,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
   @override
   Widget build(BuildContext context) {
     DateTime currentDate = DateTime.now();
-    bool isEaster = currentDate.month == 3;
+    bool isEaster = currentDate.month == 4;
     bool isChristmas = currentDate.month == 12;
     bool isRamadan = checkRamadan();
 
