@@ -228,7 +228,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
 
                         // Allergies Section
                         if (allergies != null && allergies.isNotEmpty) ...[
-                          buildSectionHeader('אלרגנים'),
+                          buildSectionHeader('אלרגיות'),
                           SizedBox(height: 8.h),
                           Text(allergies),
                           SizedBox(height: 20.h),

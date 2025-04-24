@@ -44,6 +44,8 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
   final _proteinsController = TextEditingController();
   final _calciumController = TextEditingController();
   final _ironController = TextEditingController();
+  final _potassiumController = TextEditingController();
+  final _magnesiumController = TextEditingController();
 
   // Dropdown and toggle states
   bool _inStock = false;
@@ -78,9 +80,9 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
         _image = File(pickedFile.path);
       } else {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('No image selected.')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('No image selected.')));
         }
       }
     });
@@ -96,11 +98,13 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
 
     request.fields['filename'] = barcode;
 
-    request.files.add(await http.MultipartFile.fromPath(
-      'file',
-      _image!.path,
-      filename: '$barcode.jpeg',
-    ));
+    request.files.add(
+      await http.MultipartFile.fromPath(
+        'file',
+        _image!.path,
+        filename: '$barcode.jpeg',
+      ),
+    );
 
     try {
       final response = await request.send();
@@ -109,8 +113,10 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-                content: Text(
-                    'File upload failed with status: ${response.statusCode}, body: ${responseBody.body}')),
+              content: Text(
+                'File upload failed with status: ${response.statusCode}, body: ${responseBody.body}',
+              ),
+            ),
           );
         }
         if (response.statusCode == 400) {
@@ -138,28 +144,30 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error uploading file: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error uploading file: $e')));
       }
     }
   }
 
   Future<void> _fetchCategories() async {
     try {
-      final response =
-          await http.get(Uri.parse('http://$ipAddress/api/getAllCategories'));
+      final response = await http.get(
+        Uri.parse('http://$ipAddress/api/getAllCategories'),
+      );
 
       if (response.statusCode == 200) {
         final jsonData = jsonDecode(response.body) as List;
 
         setState(() {
-          _categories = jsonData.map((item) {
-            return Category(
-              id: item['id'], // Changed from 'ID' to 'id'
-              name: item['name'], // Changed from 'שם_משתמש' to 'userName'
-            );
-          }).toList();
+          _categories =
+              jsonData.map((item) {
+                return Category(
+                  id: item['id'], // Changed from 'ID' to 'id'
+                  name: item['name'], // Changed from 'שם_משתמש' to 'userName'
+                );
+              }).toList();
 
           // Initialize the category selections
           for (var category in _categories) {
@@ -204,16 +212,19 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
     _calciumController.dispose();
     _ironController.dispose();
     _allergiesController.dispose();
+    _potassiumController.dispose();
+    _magnesiumController.dispose();
     super.dispose();
   }
 
   // Method to add a new product
   Future<void> _addProduct() async {
     if (_formKey.currentState!.validate()) {
-      List<int> selectedCategories = _categorySelections.entries
-          .where((entry) => entry.value)
-          .map((entry) => entry.key)
-          .toList();
+      List<int> selectedCategories =
+          _categorySelections.entries
+              .where((entry) => entry.value)
+              .map((entry) => entry.key)
+              .toList();
 
       List<int> healthSymbols = [];
       if (_containsSodium) healthSymbols.add(1); // Example IDs
@@ -252,6 +263,8 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
           "proteins": _proteinsController.text,
           "calcium": _calciumController.text,
           "iron": _ironController.text,
+          "potassium": _potassiumController.text,
+          "magnesium": _magnesiumController.text,
         },
         "healthSymbols": healthSymbols,
       };
@@ -280,9 +293,9 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error adding product: $e')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Error adding product: $e')));
         }
       }
     }
@@ -291,9 +304,7 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(
-        title: 'הוסף מוצר חדש',
-      ),
+      appBar: const CustomAppBar(title: 'הוסף מוצר חדש'),
       body: Directionality(
         textDirection: TextDirection.rtl,
         child: Padding(
@@ -308,46 +319,45 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
                   child: const Text('בחר תמונה'), // "Choose Image" in Hebrew
                 ),
                 if (_image != null)
-                  Image.file(
-                    _image!,
-                    height: 150,
-                    width: 150,
-                  ),
+                  Image.file(_image!, height: 150, width: 150),
                 SizedBox(height: 10.h),
                 // Text Fields for general product details
                 TextFormField(
                   controller: _barcodeController,
                   decoration: const InputDecoration(labelText: 'ברקוד'),
                   keyboardType: TextInputType.number,
-                  validator: (value) => value == null || value.trim().isEmpty
-                      ? 'יש להזין ברקוד'
-                      : null, // "Enter barcode" in Hebrew
+                  validator:
+                      (value) =>
+                          value == null || value.trim().isEmpty
+                              ? 'יש להזין ברקוד'
+                              : null, // "Enter barcode" in Hebrew
                 ),
                 SizedBox(height: 10.h),
 
                 TextFormField(
                   controller: _nameController,
                   decoration: const InputDecoration(labelText: 'שם המוצר'),
-                  validator: (value) =>
-                      value!.isEmpty ? 'Enter product name' : null,
+                  validator:
+                      (value) => value!.isEmpty ? 'Enter product name' : null,
                 ),
                 SizedBox(height: 10.h),
                 TextFormField(
                   controller: _dataController,
-                  decoration: const InputDecoration(labelText: 'מידע'),
+                  decoration: const InputDecoration(labelText: 'נתונים'),
                 ),
                 SizedBox(height: 10.h),
 
                 TextFormField(
                   controller: _ingredientsController,
-                  decoration: const InputDecoration(labelText: 'מרכיבים'),
+                  decoration: const InputDecoration(labelText: 'רכיבים'),
                 ),
                 SizedBox(height: 10.h),
 
                 TextFormField(
                   controller: _additionalFeaturesController,
-                  decoration:
-                      const InputDecoration(labelText: 'מאפיינים נוספים'),
+                  decoration: const InputDecoration(
+                    labelText: 'מאפיינים נוספים',
+                  ),
                 ),
                 SizedBox(height: 10.h),
 
@@ -413,17 +423,15 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
                   child: Text(
                     'קטגוריות',
                     style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
                 SizedBox(height: 10.h),
 
                 ..._categories.map((category) {
                   return SwitchListTile(
-                    title: Text(
-                      category.name,
-                    ),
+                    title: Text(category.name),
                     value: _categorySelections[category.id] ?? false,
                     onChanged: (value) {
                       setState(() {
@@ -436,9 +444,9 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
                 SizedBox(height: 12.h),
                 Text(
                   'סימנים',
-                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 10.h),
 
@@ -565,8 +573,9 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
 
                 TextFormField(
                   controller: _dietaryFiberController,
-                  decoration:
-                      const InputDecoration(labelText: 'סיבים תזונתיים'),
+                  decoration: const InputDecoration(
+                    labelText: 'סיבים תזונתיים',
+                  ),
                 ),
                 SizedBox(height: 10.h),
 
@@ -585,6 +594,18 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
                 TextFormField(
                   controller: _ironController,
                   decoration: const InputDecoration(labelText: 'ברזל'),
+                ),
+                SizedBox(height: 10.h),
+
+                TextFormField(
+                  controller: _potassiumController,
+                  decoration: const InputDecoration(labelText: 'אשלגן'),
+                ),
+                SizedBox(height: 10.h),
+
+                TextFormField(
+                  controller: _magnesiumController,
+                  decoration: const InputDecoration(labelText: 'מגנזיום'),
                 ),
                 SizedBox(height: 15.h),
 
