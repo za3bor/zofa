@@ -46,6 +46,7 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
   final _ironController = TextEditingController();
   final _potassiumController = TextEditingController();
   final _magnesiumController = TextEditingController();
+  final _lauricAcidController = TextEditingController();
 
   // Dropdown and toggle states
   bool _inStock = false;
@@ -214,6 +215,7 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
     _allergiesController.dispose();
     _potassiumController.dispose();
     _magnesiumController.dispose();
+    _lauricAcidController.dispose();
     super.dispose();
   }
 
@@ -265,6 +267,7 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
           "iron": _ironController.text,
           "potassium": _potassiumController.text,
           "magnesium": _magnesiumController.text,
+          "lauricAcid": _lauricAcidController.text,
         },
         "healthSymbols": healthSymbols,
       };
@@ -606,6 +609,12 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
                 TextFormField(
                   controller: _magnesiumController,
                   decoration: const InputDecoration(labelText: 'מגנזיום'),
+                ),
+                SizedBox(height: 10.h),
+
+                TextFormField(
+                  controller: _lauricAcidController,
+                  decoration: const InputDecoration(labelText: 'חומצה לאורית'),
                 ),
                 SizedBox(height: 15.h),
 

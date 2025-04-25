@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:zofa/admin/product/add_new_product.dart';
 import 'package:zofa/admin/product/add_new_category.dart';
 import 'package:zofa/admin/product/admin_p_orders.dart';
+import 'package:zofa/admin/product/custom_nutritional_values.dart';
 import 'package:zofa/admin/product/delete_category.dart';
 import 'package:zofa/admin/product/delete_product.dart';
 import 'package:zofa/admin/product/edit_existing_product.dart';
@@ -28,11 +29,7 @@ class ProductFuncScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(
-        title:
-          'לוח בקרה למוצרים',
-        
-      ),
+      appBar: const CustomAppBar(title: 'לוח בקרה למוצרים'),
       body: Directionality(
         textDirection: TextDirection.rtl,
         child: Padding(
@@ -41,9 +38,10 @@ class ProductFuncScreen extends StatelessWidget {
             crossAxisCount: 2, // Two columns
             mainAxisSpacing: 16.0.w, // Adjusted spacing for a cleaner look
             crossAxisSpacing: 16.0.h, // Adjusted spacing
-            childAspectRatio: isFoldableDevice(context)
-                ? 1.15.w
-                : 1.4.w, // Slightly adjusted aspect ratio
+            childAspectRatio:
+                isFoldableDevice(context)
+                    ? 1.15.w
+                    : 1.4.w, // Slightly adjusted aspect ratio
             children: const [
               CustomElevatedButton(
                 label: 'הוספת קטגוריה חדשה',
@@ -52,6 +50,10 @@ class ProductFuncScreen extends StatelessWidget {
               CustomElevatedButton(
                 label: 'הוספת מוצר חדש',
                 targetPage: AddNewProductScreen(),
+              ),
+              CustomElevatedButton(
+                label: 'הוספת ערכים תזונתיים נוספים',
+                targetPage: CustomNutritionalValues(),
               ),
               CustomElevatedButton(
                 label: 'צפייה בהזמנות מוצרים',

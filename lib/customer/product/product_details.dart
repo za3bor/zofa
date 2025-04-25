@@ -77,6 +77,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     productData['healthMarking'] as List<dynamic>;
                 final nutritionalValues =
                     productData['nutritionalValues'] ?? {};
+                final customnutritionalValues =
+                    productData['customnutritionalValues'] ?? {};
                 final stock = productData['in_stock'];
 
                 return SingleChildScrollView(
@@ -378,12 +380,164 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                     'מגנזיום',
                                     '${nutritionalValues['magnesium']}',
                                   ),
+                                if (nutritionalValues['lauricAcid'] != null &&
+                                    nutritionalValues['lauricAcid'] != '')
+                                  tableRow(
+                                    'חומצה לאורית',
+                                    '${nutritionalValues['lauricAcid']}',
+                                  ),
                               ],
                             )
                             : const Text('אין ערכים תזונתיים זמינים.'),
 
-                        // Disclaimer Text
+                        // Nutritional Values Header
+                        if (customnutritionalValues.isNotEmpty) ...[
+                          // Disclaimer Text
+                          SizedBox(height: 20.h),
+                          buildSectionHeader(
+                            customnutritionalValues['fieldname']?.toString() ??
+                                'כותרת חסרה',
+                          ),
+                        ],
+
+
+                        // Nutritional Values Table Section
+                        customnutritionalValues.isNotEmpty
+                            ? Table(
+                              border: TableBorder.all(color: Colors.grey),
+                              columnWidths: const {
+                                0: FlexColumnWidth(2),
+                                1: FlexColumnWidth(3),
+                              },
+                              children: [
+                                if (customnutritionalValues['energy'] != null &&
+                                    customnutritionalValues['energy'] != '')
+                                  tableRow(
+                                    'קלוריות',
+                                    '${customnutritionalValues['energy']}',
+                                  ),
+                                if (customnutritionalValues['total_fats'] !=
+                                        null &&
+                                    customnutritionalValues['total_fats'] != '')
+                                  tableRow(
+                                    'סך השומנים מתוכן:',
+                                    '${customnutritionalValues['total_fats']}',
+                                  ),
+                                if (customnutritionalValues['saturated_fatty_acids'] !=
+                                        null &&
+                                    customnutritionalValues['saturated_fatty_acids'] !=
+                                        '')
+                                  tableRow(
+                                    'חומצות שומן רוויות',
+                                    '${customnutritionalValues['saturated_fatty_acids']}',
+                                  ),
+                                if (customnutritionalValues['trans_fatty_acids'] !=
+                                        null &&
+                                    customnutritionalValues['trans_fatty_acids'] !=
+                                        '')
+                                  tableRow(
+                                    'חומצות שומן טראנס',
+                                    '${customnutritionalValues['trans_fatty_acids']}',
+                                  ),
+                                if (customnutritionalValues['cholesterol'] !=
+                                        null &&
+                                    customnutritionalValues['cholesterol'] !=
+                                        '')
+                                  tableRow(
+                                    'כולסטרול',
+                                    '${customnutritionalValues['cholesterol']}',
+                                  ),
+                                if (customnutritionalValues['sodium'] != null &&
+                                    customnutritionalValues['sodium'] != '')
+                                  tableRow(
+                                    'נתרו',
+                                    '${customnutritionalValues['sodium']}',
+                                  ),
+                                if (customnutritionalValues['total_carbs'] !=
+                                        null &&
+                                    customnutritionalValues['total_carbs'] !=
+                                        '')
+                                  tableRow(
+                                    'סך הפחמימות מתוכן:',
+                                    '${customnutritionalValues['total_carbs']}',
+                                  ),
+                                if (customnutritionalValues['sugar'] != null &&
+                                    customnutritionalValues['sugar'] != '')
+                                  tableRow(
+                                    'סוכרים',
+                                    '${customnutritionalValues['sugar']}',
+                                  ),
+                                if (customnutritionalValues['sugar_teaspoons'] !=
+                                        null &&
+                                    customnutritionalValues['sugar_teaspoons'] !=
+                                        '')
+                                  tableRow(
+                                    'כפיות סוכר',
+                                    '${customnutritionalValues['sugar_teaspoons']}',
+                                  ),
+                                if (customnutritionalValues['rav_khaliem'] !=
+                                        null &&
+                                    customnutritionalValues['rav_khaliem'] !=
+                                        '')
+                                  tableRow(
+                                    'רב קהליים',
+                                    '${customnutritionalValues['rav_khaliem']}',
+                                  ),
+                                if (customnutritionalValues['dietary_fibers'] !=
+                                        null &&
+                                    customnutritionalValues['dietary_fibers'] !=
+                                        '')
+                                  tableRow(
+                                    'סיבים תזונתיים',
+                                    '${customnutritionalValues['dietary_fibers']}',
+                                  ),
+                                if (customnutritionalValues['proteins'] !=
+                                        null &&
+                                    customnutritionalValues['proteins'] != '')
+                                  tableRow(
+                                    'חלבונים',
+                                    '${customnutritionalValues['proteins']}',
+                                  ),
+                                if (customnutritionalValues['calcium'] !=
+                                        null &&
+                                    customnutritionalValues['calcium'] != '')
+                                  tableRow(
+                                    'סידן',
+                                    '${customnutritionalValues['calcium']}',
+                                  ),
+                                if (customnutritionalValues['iron'] != null &&
+                                    customnutritionalValues['iron'] != '')
+                                  tableRow(
+                                    'ברזל',
+                                    '${customnutritionalValues['iron']}',
+                                  ),
+                                if (customnutritionalValues['potassium'] !=
+                                        null &&
+                                    customnutritionalValues['potassium'] != '')
+                                  tableRow(
+                                    'אשלגן',
+                                    '${customnutritionalValues['potassium']}',
+                                  ),
+                                if (customnutritionalValues['magnesium'] !=
+                                        null &&
+                                    customnutritionalValues['magnesium'] != '')
+                                  tableRow(
+                                    'מגנזיום',
+                                    '${customnutritionalValues['magnesium']}',
+                                  ),
+                                if (customnutritionalValues['lauricAcid'] !=
+                                        null &&
+                                    customnutritionalValues['lauricAcid'] != '')
+                                  tableRow(
+                                    'חומצה לאורית',
+                                    '${customnutritionalValues['lauricAcid']}',
+                                  ),
+                              ],
+                            )
+                            : const Text(''),
+
                         SizedBox(height: 20.h),
+
                         Divider(color: Colors.black, thickness: 2.h),
                         Text(
                           'אין להסתמך על הפירוט המופיע באפליקציה על מרכיבי המוצר, יתכנו טעויות או אי התאמות במידע, הנתונים המדויקים מופיעים על גבי המוצר. יש לבדוק שוב את הנתונים על גבי אריזת המוצר לפני השימוש.',
