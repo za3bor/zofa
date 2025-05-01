@@ -1,3 +1,4 @@
+import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
@@ -21,9 +22,9 @@ void main() async {
   await Hive.openBox('userStatus');
   await Hive.openBox('cart'); // You can still keep the cart box open
 
-  SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-  ]).then((_) {
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]).then((
+    _,
+  ) {
     runApp(const MyApp());
   });
 }
@@ -37,9 +38,9 @@ class MyApp extends StatelessWidget {
       designSize: Size(
         MediaQuery.of(context).size.width,
         MediaQuery.of(context).size.height,
-      ), // Base size of the design
-      minTextAdapt: true, // Enable font scaling
-      splitScreenMode: true, // Support for split screens
+      ),
+      minTextAdapt: true,
+      splitScreenMode: true,
       builder: (context, child) {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
@@ -47,7 +48,14 @@ class MyApp extends StatelessWidget {
           home: child,
         );
       },
-      child: const MainScreen(),
+      child: AnimatedSplashScreen(
+        splash: 'assets/splash.gif',
+        backgroundColor: const Color(0xFFDFCAAF),
+        nextScreen: const MainScreen(),
+        splashIconSize: MediaQuery.of(context).size.height,
+        duration: 2100,
+        centered: true,
+      ),
     );
   }
 }
