@@ -40,7 +40,8 @@ Bread Availability Management:
 ## Backend:
 - Framework: Node.js with Express.js
 
-## Database: MySQL
+## Database:
+- MySQL
 
 ## Storage:
 - Hive: Local storage for managing the user's cart, preferences, and other app data.
