@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:zofa/admin/admin_main_page.dart';
 import 'package:zofa/customer/otp_signup.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:zofa/customer/tabs.dart';
 import 'package:zofa/widgets/custom_appbar.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -58,11 +57,10 @@ class _SignupScreenState extends State<SignupScreen> {
           Navigator.push(
             context,
             MaterialPageRoute(
-                            builder: (context) => TabsScreen()
-              //builder: (context) => OtpSignupScreen(
-                //phoneNumber: phone,
-              //  name: name,
-            //  ),
+              builder: (context) => OtpSignupScreen(
+                phoneNumber: phone,
+                name: name,
+              ),
             ),
           );
           }

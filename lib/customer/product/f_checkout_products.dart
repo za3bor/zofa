@@ -210,7 +210,7 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
         _nameFocus.unfocus(); // Dismiss the keyboard when tapping outside
       },
       child: Scaffold(
-        appBar: const CustomAppBar(title: 'Checkout'),
+        appBar: const CustomAppBar(title: 'מעבר לתשלום'),
         body: Directionality(
           textDirection: TextDirection.rtl,
           child: Stack(

@@ -6,6 +6,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:zofa/admin/admin_main_page.dart';
 import 'package:zofa/customer/signup.dart';
 import 'package:zofa/customer/tabs.dart';
+import 'package:zofa/force_update.dart';
 import 'package:zofa/theme_data.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
@@ -51,7 +52,7 @@ class MyApp extends StatelessWidget {
       child: AnimatedSplashScreen(
         splash: 'assets/splash.gif',
         backgroundColor: const Color(0xFFDFCAAF),
-        nextScreen: const MainScreen(),
+        nextScreen: const ForceUpdateWrapper(child: MainScreen()),
         splashIconSize: MediaQuery.of(context).size.height,
         duration: 2100,
         centered: true,
