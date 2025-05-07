@@ -41,7 +41,7 @@ class _SignupScreenState extends State<SignupScreen> {
           _isLoading = false;
         });
         if (mounted) {
-          if(phone== '+11234567890'){
+          if(phone== '+11234567890' && name == 'test'){
           Navigator.push(
             context,
             MaterialPageRoute(
