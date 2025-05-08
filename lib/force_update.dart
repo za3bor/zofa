@@ -36,8 +36,8 @@ class _ForceUpdateWrapperState extends State<ForceUpdateWrapper> {
         final data = json.decode(response.body);
         final latestVersion =
             Platform.isAndroid
-                ? data['latest_android_version']
-                : data['latest_ios_version'];
+                ? data['latest_version_android']
+                : data['latest_version_ios'];
 
         if (_isVersionLower(currentVersion, latestVersion)) {
           setState(() => _shouldForceUpdate = true);
@@ -51,29 +51,41 @@ class _ForceUpdateWrapperState extends State<ForceUpdateWrapper> {
   }
 
   bool _isVersionLower(String current, String latest) {
-    List<int> currentParts = current.split('.').map(int.parse).toList();
-    List<int> latestParts = latest.split('.').map(int.parse).toList();
-    final maxLength = [
-      currentParts.length,
-      latestParts.length,
-    ].reduce((a, b) => a > b ? a : b);
+    List<int> currentParts =
+        current.split('.').map((e) => int.tryParse(e) ?? 0).toList();
+    List<int> latestParts =
+        latest.split('.').map((e) => int.tryParse(e) ?? 0).toList();
 
-    for (int i = 0; i < maxLength; i++) {
-      final currentPart = i < currentParts.length ? currentParts[i] : 0;
-      final latestPart = i < latestParts.length ? latestParts[i] : 0;
-      if (currentPart < latestPart) return true;
-      if (currentPart > latestPart) return false;
+    // Pad shorter list with zeros
+    while (currentParts.length < latestParts.length) {
+      currentParts.add(0);
+    }
+    while (latestParts.length < currentParts.length) {
+      latestParts.add(0);
+    }
+
+    for (int i = 0; i < latestParts.length; i++) {
+      if (currentParts[i] < latestParts[i]) return true;
+      if (currentParts[i] > latestParts[i]) return false;
     }
     return false;
   }
 
-  void _launchStore() {
+  void _launchStore() async {
     final url =
         Platform.isAndroid
             ? 'https://play.google.com/store/apps/details?id=com.zofa_client'
             : 'https://apps.apple.com/app/id6744275359';
 
-    launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+    if (await canLaunchUrl(Uri.parse(url))) {
+      await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('לא ניתן לפתוח את החנות')));
+      }
+    }
   }
 
   @override

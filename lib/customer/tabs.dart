@@ -134,8 +134,9 @@ class TabsScreenState extends State<TabsScreen>
   }
 
   Future<void> deleteUserAccount(BuildContext context) async {
-    if (!context.mounted)
+    if (!context.mounted) {
       return; // Ensure widget is still in the tree before showing the dialog
+    }
     final shouldDelete = await showDialog<bool>(
       context: context,
       builder:
@@ -155,9 +156,9 @@ class TabsScreenState extends State<TabsScreen>
           ),
     );
 
-    if (!context.mounted || shouldDelete != true)
+    if (!context.mounted || shouldDelete != true) {
       return; // Double check after user interaction
-
+    }
     var box = await Hive.openBox('userStatus');
     String? phoneNumber = box.get(
       'phoneNumber',

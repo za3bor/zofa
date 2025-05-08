@@ -288,27 +288,6 @@ class _ProductsScreenState extends State<ProductsScreen>
     }
   }
 
-  double _getChildAspectRatio() {
-    double width = ScreenUtil().screenWidth;
-    double height = ScreenUtil().screenHeight;
-    double aspectRatio = width / height;
-
-    if (width > 1000) {
-      return 0.5;
-    }
-    // Foldable devices logic
-    if (_isFoldable()) {
-      return flag == 1 ? 0.42 : 0.4;
-    } // Regular phones or tablets
-    if (aspectRatio > 0.6) {
-      return 0.51; // Landscape phones or tablets
-    } else if (aspectRatio > 0.55) {
-      return 0.45; // Medium devices like Pixel Fold in portrait
-    } else {
-      return 0.45; // Small phones or narrow screens
-    }
-  }
-
   bool _isFoldable() {
     double width = ScreenUtil().screenWidth;
     double height = ScreenUtil().screenHeight;
