@@ -151,7 +151,7 @@ class _BreadOrderScreenState extends State<BreadOrderScreen> {
     if (selectedItemsWithQuantity.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('אנא בחר לפחות מוצר אחד לפני המעבר לעגלה.'),
+          content: Text('.אנא בחר לפחות מוצר אחד לפני המעבר לעגלה'),
         ),
       );
       return;

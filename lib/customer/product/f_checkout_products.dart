@@ -23,7 +23,6 @@ class ProductCheckoutPage extends StatefulWidget {
 
 class _CheckoutPageState extends State<ProductCheckoutPage> {
   final _nameController = TextEditingController();
-  final _emailController = TextEditingController();
   final _couponController = TextEditingController();
 
   double _discountedPrice = 0.0;
@@ -112,8 +111,7 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
             .map((item) => '${item['id']}:${item['quantity']}\n')
             .join();
 
-    if (_nameController.text.trim().isEmpty ||
-        _emailController.text.trim().isEmpty) {
+    if (_nameController.text.trim().isEmpty) {
       showDialog(
         context: context,
         builder:
@@ -158,7 +156,6 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
 
     if (response.statusCode == 201) {
       _nameController.clear();
-      _emailController.clear();
       _couponController.clear();
 
       var box = await Hive.openBox('cart');
@@ -194,7 +191,6 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
 
   @override
   void dispose() {
-    _emailController.dispose();
     _nameController.dispose();
     _couponController.dispose();
     _nameFocus.dispose(); // important to prevent memory leaks

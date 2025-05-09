@@ -31,6 +31,7 @@ class _CheckoutBreadScreenState extends State<CheckoutBreadScreen> {
   }
 
   void _saveBreadOrder() async {
+    FocusScope.of(context).unfocus();
     String result =
         widget.selectedItems
             .map((entry) => '${entry.key.name}:${entry.value}\n')
@@ -41,25 +42,26 @@ class _CheckoutBreadScreenState extends State<CheckoutBreadScreen> {
       showDialog(
         context: context,
         builder:
-            (ctx) => AlertDialog(
-              title: const Text('לא תקין', textDirection: TextDirection.rtl),
-              content: const Text(
-                'אנא מלא את כל השדות בצורה נכונה',
-                textDirection: TextDirection.rtl,
+            (ctx) => Directionality(
+              textDirection: TextDirection.rtl,
+              child: AlertDialog(
+                title: const Text('שגיאה'),
+                content: Text('אנא מלא את כל השדות הנדרשים בצורה נכונה.'),
+
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(ctx);
+                    },
+                    child: const Text('אישור'),
+                  ),
+                ],
               ),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(ctx);
-                  },
-                  child: const Text('אוקי', textDirection: TextDirection.rtl),
-                ),
-              ],
             ),
       );
       return;
     }
-    
+
     // Retrieve the phone number from Hive
     var box = await Hive.openBox('userStatus');
     String? userPhoneNumber = box.get(
@@ -82,13 +84,24 @@ class _CheckoutBreadScreenState extends State<CheckoutBreadScreen> {
     if (response.statusCode == 201) {
       _nameController.clear();
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'ההזמנה נשלחה בהצלחה',
-              textDirection: TextDirection.rtl,
-            ),
-          ),
+        showDialog(
+          context: context,
+          builder:
+              (ctx) => Directionality(
+                textDirection: TextDirection.rtl,
+                child: AlertDialog(
+                  title: const Text('הצלחה'),
+                  content: const Text('ההזמנה נשלחה בהצלחה'),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(ctx).pop();
+                      },
+                      child: const Text('אישור'),
+                    ),
+                  ],
+                ),
+              ),
         );
       }
     } else {

@@ -570,7 +570,7 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
 
                 TextFormField(
                   controller: _sugarAlcoholsController,
-                  decoration: const InputDecoration(labelText: 'אלכוהול סוכר'),
+                  decoration: const InputDecoration(labelText: 'רב קהליים'),
                 ),
                 SizedBox(height: 10.h),
 
