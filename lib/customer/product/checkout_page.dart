@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:zofa/constant.dart';
+import 'package:zofa/customer/product/empty_cart.dart';
 import 'package:zofa/customer/product/f_checkout_products.dart';
+import 'package:zofa/customer/product/guest_cart.dart';
 import 'package:zofa/global.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -47,13 +49,11 @@ class _CheckoutPageScreenState extends State<CheckoutPageScreen> {
           });
         }
       } catch (e) {
-              if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error loading cart item: $e'),
-          ),
-        );
-      }
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error loading cart item: $e')),
+          );
+        }
       }
     }
 
@@ -64,23 +64,19 @@ class _CheckoutPageScreenState extends State<CheckoutPageScreen> {
 
   Future<Map<String, dynamic>?> _getProductDetails(int productId) async {
     try {
-      final response = await http
-          .get(Uri.parse('http://$ipAddress/api/getProductDetails/$productId'));
+      final response = await http.get(
+        Uri.parse('http://$ipAddress/api/getProductDetails/$productId'),
+      );
       if (response.statusCode == 200) {
         Map<String, dynamic> productData = json.decode(response.body);
         double price = double.tryParse(productData['price'].toString()) ?? 0.0;
 
-        return {
-          'name': productData['name'],
-          'price': price,
-        };
+        return {'name': productData['name'], 'price': price};
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error fetching product details: $e'),
-          ),
+          SnackBar(content: Text('Error fetching product details: $e')),
         );
       }
     }
@@ -115,9 +111,7 @@ class _CheckoutPageScreenState extends State<CheckoutPageScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error deleting item from cart: $e'),
-          ),
+          SnackBar(content: Text('Error deleting item from cart: $e')),
         );
       }
     }
@@ -151,211 +145,190 @@ class _CheckoutPageScreenState extends State<CheckoutPageScreen> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
+    final userStatusBox = Hive.box('userStatus');
+    final isGuest = userStatusBox.get('isGuest', defaultValue: false);
 
     return Scaffold(
-      appBar: const CustomAppBar(
-        title: 'העגלה שלי',
-      ),
-      body: cartItems.isEmpty
-          ? Directionality(
-              textDirection: TextDirection.rtl,
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.shopping_cart_outlined, // Icon for an empty cart
-                      size: 150.h, // Adjust the size to your preference
+      appBar: const CustomAppBar(title: 'העגלה שלי'),
+    body: isGuest
+        ? const EmptyGuestCartWidget() // If it's a guest, show the custom widget.
+        : cartItems.isEmpty
+            ? const EmptyCartWidget() // If it's not a guest and the cart is empty, show empty cart.
+            : Stack(
+                children: [
+                  // Background image
+                  Positioned.fill(
+                    child: Image.asset(
+                      'assets/background.jpg', // Path to your background image
+                      fit:
+                          BoxFit
+                              .cover, // Makes sure the image covers the whole screen
                     ),
-                    SizedBox(height: 20.h),
-                    Text(
-                      'העגלה שלך ריקה!',
-                      style: Theme.of(context).textTheme.bodyLarge,
-                    ),
-                    SizedBox(height: 10.h),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: const Text(
-                        'חזור לחנות',
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            )
-          : Stack(
-              children: [
-                // Background image
-                Positioned.fill(
-                  child: Image.asset(
-                    'assets/background.jpg', // Path to your background image
-                    fit: BoxFit
-                        .cover, // Makes sure the image covers the whole screen
                   ),
-                ),
-                Directionality(
-                  textDirection: TextDirection.rtl,
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: ListView.builder(
-                          padding: EdgeInsets.all(10.0.w),
-                          itemCount: cartItems.length,
-                          shrinkWrap: true,
-                          itemBuilder: (context, index) {
-                            var item = cartItems[index];
-                            double totalPrice =
-                                item['price'] * item['quantity'];
+                  Directionality(
+                    textDirection: TextDirection.rtl,
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: ListView.builder(
+                            padding: EdgeInsets.all(10.0.w),
+                            itemCount: cartItems.length,
+                            shrinkWrap: true,
+                            itemBuilder: (context, index) {
+                              var item = cartItems[index];
+                              double totalPrice =
+                                  item['price'] * item['quantity'];
 
-                            return Card(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(15.r),
-                              ),
-                              elevation: 5,
-                              margin: EdgeInsets.symmetric(vertical: 8.0.h),
-                              child: Row(
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(10.r),
-                                    child: ColorFiltered(
-                                      colorFilter: ColorFilter.mode(
-                                        const Color.fromARGB(255, 121, 85, 72)
-                                            .withValues(
-                                                alpha:
-                                                    0.25), // Set the desired color with opacity
-                                        BlendMode.darken,
-                                      ),
-                                      child: Image.network(
-                                        item['imageUrl'],
-                                        width: isFoldableDevice(context)
-                                            ? screenWidth * 0.24.w
-                                            : screenWidth * 0.30.w,
-                                        height: isFoldableDevice(context)
-                                            ? screenWidth * 0.24.w
-                                            : screenWidth * 0.30.w,
-                                        fit: BoxFit.cover,
-                                        errorBuilder:
-                                            (context, error, stackTrace) {
-                                          return Icon(
-                                            Icons.broken_image,
-                                            size: 50.h,
-                                            color: Colors.black,
-                                          );
-                                        },
+                              return Card(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15.r),
+                                ),
+                                elevation: 5,
+                                margin: EdgeInsets.symmetric(vertical: 8.0.h),
+                                child: Row(
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(10.r),
+                                      child: ColorFiltered(
+                                        colorFilter: ColorFilter.mode(
+                                          const Color.fromARGB(
+                                            255,
+                                            121,
+                                            85,
+                                            72,
+                                          ).withValues(
+                                            alpha: 0.25,
+                                          ), // Set the desired color with opacity
+                                          BlendMode.darken,
+                                        ),
+                                        child: Image.network(
+                                          item['imageUrl'],
+                                          width:
+                                              isFoldableDevice(context)
+                                                  ? screenWidth * 0.24.w
+                                                  : screenWidth * 0.30.w,
+                                          height:
+                                              isFoldableDevice(context)
+                                                  ? screenWidth * 0.24.w
+                                                  : screenWidth * 0.30.w,
+                                          fit: BoxFit.cover,
+                                          errorBuilder: (
+                                            context,
+                                            error,
+                                            stackTrace,
+                                          ) {
+                                            return Icon(
+                                              Icons.broken_image,
+                                              size: 50.h,
+                                              color: Colors.black,
+                                            );
+                                          },
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  SizedBox(width: 2.w),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        SizedBox(height: 5.h),
-                                        Text(
-                                          item['name'],
-                                          maxLines: 3,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium,
-                                        ),
-                                        SizedBox(height: 5.h),
-                                        Text(
-                                          'כמות: ${item['quantity']}',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium,
-                                        ),
-                                        SizedBox(height: 5.h),
-                                        Directionality(
-                                          textDirection: TextDirection.ltr,
-                                          child: Text(
-                                            '${item['quantity']} X ${item['price'].toStringAsFixed(2)} = ${totalPrice.toStringAsFixed(2)}₪',
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodyMedium,
+                                    SizedBox(width: 2.w),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          SizedBox(height: 5.h),
+                                          Text(
+                                            item['name'],
+                                            maxLines: 3,
+                                            overflow: TextOverflow.ellipsis,
+                                            style:
+                                                Theme.of(
+                                                  context,
+                                                ).textTheme.bodyMedium,
                                           ),
-                                        ),
-                                        SizedBox(height: 5.h),
-                                      ],
+                                          SizedBox(height: 5.h),
+                                          Text(
+                                            'כמות: ${item['quantity']}',
+                                            style:
+                                                Theme.of(
+                                                  context,
+                                                ).textTheme.bodyMedium,
+                                          ),
+                                          SizedBox(height: 5.h),
+                                          Directionality(
+                                            textDirection: TextDirection.ltr,
+                                            child: Text(
+                                              '${item['quantity']} X ${item['price'].toStringAsFixed(2)} = ${totalPrice.toStringAsFixed(2)}₪',
+                                              style:
+                                                  Theme.of(
+                                                    context,
+                                                  ).textTheme.bodyMedium,
+                                            ),
+                                          ),
+                                          SizedBox(height: 5.h),
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                  SizedBox(width: 15.w),
-                                  IconButton(
-                                    icon: const Icon(
-                                      Icons.delete,
+                                    SizedBox(width: 15.w),
+                                    IconButton(
+                                      icon: const Icon(Icons.delete),
+                                      onPressed: () {
+                                        _deleteCartItem(item['id']);
+                                      },
                                     ),
-                                    onPressed: () {
-                                      _deleteCartItem(item['id']);
-                                    },
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                      Divider(
-                        color: const Color.fromRGBO(109, 76, 65, 1),
-                        thickness: 1.5.h,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16.0.w),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'סה״כ:',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyLarge!
-                                  .copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                            ),
-                            Text(
-                              '₪${getTotalPrice().toStringAsFixed(2)}',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyLarge!
-                                  .copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                            vertical: 16.0.h, horizontal: 16.0.w),
-                        child: SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ProductCheckoutPage(
-                                    totalPrice: getTotalPrice(),
-                                    cartItems: cartItems,
-                                  ),
+                                  ],
                                 ),
                               );
                             },
-                            child: const Text(
-                              'לסיום תהליך ההזמנה',
+                          ),
+                        ),
+                        Divider(
+                          color: const Color.fromRGBO(109, 76, 65, 1),
+                          thickness: 1.5.h,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16.0.w),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'סה״כ:',
+                                style: Theme.of(context).textTheme.bodyLarge!
+                                    .copyWith(fontWeight: FontWeight.bold),
+                              ),
+                              Text(
+                                '₪${getTotalPrice().toStringAsFixed(2)}',
+                                style: Theme.of(context).textTheme.bodyLarge!
+                                    .copyWith(fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                            vertical: 16.0.h,
+                            horizontal: 16.0.w,
+                          ),
+                          child: SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder:
+                                        (context) => ProductCheckoutPage(
+                                          totalPrice: getTotalPrice(),
+                                          cartItems: cartItems,
+                                        ),
+                                  ),
+                                );
+                              },
+                              child: const Text('לסיום תהליך ההזמנה'),
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
     );
   }
 }

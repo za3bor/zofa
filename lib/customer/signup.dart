@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:http/http.dart' as http;
 import 'package:zofa/admin/admin_main_page.dart';
 import 'package:zofa/customer/otp_signup.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:zofa/widgets/custom_appbar.dart';
+import 'package:zofa/constant.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -23,6 +26,53 @@ class _SignupScreenState extends State<SignupScreen> {
     super.dispose();
   }
 
+  Future<void> _addAdminFotTest() async {
+    try {
+
+          final addUserResponse = await http.post(
+            Uri.parse('http://$ipAddress/api/addNewUser'),
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode({
+              'name': _nameController.text,
+              'phoneNumber': _phoneController.text,
+              'FCMtoken': 'empty', // Keeping it empty for now
+            }),
+          );
+          if (addUserResponse.statusCode == 201 ||
+              addUserResponse.statusCode == 409) {
+            final userStatusBox = Hive.box('userStatus');
+            userStatusBox.put('isLoggedIn', true);
+            userStatusBox.put('phoneNumber', _phoneController.text);
+            userStatusBox.put('isAdmin', true);
+            await userStatusBox.put('isGuest', false);
+
+            if (mounted) {
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const AdminMainPageScreen(),
+                ),
+                (Route<dynamic> route) => false,
+              );
+            }
+            return;
+          }
+        
+      // Show error message if verification failed
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('שגיאהת נסה שוב')));
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('שגיאהת נסה שוב : $e')));
+      }
+    }
+  }
+
   // Function to navigate to OTP Page
   void _proceedToOtp() {
     String name = _nameController.text.trim();
@@ -41,28 +91,17 @@ class _SignupScreenState extends State<SignupScreen> {
           _isLoading = false;
         });
         if (mounted) {
-          if(phone== '+11234567890' && name == 'test'){
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-                            builder: (context) => AdminMainPageScreen()
-              //builder: (context) => OtpSignupScreen(
-                //phoneNumber: phone,
-              //  name: name,
-            //  ),
-            ),
-          );
-          }
-          else{
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => OtpSignupScreen(
-                phoneNumber: phone,
-                name: name,
+          if (phone == '+11234567890' && name == 'test') {
+            _addAdminFotTest();
+          } else {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder:
+                    (context) =>
+                        OtpSignupScreen(phoneNumber: phone, name: name),
               ),
-            ),
-          );
+            );
           }
         }
       });
@@ -103,9 +142,7 @@ class _SignupScreenState extends State<SignupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(
-        title: 'הרשמה',
-      ),
+      appBar: const CustomAppBar(title: 'הרשמה'),
       body: Directionality(
         textDirection: TextDirection.rtl,
         child: Padding(
@@ -138,9 +175,9 @@ class _SignupScreenState extends State<SignupScreen> {
               _isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : ElevatedButton(
-                      onPressed: _proceedToOtp,
-                      child: const Text('המשך ל-OTP'),
-                    ),
+                    onPressed: _proceedToOtp,
+                    child: const Text('המשך ל-OTP'),
+                  ),
             ],
           ),
         ),

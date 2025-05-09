@@ -566,7 +566,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           title,
           style: Theme.of(context).textTheme.bodyMedium!.copyWith(
             fontWeight: FontWeight.bold,
-            fontSize: 17.sp,
+            fontSize: 18.sp,
           ),
         ),
         Divider(thickness: 1.h, color: Colors.black),

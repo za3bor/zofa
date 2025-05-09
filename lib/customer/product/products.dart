@@ -230,6 +230,18 @@ class _ProductsScreenState extends State<ProductsScreen>
   }
 
   void _addToCart(int productId) async {
+    var userBox = await Hive.openBox('userStatus');
+    bool isGuest = userBox.get('isGuest', defaultValue: false);
+
+    if (isGuest) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('עליך להירשם כדי להוסיף מוצרים לעגלה')),
+        );
+      }
+      return; // Exit early — guest users can't add to cart
+    }
+
     var box = await Hive.openBox('cart');
     int quantity = _productQuantities[productId] ?? 0;
 

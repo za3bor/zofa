@@ -126,6 +126,7 @@ class _OtpSignupScreenState extends State<OtpSignupScreen> {
             userStatusBox.put('isLoggedIn', true);
             userStatusBox.put('phoneNumber', widget.phoneNumber);
             userStatusBox.put('isAdmin', isAdmin);
+            await userStatusBox.put('isGuest', false);
 
             if (mounted) {
               Navigator.pushAndRemoveUntil(
@@ -187,7 +188,9 @@ class _OtpSignupScreenState extends State<OtpSignupScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('קוד אימות נשלח למספר ${widget.phoneNumber.replaceFirst('+972', '0')} בוואטסאפ.'),
+              Text(
+                'קוד אימות נשלח למספר ${widget.phoneNumber.replaceFirst('+972', '0')} בוואטסאפ.',
+              ),
               SizedBox(height: 10.h),
               Directionality(
                 textDirection: TextDirection.ltr,

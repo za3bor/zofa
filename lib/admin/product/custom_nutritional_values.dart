@@ -35,6 +35,7 @@ class _CustomNutritionalValuesState extends State<CustomNutritionalValues> {
   final _potassiumController = TextEditingController();
   final _magnesiumController = TextEditingController();
   final _lauricAcidController = TextEditingController();
+  final _zincController = TextEditingController();
 
   @override
   void dispose() {
@@ -58,6 +59,8 @@ class _CustomNutritionalValuesState extends State<CustomNutritionalValues> {
     _potassiumController.dispose();
     _magnesiumController.dispose();
     _lauricAcidController.dispose();
+    _zincController.dispose();
+
     super.dispose();
   }
 
@@ -84,6 +87,7 @@ class _CustomNutritionalValuesState extends State<CustomNutritionalValues> {
         "potassium": _potassiumController.text,
         "magnesium": _magnesiumController.text,
         "lauricAcid": _lauricAcidController.text,
+        "zinc": _zincController.text,
       };
 
       try {
@@ -95,7 +99,9 @@ class _CustomNutritionalValuesState extends State<CustomNutritionalValues> {
         if (response.statusCode == 201) {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Custom nutritional values added successfully!')),
+              const SnackBar(
+                content: Text('Custom nutritional values added successfully!'),
+              ),
             );
             Navigator.pop(context);
           }
@@ -109,9 +115,11 @@ class _CustomNutritionalValuesState extends State<CustomNutritionalValues> {
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text('Error adding Custom nutritional values: $e')));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error adding Custom nutritional values: $e'),
+            ),
+          );
         }
       }
     }
@@ -247,6 +255,11 @@ class _CustomNutritionalValuesState extends State<CustomNutritionalValues> {
                 TextFormField(
                   controller: _lauricAcidController,
                   decoration: const InputDecoration(labelText: 'חומצה לאורית'),
+                ),
+                SizedBox(height: 10.h),
+                TextFormField(
+                  controller: _zincController,
+                  decoration: const InputDecoration(labelText: 'אבץ'),
                 ),
                 SizedBox(height: 15.h),
 

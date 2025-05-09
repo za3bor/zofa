@@ -170,9 +170,10 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
             ),
           ),
         );
-        Navigator.pushReplacement(
+        Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => const TabsScreen()),
+          (Route<dynamic> route) => false,
         );
       }
     } else {
@@ -233,14 +234,16 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
                       Center(
                         child: Text(
                           'הזן את פרטיך',
-                          style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                          style: Theme.of(
+                            context,
+                          ).textTheme.bodyLarge!.copyWith(
                             fontWeight: FontWeight.bold,
                             fontSize: 24.sp,
                           ),
                         ),
                       ),
                       SizedBox(height: 24.h),
-      
+
                       // Name Input
                       _buildInputField(
                         controller: _nameController,
@@ -249,7 +252,7 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
                         focusNode: _nameFocus,
                       ),
                       SizedBox(height: 16.h),
-      
+
                       // Coupon Section
                       Row(
                         children: [
@@ -264,7 +267,10 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
                           SizedBox(width: 12.w),
                           ElevatedButton.icon(
                             onPressed: _applyCoupon,
-                            icon: const Icon(Icons.discount, color: Colors.white),
+                            icon: const Icon(
+                              Icons.discount,
+                              color: Colors.white,
+                            ),
                             label: const Text('החל'),
                             style: ElevatedButton.styleFrom(
                               padding: EdgeInsets.symmetric(
@@ -287,7 +293,7 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
                         ),
                       ),
                       SizedBox(height: 24.h),
-      
+
                       // Product Section
                       Card(
                         shape: RoundedRectangleBorder(
@@ -309,14 +315,17 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
                                   fontSize: 18.sp,
                                 ),
                               ),
-                              const Divider(thickness: 1.5, color: Colors.black),
+                              const Divider(
+                                thickness: 1.5,
+                                color: Colors.black,
+                              ),
                               SizedBox(height: 12.h),
-      
+
                               // List of Products with Dividers
                               ...widget.cartItems.asMap().entries.map((entry) {
                                 int index = entry.key;
                                 var item = entry.value;
-      
+
                                 return Column(
                                   children: [
                                     // Product Row
@@ -329,7 +338,7 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
                                           size: 24,
                                         ),
                                         SizedBox(width: 12.w),
-      
+
                                         // Product Name and Quantity
                                         Expanded(
                                           child: Text(
@@ -340,7 +349,7 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
                                                 ).textTheme.bodyMedium,
                                           ),
                                         ),
-      
+
                                         // Quantity Badge
                                         Container(
                                           padding: EdgeInsets.symmetric(
@@ -363,9 +372,10 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
                                         ),
                                       ],
                                     ),
-      
+
                                     // Add Divider Below Except for Last Item
-                                    if (index < widget.cartItems.length - 1) ...[
+                                    if (index <
+                                        widget.cartItems.length - 1) ...[
                                       SizedBox(height: 8.h),
                                       const Divider(
                                         thickness: 1,
@@ -381,7 +391,7 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
                         ),
                       ),
                       SizedBox(height: 24.h),
-      
+
                       // Price Section
                       Center(
                         child: SizedBox(
@@ -399,10 +409,11 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
                                   if (_isCouponApplied) ...[
                                     Text(
                                       'סך הכל: ₪ ${widget.totalPrice.toStringAsFixed(2)}',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium!
-                                          .copyWith(fontWeight: FontWeight.bold),
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.bodyMedium!.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                     SizedBox(height: 8.h),
                                     Text(
@@ -417,10 +428,11 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
                                   ] else ...[
                                     Text(
                                       'סך הכל: ₪ ${widget.totalPrice.toStringAsFixed(2)}',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium!
-                                          .copyWith(fontWeight: FontWeight.bold),
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.bodyMedium!.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                   ],
                                 ],
@@ -429,9 +441,9 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
                           ),
                         ),
                       ),
-      
+
                       SizedBox(height: 24.h),
-      
+
                       // Pay Button
                       SizedBox(
                         width: double.infinity,

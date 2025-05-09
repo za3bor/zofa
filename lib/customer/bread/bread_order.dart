@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:zofa/models/bread.dart';
 import 'package:zofa/customer/bread/checkout_bread.dart';
 import 'package:zofa/widgets/bread_quantity_row.dart';
@@ -145,28 +146,43 @@ class _BreadOrderScreenState extends State<BreadOrderScreen> {
     });
   }
 
-  void addToCart(BuildContext context) {
+  void addToCart(BuildContext context) async {
+    var userBox = await Hive.openBox('userStatus');
+    bool isGuest = userBox.get('isGuest', defaultValue: false);
+
+    if (isGuest) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('עליך להירשם כדי להוסיף מוצרים לעגלה')),
+        );
+      }
+      return; // Exit early — guest users can't add to cart
+    }
     final selectedItemsWithQuantity =
         selectedItems.entries.where((entry) => entry.value > 0).toList();
     if (selectedItemsWithQuantity.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('.אנא בחר לפחות מוצר אחד לפני המעבר לעגלה'),
-        ),
-      );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('.אנא בחר לפחות מוצר אחד לפני המעבר לעגלה'),
+          ),
+        );
+      }
       return;
     }
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder:
-            (context) => CheckoutBreadScreen(
-              selectedItems: selectedItemsWithQuantity,
-              day: day,
-            ),
-      ),
-    );
+    if (context.mounted) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder:
+              (context) => CheckoutBreadScreen(
+                selectedItems: selectedItemsWithQuantity,
+                day: day,
+              ),
+        ),
+      );
+    }
   }
 
   @override

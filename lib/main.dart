@@ -11,6 +11,7 @@ import 'package:zofa/theme_data.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
 import 'package:zofa/constant.dart';
+import 'package:zofa/welcome.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -94,7 +95,7 @@ class _MainScreenState extends State<MainScreen> {
 
     if (!isLoggedIn) {
       // User is not logged in, navigate to SignupScreen
-      return const SignupScreen();
+      return const WelcomeScreen();
     }
 
     // User is logged in, check if the user is an admin

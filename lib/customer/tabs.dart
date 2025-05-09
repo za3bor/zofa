@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hijri/hijri_calendar.dart';
 import 'package:http/http.dart' as http;
+import 'package:zofa/admin/admin_main_page.dart';
 import 'package:zofa/customer/about_app.dart';
 import 'package:zofa/customer/bread/bread_order.dart';
 import 'package:zofa/customer/product/checkout_page.dart';
@@ -13,6 +14,7 @@ import 'package:zofa/customer/signup.dart';
 import 'package:zofa/customer/term_of_use.dart';
 import 'package:hive/hive.dart';
 import 'package:zofa/global.dart';
+import 'package:zofa/welcome.dart';
 import 'package:zofa/widgets/christmas/snow_layer.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
@@ -173,6 +175,7 @@ class TabsScreenState extends State<TabsScreen>
       if (response.statusCode == 200) {
         // Clear Hive data
         final userStatusBox = Hive.box('userStatus');
+        await userStatusBox.put('isGuest', true);
         await userStatusBox.clear(); // Removes all user-related data
 
         if (!context.mounted) return; // Make sure widget is still in the tree
@@ -184,7 +187,7 @@ class TabsScreenState extends State<TabsScreen>
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
-            builder: (context) => const SignupScreen(),
+            builder: (context) => const WelcomeScreen(),
           ), // Replace with your login/welcome screen
           (Route<dynamic> route) => false,
         );
@@ -210,6 +213,9 @@ class TabsScreenState extends State<TabsScreen>
     bool isEaster = currentDate.month == 4;
     bool isChristmas = currentDate.month == 12;
     bool isRamadan = checkRamadan();
+    final userStatusBox = Hive.box('userStatus');
+    final isGuest = userStatusBox.get('isGuest', defaultValue: false);
+    final isAdmin = userStatusBox.get('isAdmin', defaultValue: false);
 
     if (_selectedPageIndex == 1) {
       // Active page for BreadOrderScreen (as an example)
@@ -230,97 +236,113 @@ class TabsScreenState extends State<TabsScreen>
                 : null,
         title: Text(activePageTitle),
         leading:
-            _selectedPageIndex == 0
-                ? ValueListenableBuilder<int>(
-                  valueListenable: cartItemCountNotifier,
-                  builder: (context, cartCount, child) {
-                    return IconButton(
-                      icon: Stack(
-                        children: [
-                          if (isChristmas)
-                            AnimatedBuilder(
-                              animation: _rotation,
-                              builder: (context, child) {
-                                return Transform.rotate(
-                                  angle: _rotation.value,
-                                  child: child,
-                                );
-                              },
-                              child: Image.asset(
-                                'assets/christmas/cart.png',
-                                width: 30,
-                                height: 30,
-                              ),
-                            )
-                          else if (isEaster)
-                            AnimatedBuilder(
-                              animation: _rotation,
-                              builder: (context, child) {
-                                return Transform.rotate(
-                                  angle: _rotation.value,
-                                  child: child,
-                                );
-                              },
-                              child: Image.asset(
-                                'assets/easter/cart.png',
-                                width: 40,
-                                height: 40,
-                              ),
-                            )
-                          else if (isRamadan)
-                            AnimatedBuilder(
-                              animation: _rotation,
-                              builder: (context, child) {
-                                return Transform.rotate(
-                                  angle: _rotation.value,
-                                  child: child,
-                                );
-                              },
-                              child: Image.asset(
-                                'assets/ramadan/ramadan_cart.png',
-                                width: 30,
-                                height: 30,
-                              ),
-                            )
-                          else
-                            AnimatedBuilder(
-                              animation: _rotation,
-                              builder: (context, child) {
-                                return Transform.rotate(
-                                  angle: _rotation.value,
-                                  child: child,
-                                );
-                              },
-                              child: const Icon(Icons.shopping_cart),
-                            ),
-                          if (cartCount > 0)
-                            Positioned(
-                              top: 0,
-                              right: 0,
-                              child: CircleAvatar(
-                                radius: 8,
-                                backgroundColor: Colors.red,
-                                child: Text(
-                                  '$cartCount',
-                                  style: Theme.of(context).textTheme.bodySmall!
-                                      .copyWith(color: Colors.white),
-                                ),
-                              ),
-                            ),
-                        ],
+            _selectedPageIndex == 1 && isAdmin
+                ? IconButton(
+                  icon: const Icon(Icons.arrow_back),
+                  onPressed: () {
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const AdminMainPageScreen(),
                       ),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const CheckoutPageScreen(),
-                          ),
-                        );
-                      },
+                      (Route<dynamic> route) => false,
                     );
                   },
                 )
-                : null,
+                : (_selectedPageIndex == 0
+                    ? ValueListenableBuilder<int>(
+                      valueListenable: cartItemCountNotifier,
+                      builder: (context, cartCount, child) {
+                        return IconButton(
+                          icon: Stack(
+                            children: [
+                              if (isChristmas)
+                                AnimatedBuilder(
+                                  animation: _rotation,
+                                  builder: (context, child) {
+                                    return Transform.rotate(
+                                      angle: _rotation.value,
+                                      child: child,
+                                    );
+                                  },
+                                  child: Image.asset(
+                                    'assets/christmas/cart.png',
+                                    width: 30,
+                                    height: 30,
+                                  ),
+                                )
+                              else if (isEaster)
+                                AnimatedBuilder(
+                                  animation: _rotation,
+                                  builder: (context, child) {
+                                    return Transform.rotate(
+                                      angle: _rotation.value,
+                                      child: child,
+                                    );
+                                  },
+                                  child: Image.asset(
+                                    'assets/easter/cart.png',
+                                    width: 40,
+                                    height: 40,
+                                  ),
+                                )
+                              else if (isRamadan)
+                                AnimatedBuilder(
+                                  animation: _rotation,
+                                  builder: (context, child) {
+                                    return Transform.rotate(
+                                      angle: _rotation.value,
+                                      child: child,
+                                    );
+                                  },
+                                  child: Image.asset(
+                                    'assets/ramadan/ramadan_cart.png',
+                                    width: 30,
+                                    height: 30,
+                                  ),
+                                )
+                              else
+                                AnimatedBuilder(
+                                  animation: _rotation,
+                                  builder: (context, child) {
+                                    return Transform.rotate(
+                                      angle: _rotation.value,
+                                      child: child,
+                                    );
+                                  },
+                                  child: const Icon(Icons.shopping_cart),
+                                ),
+                              if (cartCount > 0)
+                                Positioned(
+                                  top: 0,
+                                  right: 0,
+                                  child: CircleAvatar(
+                                    radius: 8,
+                                    backgroundColor: Colors.red,
+                                    child: Text(
+                                      '$cartCount',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall!
+                                          .copyWith(color: Colors.white),
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (context) => const CheckoutPageScreen(),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    )
+                    : null),
         actions: [
           Padding(
             padding: EdgeInsets.only(right: 8.0.w), // Adjust padding if needed
@@ -525,14 +547,35 @@ class TabsScreenState extends State<TabsScreen>
                     _navigateToDrawerPage(const AboutAppScreen());
                   },
                 ),
-                ListTile(
-                  leading: const Icon(Icons.delete),
-                  title: Text(
-                    'מחק חשבון',
-                    style: Theme.of(context).textTheme.bodyLarge,
+
+                if (!isGuest) ...[
+                  ListTile(
+                    leading: const Icon(Icons.delete),
+                    title: Text(
+                      'מחק חשבון',
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                    onTap: () => deleteUserAccount(context),
                   ),
-                  onTap: () => deleteUserAccount(context),
-                ),
+                ],
+                if (isGuest) ...[
+                  ListTile(
+                    leading: const Icon(Icons.exit_to_app),
+                    title: Text(
+                      'יציאה',
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                    onTap: () {
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const WelcomeScreen(),
+                        ), // Replace with your login/welcome screen
+                        (Route<dynamic> route) => false,
+                      );
+                    },
+                  ),
+                ],
               ],
             ),
           ),
