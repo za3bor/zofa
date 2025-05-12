@@ -9,6 +9,7 @@ import 'package:zofa/customer/signup.dart';
 import 'package:zofa/customer/tabs.dart';
 import 'package:zofa/firebase_options.dart';
 import 'package:zofa/force_update.dart';
+import 'package:zofa/notification_service.dart';
 import 'package:zofa/theme_data.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
@@ -17,9 +18,7 @@ import 'package:zofa/welcome.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-);
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   // Initialize Hive
   final appDocumentDirectory = await getApplicationDocumentsDirectory();
   Hive.init(appDocumentDirectory.path); // Set the path where Hive stores data
@@ -74,6 +73,17 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+  @override
+  void initState() {
+    super.initState();
+    _checkFirstTime();
+  }
+
+  // Check if the app is being opened for the first time
+  _checkFirstTime() async {
+    await NotificationService.checkFirstTwoTimesAndRequestPermission();
+  }
+
   // Function to check if the user is an admin by phone number
   Future<bool> _checkAdmin(String phone) async {
     try {
