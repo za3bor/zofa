@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:http/http.dart' as http;
@@ -108,6 +109,8 @@ class _OtpSignupScreenState extends State<OtpSignupScreen> {
         final responseData = json.decode(response.body);
 
         if (responseData['verified'] == true) {
+          final fcmToken = await FirebaseMessaging.instance.getToken();
+
           bool isAdmin = await _checkAdmin(widget.phoneNumber);
 
           // Add new user to database
@@ -117,7 +120,7 @@ class _OtpSignupScreenState extends State<OtpSignupScreen> {
             body: jsonEncode({
               'name': widget.name,
               'phoneNumber': widget.phoneNumber,
-              'FCMtoken': 'empty', // Keeping it empty for now
+              'FCMtoken': fcmToken, // Keeping it empty for now
             }),
           );
           if (addUserResponse.statusCode == 201 ||

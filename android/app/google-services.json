@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "536882627678",
+    "project_id": "zofa-health-shop",
+    "storage_bucket": "zofa-health-shop.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:536882627678:android:29a58ef1a05b811fdf60cf",
+        "android_client_info": {
+          "package_name": "com.zofa_client"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDb6p6oDPbVnQrPctili4Gn3M4PR3wFszk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,4 +1,5 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
@@ -6,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:zofa/admin/admin_main_page.dart';
 import 'package:zofa/customer/signup.dart';
 import 'package:zofa/customer/tabs.dart';
+import 'package:zofa/firebase_options.dart';
 import 'package:zofa/force_update.dart';
 import 'package:zofa/theme_data.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -15,7 +17,9 @@ import 'package:zofa/welcome.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+);
   // Initialize Hive
   final appDocumentDirectory = await getApplicationDocumentsDirectory();
   Hive.init(appDocumentDirectory.path); // Set the path where Hive stores data

@@ -8,10 +8,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class AdminBreadOrdersScreen extends StatefulWidget {
   final String day;
 
-  const AdminBreadOrdersScreen({
-    super.key,
-    required this.day,
-  });
+  const AdminBreadOrdersScreen({super.key, required this.day});
 
   @override
   State<AdminBreadOrdersScreen> createState() {
@@ -41,16 +38,17 @@ class _AdminBreadOrdersScreenState extends State<AdminBreadOrdersScreen> {
         final jsonData = jsonDecode(response.body) as List;
 
         setState(() {
-          _breadOrders = jsonData.map((item) {
-            return BreadOrders(
-              id: item['id'],
-              userName: item['username'],
-              phoneNumber: item['phone_number'],
-              totalPrice: double.parse(item['total_price'].toString()),
-              orderDetails: item['order_details'],
-              status: item['status'],
-            );
-          }).toList();
+          _breadOrders =
+              jsonData.map((item) {
+                return BreadOrders(
+                  id: item['id'],
+                  userName: item['username'],
+                  phoneNumber: item['phone_number'],
+                  totalPrice: double.parse(item['total_price'].toString()),
+                  orderDetails: item['order_details'],
+                  status: item['status'],
+                );
+              }).toList();
 
           // Aggregate bread quantities
           breadQuantityMap.clear();
@@ -97,7 +95,7 @@ class _AdminBreadOrdersScreenState extends State<AdminBreadOrdersScreen> {
     getOrders();
   }
 
-// Function to delete bread order
+  // Function to delete bread order
   Future<void> deleteOrder(int orderId) async {
     try {
       setState(() {
@@ -111,7 +109,8 @@ class _AdminBreadOrdersScreenState extends State<AdminBreadOrdersScreen> {
       if (response.statusCode == 200) {
         setState(() {
           _breadOrders.removeWhere(
-              (order) => order.id == orderId); // Remove the order from the list
+            (order) => order.id == orderId,
+          ); // Remove the order from the list
         });
         _showSnackbar('ההזמנה נמחקה בהצלחה.');
       } else {
@@ -135,16 +134,14 @@ class _AdminBreadOrdersScreenState extends State<AdminBreadOrdersScreen> {
       final response = await http.post(
         Uri.parse('http://$ipAddress/api/setBreadOrderStatus'),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'id': orderId,
-          'status': newStatus,
-        }),
+        body: jsonEncode({'id': orderId, 'status': newStatus}),
       );
 
       if (response.statusCode == 200) {
         setState(() {
-          final orderIndex =
-              _breadOrders.indexWhere((order) => order.id == orderId);
+          final orderIndex = _breadOrders.indexWhere(
+            (order) => order.id == orderId,
+          );
           if (orderIndex != -1) {
             _breadOrders[orderIndex] = BreadOrders(
               id: _breadOrders[orderIndex].id,
@@ -170,7 +167,8 @@ class _AdminBreadOrdersScreenState extends State<AdminBreadOrdersScreen> {
 
   void sendWhatsApp(String phoneNumber, String message) async {
     final uri = Uri.parse(
-        'https://wa.me/$phoneNumber?text=${Uri.encodeComponent(message)}');
+      'https://wa.me/$phoneNumber?text=${Uri.encodeComponent(message)}',
+    );
 
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri);
@@ -180,179 +178,186 @@ class _AdminBreadOrdersScreenState extends State<AdminBreadOrdersScreen> {
     }
   }
 
+  Future<void> sendNotification(String phoneNumber, String message) async {
+    try {
+      final response = await http.post(
+        Uri.parse('http://$ipAddress/api/sendNotification'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'phone_number': phoneNumber, 'message': message}),
+      );
+
+      if (response.statusCode != 200) {
+        throw Exception('Failed to send notification');
+      }
+    } catch (e) {
+      _showSnackbar('שגיאה בשליחת ההתראה.');
+    }
+  }
+
   void _showSnackbar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(
-        title: 'הזמנות לחם ליום ${widget.day} ',
-      ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _errorMessage != null
+      appBar: CustomAppBar(title: 'הזמנות לחם ליום ${widget.day} '),
+      body:
+          _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : _errorMessage != null
               ? Center(
-                  child: Text(
-                    _errorMessage!,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      color: Colors.red,
-                    ),
-                  ),
-                )
+                child: Text(
+                  _errorMessage!,
+                  style: const TextStyle(fontSize: 18, color: Colors.red),
+                ),
+              )
               : _breadOrders.isEmpty
-                  ? Center(
+              ? Center(
+                child: Text(
+                  '.אין הזמנות זמינות להיום',
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.bold),
+                ),
+              )
+              : Directionality(
+                textDirection: TextDirection.rtl,
+                child: ListView(
+                  padding: EdgeInsets.all(16.0.w),
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(bottom: 20.0.h),
                       child: Text(
-                        '.אין הזמנות זמינות להיום',
-                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
+                        'סיכום כמות לחמים להיום:',
+                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    )
-                  : Directionality(
-                      textDirection: TextDirection.rtl,
-                      child: ListView(
-                        padding: EdgeInsets.all(16.0.w),
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.only(bottom: 20.0.h),
-                            child: Text(
-                              'סיכום כמות לחמים להיום:',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyLarge!
-                                  .copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                            ),
+                    ),
+                    ...breadQuantityMap.entries.map((entry) {
+                      return Card(
+                        margin: EdgeInsets.symmetric(vertical: 8.0.w),
+                        child: ListTile(
+                          title: Text(
+                            '${entry.key}: \n ${entry.value} יחידות',
+                            style: Theme.of(context).textTheme.bodyMedium,
                           ),
-                          ...breadQuantityMap.entries.map((entry) {
-                            return Card(
-                              margin: EdgeInsets.symmetric(vertical: 8.0.w),
-                              child: ListTile(
-                                title: Text(
-                                  '${entry.key}: \n ${entry.value} יחידות',
+                          contentPadding: EdgeInsets.symmetric(
+                            vertical: 10.h,
+                            horizontal: 16.w,
+                          ),
+                        ),
+                      );
+                    }),
+                    SizedBox(height: 20.h),
+                    Text(
+                      'הזמנות לחם:',
+                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 10.h),
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: _breadOrders.length,
+                      itemBuilder: (context, index) {
+                        final order = _breadOrders[index];
+                        // Determine button states based on the order status
+                        bool isReady = order.status == 'מוכן';
+                        bool isShipped = order.status == 'שלח';
+
+                        return Card(
+                          margin: EdgeInsets.symmetric(vertical: 10.0.h),
+                          child: Padding(
+                            padding: EdgeInsets.all(16.0.w),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'שם משתמש: ${order.userName}',
                                   style: Theme.of(context).textTheme.bodyMedium,
                                 ),
-                                contentPadding: EdgeInsets.symmetric(
-                                    vertical: 10.h, horizontal: 16.w),
-                              ),
-                            );
-                          }),
-                          SizedBox(height: 20.h),
-                          Text(
-                            'הזמנות לחם:',
-                            style:
-                                Theme.of(context).textTheme.bodyLarge!.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                          ),
-                          SizedBox(height: 10.h),
-                          ListView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: _breadOrders.length,
-                            itemBuilder: (context, index) {
-                              final order = _breadOrders[index];
-                              // Determine button states based on the order status
-                              bool isReady = order.status == 'מוכן';
-                              bool isShipped = order.status == 'שלח';
-
-                              return Card(
-                                margin: EdgeInsets.symmetric(vertical: 10.0.h),
-                                child: Padding(
-                                  padding: EdgeInsets.all(16.0.w),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'שם משתמש: ${order.userName}',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium,
-                                      ),
-                                      Text(
-                                        'טלפון: ${order.phoneNumber}',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium,
-                                      ),
-                                      Text(
-                                        'פרטי הזמנה: ${order.orderDetails}',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium,
-                                      ),
-                                      Text(
-                                        'סכום סופי: ₪${order.totalPrice.toStringAsFixed(2)}',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium,
-                                      ),
-                                      Text(
-                                        'סטטוס: ${order.status}',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium!
-                                            .copyWith(
-                                              color: isShipped
-                                                  ? Colors.green
-                                                  : isReady
-                                                      ? Colors.blue
-                                                      : Colors.black,
-                                            ),
-                                      ),
-                                      SizedBox(height: 10.h),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.end,
-                                        children: [
-                                          ElevatedButton(
-                                            onPressed: isShipped || isReady
-                                                ? null
-                                                : () {
-                                                    changeStatus(
-                                                        order.id, 'מוכן');
-                                                  },
-                                            child: const Text('מוכן'),
-                                          ),
-                                          SizedBox(width: 10.0.w),
-                                          ElevatedButton(
-                                            onPressed: isShipped
-                                                ? null
-                                                : () {
-                                                    changeStatus(
-                                                        order.id, 'שלח');
-                                                    sendWhatsApp(
-                                                        order.phoneNumber,
-                                                        'ההזמנה מוכנה');
-                                                  },
-                                            child: const Text('שלח'),
-                                          ),
-                                          SizedBox(width: 10.0.w),
-                                          ElevatedButton(
-                                            onPressed: () {
-                                              deleteOrder(
-                                                  order.id); // Call deleteOrder
-                                            },
-                                            child: const Text('מחק'),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
+                                Text(
+                                  'טלפון: ${order.phoneNumber}',
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
+                                Text(
+                                  'פרטי הזמנה: ${order.orderDetails}',
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
+                                Text(
+                                  'סכום סופי: ₪${order.totalPrice.toStringAsFixed(2)}',
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
+                                Text(
+                                  'סטטוס: ${order.status}',
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.bodyMedium!.copyWith(
+                                    color:
+                                        isShipped
+                                            ? Colors.green
+                                            : isReady
+                                            ? Colors.blue
+                                            : Colors.black,
                                   ),
                                 ),
-                              );
-                            },
+                                SizedBox(height: 10.h),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    ElevatedButton(
+                                      onPressed:
+                                          isShipped || isReady
+                                              ? null
+                                              : () {
+                                                changeStatus(order.id, 'מוכן');
+                                              },
+                                      child: const Text('מוכן'),
+                                    ),
+                                    SizedBox(width: 10.0.w),
+                                    ElevatedButton(
+                                      onPressed:
+                                          isShipped
+                                              ? null
+                                              : () {
+                                                changeStatus(order.id, 'שלח');
+                                                sendNotification(
+                                                  order.phoneNumber,
+                                                  'ההזמנה שלך מוכנה למשלוח!',
+                                                );
+
+                                                sendWhatsApp(
+                                                  order.phoneNumber,
+                                                  'ההזמנה מוכנה',
+                                                );
+                                              },
+                                      child: const Text('שלח'),
+                                    ),
+                                    SizedBox(width: 10.0.w),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        deleteOrder(
+                                          order.id,
+                                        ); // Call deleteOrder
+                                      },
+                                      child: const Text('מחק'),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
-                        ],
-                      ),
+                        );
+                      },
                     ),
+                  ],
+                ),
+              ),
     );
   }
 }
