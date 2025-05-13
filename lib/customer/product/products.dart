@@ -11,6 +11,7 @@ import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:zofa/global.dart';
 import 'package:zofa/customer/tabs.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:zofa/widgets/product_card.dart';
 
 class ProductsScreen extends StatefulWidget {
   const ProductsScreen({super.key});
@@ -557,170 +558,13 @@ class _ProductsScreenState extends State<ProductsScreen>
                                             ),
                                           );
                                         },
-                                        child: Card(
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              15.r,
-                                            ),
-                                          ),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              ClipRRect(
-                                                borderRadius: BorderRadius.only(
-                                                  topLeft: Radius.circular(
-                                                    15.r,
-                                                  ),
-                                                  topRight: Radius.circular(
-                                                    15.r,
-                                                  ),
-                                                ),
-                                                child: Hero(
-                                                  tag:
-                                                      'imageHero-${product.id}',
-                                                  child: ColorFiltered(
-                                                    colorFilter:
-                                                        ColorFilter.mode(
-                                                          const Color.fromARGB(
-                                                            255,
-                                                            148,
-                                                            105,
-                                                            90,
-                                                          ).withAlpha(75),
-                                                          BlendMode.darken,
-                                                        ),
-                                                    child: CachedNetworkImage(
-                                                      imageUrl: imageUrl,
-                                                      fit: BoxFit.cover,
-                                                      height: 150.w,
-                                                      width: double.infinity,
-                                                      placeholder:
-                                                          (context, url) =>
-                                                              const CircularProgressIndicator(),
-                                                      errorWidget:
-                                                          (
-                                                            context,
-                                                            url,
-                                                            error,
-                                                          ) => Image.asset(
-                                                            'assets/noimage.jpg',
-                                                            fit: BoxFit.cover,
-                                                            height: 150.w,
-                                                            width:
-                                                                double.infinity,
-                                                          ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                              SizedBox(height: 8.h),
-                                              Expanded(
-                                                child: Padding(
-                                                  padding: EdgeInsets.symmetric(
-                                                    horizontal: 12.w,
-                                                    vertical: 4.h,
-                                                  ),
-                                                  child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .stretch,
-                                                    children: [
-                                                      Text(
-                                                        product.name,
-                                                        style:
-                                                            Theme.of(context)
-                                                                .textTheme
-                                                                .bodyMedium,
-                                                        maxLines: 2,
-                                                        overflow:
-                                                            TextOverflow
-                                                                .ellipsis,
-                                                      ),
-                                                      const Spacer(),
-                                                      Column(
-                                                        children: [
-                                                          Text(
-                                                            '₪ ${product.price.toStringAsFixed(1)}',
-                                                            style:
-                                                                Theme.of(
-                                                                      context,
-                                                                    )
-                                                                    .textTheme
-                                                                    .bodyMedium,
-                                                          ),
-                                                          Row(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .center,
-                                                            children: [
-                                                              IconButton(
-                                                                icon:
-                                                                    const Icon(
-                                                                      Icons.add,
-                                                                    ),
-                                                                onPressed:
-                                                                    () => _incrementQuantity(
-                                                                      product
-                                                                          .id,
-                                                                    ),
-                                                              ),
-                                                              Text(
-                                                                '${_productQuantities[product.id] ?? 0}',
-                                                                style:
-                                                                    Theme.of(
-                                                                          context,
-                                                                        )
-                                                                        .textTheme
-                                                                        .bodyMedium,
-                                                              ),
-                                                              IconButton(
-                                                                icon: const Icon(
-                                                                  Icons.remove,
-                                                                ),
-                                                                onPressed:
-                                                                    () => _decrementQuantity(
-                                                                      product
-                                                                          .id,
-                                                                    ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      ElevatedButton(
-                                                        onPressed:
-                                                            product.stock
-                                                                ? () =>
-                                                                    _addToCart(
-                                                                      product
-                                                                          .id,
-                                                                    )
-                                                                : null,
-                                                        style:
-                                                            ElevatedButton.styleFrom(
-                                                              backgroundColor:
-                                                                  product.stock
-                                                                      ? Colors
-                                                                          .brown
-                                                                      : Colors
-                                                                          .grey,
-                                                            ),
-                                                        child: Text(
-                                                          product.stock
-                                                              ? 'הוסף לסל'
-                                                              : 'אזל מהמלאי',
-                                                          style: TextStyle(
-                                                            fontSize: 14.sp,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
+                                        child: ProductCard(
+                                          product: product,
+                                          imageUrl: imageUrl,
+                                          productQuantities: _productQuantities,
+                                          onIncrement: _incrementQuantity,
+                                          onDecrement: _decrementQuantity,
+                                          onAddToCart: _addToCart,
                                         ),
                                       );
                                     }).toList(),

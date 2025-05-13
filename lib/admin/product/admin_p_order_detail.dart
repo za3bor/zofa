@@ -22,8 +22,9 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
 
   // Fetch product details by product ID
   Future<Map<String, dynamic>> fetchProductDetails(int productId) async {
-    final response = await http
-        .get(Uri.parse('http://$ipAddress/api/getProductDetails/$productId'));
+    final response = await http.get(
+      Uri.parse('http://$ipAddress/api/getProductDetails/$productId'),
+    );
 
     if (response.statusCode == 200) {
       // Assuming the API returns a JSON object with product details
@@ -51,28 +52,30 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
           String quantity = productData[1];
 
           // Fetch product details
-          fetchFutures
-              .add(fetchProductDetails(productId).then((productDetails) {
-            return {
-              'id': productId,
-              'name': productDetails['name'],
-              'quantity': quantity,
-            };
-          }));
+          fetchFutures.add(
+            fetchProductDetails(productId).then((productDetails) {
+              return {
+                'id': productId,
+                'name': productDetails['name'],
+                'quantity': quantity,
+              };
+            }),
+          );
         } catch (e) {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                  content:
-                      Text('Error parsing product item: $item, Error: $e')),
+                content: Text('Error parsing product item: $item, Error: $e'),
+              ),
             );
           }
         }
       }
 
       // Wait for all fetch operations to complete
-      List<Map<String, dynamic>> fetchedProducts =
-          await Future.wait(fetchFutures);
+      List<Map<String, dynamic>> fetchedProducts = await Future.wait(
+        fetchFutures,
+      );
 
       // Update state with fetched products
       setState(() {
@@ -94,7 +97,8 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
 
   void sendWhatsApp(String phoneNumber, String message) async {
     final uri = Uri.parse(
-        'https://wa.me/$phoneNumber?text=${Uri.encodeComponent(message)}');
+      'https://wa.me/$phoneNumber?text=${Uri.encodeComponent(message)}',
+    );
 
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri);
@@ -103,11 +107,26 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     }
   }
 
+  Future<void> sendNotification(String phoneNumber, String message) async {
+    try {
+      final response = await http.post(
+        Uri.parse('http://$ipAddress/api/sendNotification'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'phone_number': phoneNumber, 'message': message}),
+      );
+
+      if (response.statusCode != 200) {
+        throw Exception('Failed to send notification');
+      }
+    } catch (e) {
+      _showSnackbar('שגיאה בשליחת ההתראה.');
+    }
+  }
 
   void _showSnackbar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   // Function to delete bread order
@@ -121,7 +140,8 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
         _showSnackbar('ההזמנה נמחקה בהצלחה.');
         if (mounted) {
           Navigator.pop(
-              context); // Go back to the previous screen after successful deletion
+            context,
+          ); // Go back to the previous screen after successful deletion
         }
       } else {
         throw Exception('Failed to delete bread order.');
@@ -168,9 +188,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(
-        title: 'פרטי הזמנה ${widget.order.id}',
-      ),
+      appBar: CustomAppBar(title: 'פרטי הזמנה ${widget.order.id}'),
       body: Directionality(
         textDirection: TextDirection.rtl,
         child: Padding(
@@ -206,99 +224,109 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
               SizedBox(height: 20.h),
               Text(
                 'פרטי ההזמנה:',
-                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 10.h),
               productDetailsList.isEmpty
                   ? const Center(
-                      child: CircularProgressIndicator(),
-                    ) // Show loading until data is fetched
+                    child: CircularProgressIndicator(),
+                  ) // Show loading until data is fetched
                   : Expanded(
-                      child: Expanded(
-                        child: ListView.builder(
-                          padding: EdgeInsets.all(10.0.w),
-                          itemCount: productDetailsList.length,
-                          shrinkWrap: true,
-                          itemBuilder: (context, index) {
-                            var product = productDetailsList[index];
-                            final imageUrl =
-                                'https://d1qq705dywrog2.cloudfront.net/images/${product['id']}.jpeg';
+                    child: Expanded(
+                      child: ListView.builder(
+                        padding: EdgeInsets.all(10.0.w),
+                        itemCount: productDetailsList.length,
+                        shrinkWrap: true,
+                        itemBuilder: (context, index) {
+                          var product = productDetailsList[index];
+                          final imageUrl =
+                              'https://d1qq705dywrog2.cloudfront.net/images/${product['id']}.jpeg';
 
-                            return Card(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(15.r),
-                              ),
-                              elevation: 5,
-                              margin: EdgeInsets.symmetric(vertical: 8.0.h),
-                              child: Row(
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(10.r),
-                                    child: ColorFiltered(
-                                      colorFilter: ColorFilter.mode(
-                                        const Color.fromARGB(255, 121, 85, 72)
-                                            .withValues(alpha: 0.25),
-                                        BlendMode.darken,
-                                      ),
-                                      child: Image.network(
-                                        imageUrl,
-                                        width: 100.w,
-                                        height: 100.h,
-                                        fit: BoxFit.cover,
-                                        errorBuilder:
-                                            (context, error, stackTrace) {
-                                          return Icon(
-                                            Icons.broken_image,
-                                            size: 50.h,
-                                            color: Colors.black,
-                                          );
-                                        },
-                                      ),
+                          return Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15.r),
+                            ),
+                            elevation: 5,
+                            margin: EdgeInsets.symmetric(vertical: 8.0.h),
+                            child: Row(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(10.r),
+                                  child: ColorFiltered(
+                                    colorFilter: ColorFilter.mode(
+                                      const Color.fromARGB(
+                                        255,
+                                        121,
+                                        85,
+                                        72,
+                                      ).withValues(alpha: 0.25),
+                                      BlendMode.darken,
+                                    ),
+                                    child: Image.network(
+                                      imageUrl,
+                                      width: 100.w,
+                                      height: 100.h,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (
+                                        context,
+                                        error,
+                                        stackTrace,
+                                      ) {
+                                        return Icon(
+                                          Icons.broken_image,
+                                          size: 50.h,
+                                          color: Colors.black,
+                                        );
+                                      },
                                     ),
                                   ),
-                                  SizedBox(width: 10.w),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        SizedBox(height: 5.h),
-                                        Text(
-                                          product['name'],
-                                          maxLines: 3,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium,
-                                        ),
-                                        SizedBox(height: 2.h),
-                                        Text(
-                                          'כמות: ${product['quantity']}',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium,
-                                        ),
-                                        SizedBox(height: 2.h),
-                                        Text(
-                                          'ברקוד: ${product['id']}',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium,
-                                        ),
-                                        SizedBox(height: 5.h),
-                                      ],
-                                    ),
+                                ),
+                                SizedBox(width: 10.w),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      SizedBox(height: 5.h),
+                                      Text(
+                                        product['name'],
+                                        maxLines: 3,
+                                        overflow: TextOverflow.ellipsis,
+                                        style:
+                                            Theme.of(
+                                              context,
+                                            ).textTheme.bodyMedium,
+                                      ),
+                                      SizedBox(height: 2.h),
+                                      Text(
+                                        'כמות: ${product['quantity']}',
+                                        style:
+                                            Theme.of(
+                                              context,
+                                            ).textTheme.bodyMedium,
+                                      ),
+                                      SizedBox(height: 2.h),
+                                      Text(
+                                        'ברקוד: ${product['id']}',
+                                        style:
+                                            Theme.of(
+                                              context,
+                                            ).textTheme.bodyMedium,
+                                      ),
+                                      SizedBox(height: 5.h),
+                                    ],
                                   ),
-                                  SizedBox(width: 15.w),
-                                ],
-                              ),
-                            );
-                          },
-                        ),
+                                ),
+                                SizedBox(width: 15.w),
+                              ],
+                            ),
+                          );
+                        },
                       ),
                     ),
+                  ),
               SizedBox(height: 20.h),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -306,6 +334,10 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                   ElevatedButton(
                     onPressed: () {
                       sendWhatsApp(widget.order.phoneNumber, 'ההזמנה מוכנה');
+                      sendNotification(
+                        widget.order.phoneNumber,
+                        'ההזמנה שלך מוכנה למשלוח!',
+                      );
                     },
                     child: const Text('שלח'),
                   ),
@@ -313,7 +345,8 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                   ElevatedButton(
                     onPressed: () {
                       _confirmDeleteOrder(
-                          widget.order.id); // Show confirmation before delete
+                        widget.order.id,
+                      ); // Show confirmation before delete
                     },
                     child: const Text('מחק הזמנה'),
                   ),

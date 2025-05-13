@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hijri/hijri_calendar.dart';
@@ -161,11 +162,13 @@ class TabsScreenState extends State<TabsScreen>
     if (!context.mounted || shouldDelete != true) {
       return; // Double check after user interaction
     }
+
     var box = await Hive.openBox('userStatus');
     String? phoneNumber = box.get(
       'phoneNumber',
     ); // Fetch the stored phone number
     try {
+      await FirebaseMessaging.instance.deleteToken();
       final response = await http.delete(
         Uri.parse("http://$ipAddress/api/deleteUser/$phoneNumber"),
       );
