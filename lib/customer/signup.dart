@@ -1,10 +1,10 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:zofa/admin/admin_main_page.dart';
 import 'package:zofa/customer/otp_signup.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:zofa/widgets/custom_appbar.dart';
 import 'package:zofa/constant.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -28,36 +28,47 @@ class _SignupScreenState extends State<SignupScreen> {
 
   Future<void> _addAdminFotTest() async {
     try {
-
-          final addUserResponse = await http.post(
-            Uri.parse('http://$ipAddress/api/addNewUser'),
-            headers: {'Content-Type': 'application/json'},
-            body: jsonEncode({
-              'name': _nameController.text,
-              'phoneNumber': _phoneController.text,
-              'FCMtoken': 'empty', // Keeping it empty for now
-            }),
+      // Get the current FCM token
+      final fcmToken = await FirebaseMessaging.instance.getToken();
+      if (fcmToken == null) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('לא ניתן לקבל את אסימון ההתראות (FCM token)'),
+            ),
           );
-          if (addUserResponse.statusCode == 201 ||
-              addUserResponse.statusCode == 409) {
-            final userStatusBox = Hive.box('userStatus');
-            userStatusBox.put('isLoggedIn', true);
-            userStatusBox.put('phoneNumber', _phoneController.text);
-            userStatusBox.put('isAdmin', true);
-            await userStatusBox.put('isGuest', false);
+        }
+        return;
+      }
+      final addUserResponse = await http.post(
+        Uri.parse('http://$ipAddress/api/addNewUser'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'name': _nameController.text,
+          'phoneNumber': _phoneController.text,
+          'FCMtoken': fcmToken, // Keeping it empty for now
+        }),
+      );
+      if (addUserResponse.statusCode == 201 ||
+          addUserResponse.statusCode == 409) {
+        final userStatusBox = Hive.box('userStatus');
+        userStatusBox.put('isLoggedIn', true);
+        userStatusBox.put('phoneNumber', _phoneController.text);
+        userStatusBox.put('isAdmin', true);
+        await userStatusBox.put('isGuest', false);
 
-            if (mounted) {
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const AdminMainPageScreen(),
-                ),
-                (Route<dynamic> route) => false,
-              );
-            }
-            return;
-          }
-        
+        if (mounted) {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const AdminMainPageScreen(),
+            ),
+            (Route<dynamic> route) => false,
+          );
+        }
+        return;
+      }
+
       // Show error message if verification failed
       if (mounted) {
         ScaffoldMessenger.of(

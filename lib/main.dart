@@ -1,5 +1,6 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
@@ -58,7 +59,7 @@ class MyApp extends StatelessWidget {
         backgroundColor: const Color(0xFFDFCAAF),
         nextScreen: const ForceUpdateWrapper(child: MainScreen()),
         splashIconSize: MediaQuery.of(context).size.height,
-        duration: 2100,
+        duration: 2000,
         centered: true,
       ),
     );
@@ -76,12 +77,69 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     super.initState();
-    _checkFirstTime();
+    _initializeNotifications();
   }
 
-  // Check if the app is being opened for the first time
-  _checkFirstTime() async {
-    await NotificationService.checkFirstTwoTimesAndRequestPermission();
+  Future<void> _initializeNotifications() async {
+    try {
+      // Ask for permission (only during first few launches)
+      await NotificationService.checkAndRequestPermission(context);
+
+      // Get user's phone number from Hive
+      final phone = Hive.box('userStatus').get('phoneNumber', defaultValue: '');
+      if (phone.isEmpty) return;
+
+      // Get the current FCM token
+      final fcmToken = await FirebaseMessaging.instance.getToken();
+      if (fcmToken == null) return;
+
+      // Send token to backend
+      await _sendTokenToServer(phone, fcmToken);
+
+      // Listen for token refresh and update backend
+      FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
+        _sendTokenToServer(phone, newToken);
+      });
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('אירעה שגיאה בהפעלת ההתראות. נסה שוב מאוחר יותר.'),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _sendTokenToServer(String phone, String token) async {
+    try {
+      final response = await http.post(
+        Uri.parse('http://$ipAddress/api/updateFcmToken'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'phone_number': phone, 'fcm_token': token}),
+      );
+
+      if (response.statusCode != 200) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('עדכון האסימון נכשל: נסה שוב מאוחר יותר.'),
+              backgroundColor: Colors.redAccent,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('שגיאה בעדכון אסימון ההתראות. נסה שוב מאוחר יותר.'),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+      }
+    }
   }
 
   // Function to check if the user is an admin by phone number

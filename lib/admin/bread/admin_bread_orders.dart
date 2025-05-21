@@ -328,12 +328,12 @@ class _AdminBreadOrdersScreenState extends State<AdminBreadOrdersScreen> {
                                                 changeStatus(order.id, 'שלח');
                                                 sendNotification(
                                                   order.phoneNumber,
-                                                  'ההזמנה שלך מוכנה למשלוח!',
+                                                  'הזמנת הלחם שלך מוכנה לאיסוף',
                                                 );
 
                                                 sendWhatsApp(
                                                   order.phoneNumber,
-                                                  'ההזמנה מוכנה',
+                                                  'שלום \n הזמנת הלחם שלך מוכנה לאיסוף', 
                                                 );
                                               },
                                       child: const Text('שלח'),

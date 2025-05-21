@@ -38,8 +38,16 @@ class _OtpSignupScreenState extends State<OtpSignupScreen> {
         return data['exists'];
       }
     } catch (e) {
-      print('Error checking admin: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('אירעה שגיאה בבדיקת מנהל. נסה שוב מאוחר יותר.'),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+      }
     }
+
     return false;
   }
 

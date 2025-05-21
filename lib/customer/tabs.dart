@@ -11,7 +11,6 @@ import 'package:zofa/customer/contact_us.dart';
 import 'package:zofa/customer/product/products.dart';
 import 'package:zofa/customer/rate_app.dart';
 import 'package:zofa/customer/share_app.dart';
-import 'package:zofa/customer/signup.dart';
 import 'package:zofa/customer/term_of_use.dart';
 import 'package:hive/hive.dart';
 import 'package:zofa/global.dart';

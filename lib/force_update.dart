@@ -44,7 +44,14 @@ class _ForceUpdateWrapperState extends State<ForceUpdateWrapper> {
         }
       }
     } catch (e) {
-      print("Version check failed: $e");
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('בדיקת הגרסה נכשלה. אנא נסה שוב מאוחר יותר.'),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+      }
     } finally {
       setState(() => _loading = false);
     }
@@ -81,9 +88,12 @@ class _ForceUpdateWrapperState extends State<ForceUpdateWrapper> {
       await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
     } else {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('לא ניתן לפתוח את החנות')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('לא ניתן לפתוח את החנות'),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
       }
     }
   }

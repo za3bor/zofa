@@ -333,10 +333,10 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      sendWhatsApp(widget.order.phoneNumber, 'ההזמנה מוכנה');
+                      sendWhatsApp(widget.order.phoneNumber, 'שלום \n הזמנת המוצרים שלך מוכנה לאיסוף');
                       sendNotification(
                         widget.order.phoneNumber,
-                        'ההזמנה שלך מוכנה למשלוח!',
+                        'הזמנת המוצרים שלך מוכנה לאיסוף',
                       );
                     },
                     child: const Text('שלח'),

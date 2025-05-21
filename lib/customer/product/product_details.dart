@@ -144,6 +144,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                         SizedBox(height: 20.h),
 
                         // Stock information
+                        // Stock info
                         if (stock == 0) ...[
                           Text(
                             'המוצר אזל מהמלאי',
@@ -157,384 +158,103 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                           SizedBox(height: 8.h),
                         ],
 
-                        // Product Data Sections
-                        if (productData['name'] != null &&
-                            productData['name'].isNotEmpty) ...[
-                          buildSectionHeader('שם מוצר'),
-                          SizedBox(height: 8.h),
-                          Text(productData['name'] ?? 'לא נמצא שם המוצר'),
-                          SizedBox(height: 20.h),
-                        ],
+                        // Use helper for standard sections
+                        buildTextSection(
+                          value: productData['name'],
+                          label: 'שם מוצר',
+                          fallback: 'לא נמצא שם המוצר',
+                        ),
 
-                        // Product Data Sections
-                        if (productData['price'] != null &&
-                            productData['price'].isNotEmpty) ...[
-                          buildSectionHeader('מחיר'),
-                          SizedBox(height: 8.h),
-                          Text(productData['price'] ?? 'לא נמצא מחיר המוצר'),
-                          SizedBox(height: 20.h),
-                        ],
+                        buildTextSection(
+                          value: productData['price'],
+                          label: 'מחיר',
+                          fallback: 'לא נמצא מחיר המוצר',
+                        ),
 
-                        // Product Data Section
-                        if (productData['data'] != null &&
-                            productData['data'].isNotEmpty) ...[
-                          buildSectionHeader('נתונים'),
-                          SizedBox(height: 8.h),
-                          Text(productData['data'] ?? 'אין נתונים זמינים'),
-                          SizedBox(height: 20.h),
-                        ],
+                        buildTextSection(
+                          value: productData['data'],
+                          label: 'נתונים',
+                          fallback: 'אין נתונים זמינים',
+                        ),
 
-                        // Components Section
-                        if (productData['components'] != null &&
-                            productData['components'].isNotEmpty) ...[
-                          buildSectionHeader('רכיבים'),
-                          SizedBox(height: 8.h),
-                          Text(
-                            productData['components'] ?? 'אין רכיבים זמינים',
+                        buildTextSection(
+                          value: productData['components'],
+                          label: 'רכיבים',
+                          fallback: 'אין רכיבים זמינים',
+                        ),
+
+                        buildTextSection(
+                          value: productData['additional_features'],
+                          label: 'מאפיינים נוספים',
+                          fallback: 'אין מאפיינים נוספים',
+                        ),
+
+                        buildTextSection(
+                          value: productData['contain'],
+                          label: 'מכיל',
+                          fallback: 'אין פרטים על מכיל',
+                        ),
+
+                        buildTextSection(
+                          value: productData['may_contain'],
+                          label: 'עלול להכיל',
+                          fallback: 'אין פרטים על עלול להכיל',
+                        ),
+
+                        buildTextSection(value: allergies, label: 'אלרגיות'),
+
+                        if (categories.isNotEmpty)
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              buildSectionHeader('קטגוריות'),
+                              SizedBox(height: 8.h),
+                              Text(categories.join(', ')),
+                              SizedBox(height: 20.h),
+                            ],
                           ),
-                          SizedBox(height: 20.h),
-                        ],
 
-                        // Additional Features Section
-                        if (productData['additional_features'] != null &&
-                            productData['additional_features'].isNotEmpty) ...[
-                          buildSectionHeader('מאפיינים נוספים'),
-                          SizedBox(height: 8.h),
-                          Text(
-                            productData['additional_features'] ??
-                                'אין מאפיינים נוספים',
+                        if (healthMarking.isNotEmpty)
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              buildSectionHeader('סימונים בריאותיים'),
+                              SizedBox(height: 8.h),
+                              Wrap(
+                                spacing: 8.0,
+                                runSpacing:
+                                    8.0, // vertical spacing between rows
+
+                                children:
+                                    healthMarking.map((marking) {
+                                      return Image.asset(
+                                        'assets/$marking.png',
+                                        height: 82,
+                                        width: 82,
+                                      );
+                                    }).toList(),
+                              ),
+                              SizedBox(height: 20.h),
+                            ],
                           ),
-                          SizedBox(height: 20.h),
-                        ],
 
-                        // Contains Section
-                        if (productData['contain'] != null &&
-                            productData['contain'].isNotEmpty) ...[
-                          buildSectionHeader('מכיל'),
-                          SizedBox(height: 8.h),
-                          Text(productData['contain'] ?? 'אין פרטים על מכיל'),
-                          SizedBox(height: 20.h),
-                        ],
-
-                        // May Contain Section
-                        if (productData['may_contain'] != null &&
-                            productData['may_contain'].isNotEmpty) ...[
-                          buildSectionHeader('עלול להכיל'),
-                          SizedBox(height: 8.h),
-                          Text(
-                            productData['may_contain'] ??
-                                'אין פרטים על עלול להכיל',
-                          ),
-                          SizedBox(height: 20.h),
-                        ],
-
-                        // Allergies Section
-                        if (allergies != null && allergies.isNotEmpty) ...[
-                          buildSectionHeader('אלרגיות'),
-                          SizedBox(height: 8.h),
-                          Text(allergies),
-                          SizedBox(height: 20.h),
-                        ],
-
-                        // Categories Section
-                        if (categories.isNotEmpty) ...[
-                          buildSectionHeader('קטגוריות'),
-                          SizedBox(height: 8.h),
-                          Text(categories.join(', ')),
-                          SizedBox(height: 20.h),
-                        ],
-
-                        // Health Marking Section
-                        if (healthMarking.isNotEmpty) ...[
-                          buildSectionHeader('סימונים בריאותיים'),
-                          SizedBox(height: 8.h),
-                          Wrap(
-                            spacing: 8.0, // Space between images
-                            children:
-                                healthMarking.map((marking) {
-                                  return Image.asset(
-                                    'assets/$marking.png', // Image from local assets
-                                    height: 82,
-                                    width: 82,
-                                  );
-                                }).toList(),
-                          ),
-                          SizedBox(height: 20.h),
-                        ],
-
-                        // Nutritional Values Header
+                        // Standard Nutritional Values
                         buildSectionHeader(
                           'ערכים תזונתיים עבור 100 ${productData['is_beverage'] == 1 ? 'מ"ל' : 'גרם'}',
                         ),
-
                         SizedBox(height: 8.h),
+                        buildNutritionalTable(nutritionalValues),
 
-                        // Nutritional Values Table Section
-                        nutritionalValues.isNotEmpty
-                            ? Table(
-                              border: TableBorder.all(color: Colors.grey),
-                              columnWidths: const {
-                                0: FlexColumnWidth(2),
-                                1: FlexColumnWidth(3),
-                              },
-                              children: [
-                                if (nutritionalValues['energy'] != null &&
-                                    nutritionalValues['energy'] != '')
-                                  tableRow(
-                                    'קלוריות',
-                                    '${nutritionalValues['energy']}',
-                                  ),
-                                if (nutritionalValues['total_fats'] != null &&
-                                    nutritionalValues['total_fats'] != '')
-                                  tableRow(
-                                    'סך השומנים מתוכן:',
-                                    '${nutritionalValues['total_fats']}',
-                                  ),
-                                if (nutritionalValues['saturated_fatty_acids'] !=
-                                        null &&
-                                    nutritionalValues['saturated_fatty_acids'] !=
-                                        '')
-                                  tableRow(
-                                    'חומצות שומן רוויות',
-                                    '${nutritionalValues['saturated_fatty_acids']}',
-                                  ),
-                                if (nutritionalValues['trans_fatty_acids'] !=
-                                        null &&
-                                    nutritionalValues['trans_fatty_acids'] !=
-                                        '')
-                                  tableRow(
-                                    'חומצות שומן טראנס',
-                                    '${nutritionalValues['trans_fatty_acids']}',
-                                  ),
-                                if (nutritionalValues['cholesterol'] != null &&
-                                    nutritionalValues['cholesterol'] != '')
-                                  tableRow(
-                                    'כולסטרול',
-                                    '${nutritionalValues['cholesterol']}',
-                                  ),
-                                if (nutritionalValues['sodium'] != null &&
-                                    nutritionalValues['sodium'] != '')
-                                  tableRow(
-                                    'נתרו',
-                                    '${nutritionalValues['sodium']}',
-                                  ),
-                                if (nutritionalValues['total_carbs'] != null &&
-                                    nutritionalValues['total_carbs'] != '')
-                                  tableRow(
-                                    'סך הפחמימות מתוכן:',
-                                    '${nutritionalValues['total_carbs']}',
-                                  ),
-                                if (nutritionalValues['sugar'] != null &&
-                                    nutritionalValues['sugar'] != '')
-                                  tableRow(
-                                    'סוכרים',
-                                    '${nutritionalValues['sugar']}',
-                                  ),
-                                if (nutritionalValues['sugar_teaspoons'] !=
-                                        null &&
-                                    nutritionalValues['sugar_teaspoons'] != '')
-                                  tableRow(
-                                    'כפיות סוכר',
-                                    '${nutritionalValues['sugar_teaspoons']}',
-                                  ),
-                                if (nutritionalValues['rav_khaliem'] != null &&
-                                    nutritionalValues['rav_khaliem'] != '')
-                                  tableRow(
-                                    'רב קהליים',
-                                    '${nutritionalValues['rav_khaliem']}',
-                                  ),
-                                if (nutritionalValues['dietary_fibers'] !=
-                                        null &&
-                                    nutritionalValues['dietary_fibers'] != '')
-                                  tableRow(
-                                    'סיבים תזונתיים',
-                                    '${nutritionalValues['dietary_fibers']}',
-                                  ),
-                                if (nutritionalValues['proteins'] != null &&
-                                    nutritionalValues['proteins'] != '')
-                                  tableRow(
-                                    'חלבונים',
-                                    '${nutritionalValues['proteins']}',
-                                  ),
-                                if (nutritionalValues['calcium'] != null &&
-                                    nutritionalValues['calcium'] != '')
-                                  tableRow(
-                                    'סידן',
-                                    '${nutritionalValues['calcium']}',
-                                  ),
-                                if (nutritionalValues['iron'] != null &&
-                                    nutritionalValues['iron'] != '')
-                                  tableRow(
-                                    'ברזל',
-                                    '${nutritionalValues['iron']}',
-                                  ),
-                                if (nutritionalValues['potassium'] != null &&
-                                    nutritionalValues['potassium'] != '')
-                                  tableRow(
-                                    'אשלגן',
-                                    '${nutritionalValues['potassium']}',
-                                  ),
-                                if (nutritionalValues['magnesium'] != null &&
-                                    nutritionalValues['magnesium'] != '')
-                                  tableRow(
-                                    'מגנזיום',
-                                    '${nutritionalValues['magnesium']}',
-                                  ),
-                                if (nutritionalValues['lauricAcid'] != null &&
-                                    nutritionalValues['lauricAcid'] != '')
-                                  tableRow(
-                                    'חומצה לאורית',
-                                    '${nutritionalValues['lauricAcid']}',
-                                  ),
-                              ],
-                            )
-                            : const Text('אין ערכים תזונתיים זמינים.'),
-
-                        // Nutritional Values Header
+                        // Custom Nutritional Values
                         if (customnutritionalValues.isNotEmpty) ...[
-                          // Disclaimer Text
                           SizedBox(height: 20.h),
                           buildSectionHeader(
                             customnutritionalValues['fieldname']?.toString() ??
                                 'כותרת חסרה',
                           ),
+                          SizedBox(height: 8.h),
+                          buildNutritionalTable(customnutritionalValues),
                         ],
-
-
-                        // Nutritional Values Table Section
-                        customnutritionalValues.isNotEmpty
-                            ? Table(
-                              border: TableBorder.all(color: Colors.grey),
-                              columnWidths: const {
-                                0: FlexColumnWidth(2),
-                                1: FlexColumnWidth(3),
-                              },
-                              children: [
-                                if (customnutritionalValues['energy'] != null &&
-                                    customnutritionalValues['energy'] != '')
-                                  tableRow(
-                                    'קלוריות',
-                                    '${customnutritionalValues['energy']}',
-                                  ),
-                                if (customnutritionalValues['total_fats'] !=
-                                        null &&
-                                    customnutritionalValues['total_fats'] != '')
-                                  tableRow(
-                                    'סך השומנים מתוכן:',
-                                    '${customnutritionalValues['total_fats']}',
-                                  ),
-                                if (customnutritionalValues['saturated_fatty_acids'] !=
-                                        null &&
-                                    customnutritionalValues['saturated_fatty_acids'] !=
-                                        '')
-                                  tableRow(
-                                    'חומצות שומן רוויות',
-                                    '${customnutritionalValues['saturated_fatty_acids']}',
-                                  ),
-                                if (customnutritionalValues['trans_fatty_acids'] !=
-                                        null &&
-                                    customnutritionalValues['trans_fatty_acids'] !=
-                                        '')
-                                  tableRow(
-                                    'חומצות שומן טראנס',
-                                    '${customnutritionalValues['trans_fatty_acids']}',
-                                  ),
-                                if (customnutritionalValues['cholesterol'] !=
-                                        null &&
-                                    customnutritionalValues['cholesterol'] !=
-                                        '')
-                                  tableRow(
-                                    'כולסטרול',
-                                    '${customnutritionalValues['cholesterol']}',
-                                  ),
-                                if (customnutritionalValues['sodium'] != null &&
-                                    customnutritionalValues['sodium'] != '')
-                                  tableRow(
-                                    'נתרו',
-                                    '${customnutritionalValues['sodium']}',
-                                  ),
-                                if (customnutritionalValues['total_carbs'] !=
-                                        null &&
-                                    customnutritionalValues['total_carbs'] !=
-                                        '')
-                                  tableRow(
-                                    'סך הפחמימות מתוכן:',
-                                    '${customnutritionalValues['total_carbs']}',
-                                  ),
-                                if (customnutritionalValues['sugar'] != null &&
-                                    customnutritionalValues['sugar'] != '')
-                                  tableRow(
-                                    'סוכרים',
-                                    '${customnutritionalValues['sugar']}',
-                                  ),
-                                if (customnutritionalValues['sugar_teaspoons'] !=
-                                        null &&
-                                    customnutritionalValues['sugar_teaspoons'] !=
-                                        '')
-                                  tableRow(
-                                    'כפיות סוכר',
-                                    '${customnutritionalValues['sugar_teaspoons']}',
-                                  ),
-                                if (customnutritionalValues['rav_khaliem'] !=
-                                        null &&
-                                    customnutritionalValues['rav_khaliem'] !=
-                                        '')
-                                  tableRow(
-                                    'רב קהליים',
-                                    '${customnutritionalValues['rav_khaliem']}',
-                                  ),
-                                if (customnutritionalValues['dietary_fibers'] !=
-                                        null &&
-                                    customnutritionalValues['dietary_fibers'] !=
-                                        '')
-                                  tableRow(
-                                    'סיבים תזונתיים',
-                                    '${customnutritionalValues['dietary_fibers']}',
-                                  ),
-                                if (customnutritionalValues['proteins'] !=
-                                        null &&
-                                    customnutritionalValues['proteins'] != '')
-                                  tableRow(
-                                    'חלבונים',
-                                    '${customnutritionalValues['proteins']}',
-                                  ),
-                                if (customnutritionalValues['calcium'] !=
-                                        null &&
-                                    customnutritionalValues['calcium'] != '')
-                                  tableRow(
-                                    'סידן',
-                                    '${customnutritionalValues['calcium']}',
-                                  ),
-                                if (customnutritionalValues['iron'] != null &&
-                                    customnutritionalValues['iron'] != '')
-                                  tableRow(
-                                    'ברזל',
-                                    '${customnutritionalValues['iron']}',
-                                  ),
-                                if (customnutritionalValues['potassium'] !=
-                                        null &&
-                                    customnutritionalValues['potassium'] != '')
-                                  tableRow(
-                                    'אשלגן',
-                                    '${customnutritionalValues['potassium']}',
-                                  ),
-                                if (customnutritionalValues['magnesium'] !=
-                                        null &&
-                                    customnutritionalValues['magnesium'] != '')
-                                  tableRow(
-                                    'מגנזיום',
-                                    '${customnutritionalValues['magnesium']}',
-                                  ),
-                                if (customnutritionalValues['lauricAcid'] !=
-                                        null &&
-                                    customnutritionalValues['lauricAcid'] != '')
-                                  tableRow(
-                                    'חומצה לאורית',
-                                    '${customnutritionalValues['lauricAcid']}',
-                                  ),
-                              ],
-                            )
-                            : const Text(''),
 
                         SizedBox(height: 20.h),
 
@@ -591,6 +311,70 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           padding: EdgeInsets.all(8.0.w),
           child: Text(value, style: Theme.of(context).textTheme.bodyMedium),
         ),
+      ],
+    );
+  }
+
+  /// List of nutritional field labels and keys
+  final List<Map<String, String>> nutritionalFields = [
+    {'label': 'קלוריות', 'key': 'energy'},
+    {'label': 'סך השומנים מתוכן:', 'key': 'total_fats'},
+    {'label': 'חומצות שומן רוויות', 'key': 'saturated_fatty_acids'},
+    {'label': 'חומצות שומן טראנס', 'key': 'trans_fatty_acids'},
+    {'label': 'כולסטרול', 'key': 'cholesterol'},
+    {'label': 'נתרו', 'key': 'sodium'},
+    {'label': 'סך הפחמימות מתוכן:', 'key': 'total_carbs'},
+    {'label': 'סוכרים', 'key': 'sugar'},
+    {'label': 'כפיות סוכר', 'key': 'sugar_teaspoons'},
+    {'label': 'רב קהליים', 'key': 'rav_khaliem'},
+    {'label': 'סיבים תזונתיים', 'key': 'dietary_fibers'},
+    {'label': 'חלבונים', 'key': 'proteins'},
+    {'label': 'סידן', 'key': 'calcium'},
+    {'label': 'ברזל', 'key': 'iron'},
+    {'label': 'אשלגן', 'key': 'potassium'},
+    {'label': 'מגנזיום', 'key': 'magnesium'},
+    {'label': 'חומצה לאורית', 'key': 'lauricAcid'},
+    {'label': 'אבץ', 'key': 'zinc'},
+  ];
+
+  /// Function to build nutritional values table from map
+  Widget buildNutritionalTable(Map values) {
+    final rows =
+        nutritionalFields
+            .where(
+              (item) =>
+                  values[item['key']] != null && values[item['key']] != '',
+            )
+            .map(
+              (item) =>
+                  tableRow(item['label']!, values[item['key']!].toString()),
+            )
+            .toList();
+
+    if (rows.isEmpty) {
+      return const Text('אין ערכים תזונתיים זמינים.');
+    }
+
+    return Table(
+      border: TableBorder.all(color: Colors.grey),
+      columnWidths: const {0: FlexColumnWidth(2), 1: FlexColumnWidth(3)},
+      children: rows,
+    );
+  }
+
+  Widget buildTextSection({
+    required String? value,
+    required String label,
+    String? fallback,
+  }) {
+    if (value == null || value.isEmpty) return SizedBox.shrink();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        buildSectionHeader(label),
+        SizedBox(height: 8.h),
+        Text(value),
+        SizedBox(height: 20.h),
       ],
     );
   }

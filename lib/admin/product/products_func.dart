@@ -4,8 +4,6 @@ import 'package:zofa/admin/product/add_new_category.dart';
 import 'package:zofa/admin/product/admin_p_orders.dart';
 import 'package:zofa/admin/product/custom_nutritional_values.dart';
 import 'package:zofa/admin/product/delete_category.dart';
-import 'package:zofa/admin/product/delete_product.dart';
-import 'package:zofa/admin/product/edit_existing_product.dart';
 import 'package:zofa/admin/product/edit_product_stock.dart';
 import 'package:zofa/widgets/custom_appbar.dart';
 import 'package:zofa/widgets/custom_elevated_but.dart';
@@ -60,15 +58,7 @@ class ProductFuncScreen extends StatelessWidget {
                 targetPage: ProductOrdersScreen(),
               ),
               CustomElevatedButton(
-                label: 'עריכת מוצר קיים',
-                targetPage: EditExistingProductScreen(),
-              ),
-              CustomElevatedButton(
-                label: 'מחק מוצר קיים',
-                targetPage: DeleteProductScreen(),
-              ),
-              CustomElevatedButton(
-                label: 'עריכת מלאי מוצר',
+                label: 'עריכת מוצר',
                 targetPage: EditProductStockScreen(),
               ),
               CustomElevatedButton(
