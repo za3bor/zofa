@@ -116,6 +116,10 @@ class _BreadOrderScreenState extends State<BreadOrderScreen> {
                       name: item['name'],
                       price: double.parse(item['price'].toString()),
                       quantity: int.parse(item['quantity'].toString()),
+                      salePrice:
+                          item['salePrice'] != null
+                              ? double.tryParse(item['salePrice'].toString())
+                              : null,
                     ),
                   )
                   .toList();
@@ -233,6 +237,7 @@ class _BreadOrderScreenState extends State<BreadOrderScreen> {
                                   BreadQuantityRow(
                                     name: bread.name,
                                     price: bread.price,
+                                    salePrice: bread.salePrice,
                                     onQuantitySelected: (int quantity) {
                                       onQuantitySelected(bread, quantity);
                                     },

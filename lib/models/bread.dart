@@ -4,9 +4,11 @@ class Bread {
     required this.name,
     required this.price,
     required this.quantity,
+    this.salePrice,
   });
   final String name;
   final int id;
   final double price;
   final int quantity;
+  final double? salePrice; // nullable
 }

@@ -364,6 +364,10 @@ class _ProductsScreenState extends State<ProductsScreen>
                   decoration: InputDecoration(
                     prefixIcon: const Icon(Icons.search),
                     hintText: '...חיפוש מוצר',
+                    hintStyle: TextStyle(
+                      fontSize:
+                          16.sp, // Adjust font size for better readability
+                    ),
                     suffixIcon:
                         _searchController.text.isNotEmpty
                             ? IconButton(

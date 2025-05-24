@@ -313,23 +313,36 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   mayContainController = TextEditingController(
                     text: productData['may_contain'] ?? '',
                   );
-                    final nutritionalValues = productData['nutritionalValues'] ?? {};
-  for (var field in nutritionalFields) {
-    final key  = field['key']!;
-    final type = field['type']!;
-    if (type != 'bool') {
-      final initVal = nutritionalValues[key]?.toString() ?? '';
-      nutritionalControllers[key] = TextEditingController(text: initVal);
-    } else {
-      booleanValues[key] = (nutritionalValues[key] == 1 || nutritionalValues[key] == true);
-    }
-  }
+                  final nutritionalValues =
+                      productData['nutritionalValues'] ?? {};
+                  for (var field in nutritionalFields) {
+                    final key = field['key']!;
+                    final type = field['type']!;
+                    if (type != 'bool') {
+                      final initVal = nutritionalValues[key]?.toString() ?? '';
+                      nutritionalControllers[key] = TextEditingController(
+                        text: initVal,
+                      );
+                    } else {
+                      booleanValues[key] =
+                          (nutritionalValues[key] == 1 ||
+                              nutritionalValues[key] == true);
+                    }
+                  }
 
-  // —— NEW: initialize custom nutritional controllers ONCE ——
-  final customValues = productData['customnutritionalValues'] ?? {};
-  customValues.forEach((key, value) {
-    customNutritionalControllers[key] = TextEditingController(text: value.toString());
-  });
+                  // —— NEW: initialize custom nutritional controllers ONCE ——
+                  final raw = productData['customnutritionalValues'];
+                  final customValues =
+                      raw is Map
+                          ? Map<String, dynamic>.from(raw)
+                          : <String, dynamic>{};
+
+                  customValues.forEach((key, value) {
+                    customNutritionalControllers[key] = TextEditingController(
+                      text: value.toString(),
+                    );
+                  });
+
                   _controllersInitialized = true;
                 } else if (snapshot.hasError) {
                   // Show error in a Snackbar

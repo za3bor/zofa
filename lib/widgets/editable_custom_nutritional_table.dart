@@ -22,9 +22,8 @@ class EditableCustomNutritionalTable extends StatefulWidget {
       _EditableCustomNutritionalTableState();
 }
 
-class _EditableCustomNutritionalTableState extends State<EditableCustomNutritionalTable> {
-
-  
+class _EditableCustomNutritionalTableState
+    extends State<EditableCustomNutritionalTable> {
   Future<void> saveNutritionalValues() async {
     try {
       final Map<String, dynamic> payload = {};
@@ -39,25 +38,31 @@ class _EditableCustomNutritionalTableState extends State<EditableCustomNutrition
       );
 
       if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('ערכים תזונתיים נשמרו בהצלחה')),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('ערכים תזונתיים נשמרו בהצלחה')),
+          );
+        }
       } else {
-        // show the raw error text
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('שגיאה (${response.statusCode}): ${response.body}'),
-          ),
-        );
-        debugPrint(
-          'SAVE_NUTRI ERROR: ${response.statusCode} → ${response.body}',
-        );
+        if (mounted) {
+          // show the raw error text
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('שגיאה (${response.statusCode}): ${response.body}'),
+            ),
+          );
+          debugPrint(
+            'SAVE_NUTRI ERROR: ${response.statusCode} → ${response.body}',
+          );
+        }
       }
     } catch (e, st) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Exception: $e')));
-      debugPrint('SAVE_NUTRI EXCEPTION: $e\n$st');
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Exception: $e')));
+        debugPrint('SAVE_NUTRI EXCEPTION: $e\n$st');
+      }
     }
   }
 

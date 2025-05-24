@@ -72,7 +72,7 @@ class ContactUsScreen extends StatelessWidget {
               child: Column(
                 children: [
                   // Phone Number Section
-                  _buildSectionTitle("מספר טלפון"),
+                  _buildSectionTitle("📞 מספר טלפון"),
                   SizedBox(height: 8.h),
                   _buildCard(
                     child: GestureDetector(
@@ -91,7 +91,7 @@ class ContactUsScreen extends StatelessWidget {
                   SizedBox(height: 10.h),
 
                   // Follow Us Section
-                  _buildSectionTitle("עקוב אחרינו"),
+                  _buildSectionTitle("📱 עקוב אחרינו"),
                   SizedBox(height: 8.h),
                   _buildCard(
                     child: Row(
@@ -123,7 +123,7 @@ class ContactUsScreen extends StatelessWidget {
                   SizedBox(height: 10.h),
 
                   // Location Section
-                  _buildSectionTitle("המיקום שלנו"),
+                  _buildSectionTitle("📍 המיקום שלנו"),
                   SizedBox(height: 8.h),
                   _buildCard(
                     child: Row(
@@ -152,7 +152,7 @@ class ContactUsScreen extends StatelessWidget {
 
                   // Opening Hours Section
                   // Opening Hours Section
-                  _buildSectionTitle("שעות עבודה"),
+                  _buildSectionTitle("⏰ שעות עבודה"),
                   SizedBox(height: 8.h),
                   _buildCard(
                     child: Directionality(

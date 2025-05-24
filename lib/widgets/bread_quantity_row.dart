@@ -5,6 +5,7 @@ class BreadQuantityRow extends StatefulWidget {
   const BreadQuantityRow({
     required this.name,
     required this.price,
+    this.salePrice,
     required this.onQuantitySelected,
     required this.quantity,
     super.key,
@@ -14,6 +15,7 @@ class BreadQuantityRow extends StatefulWidget {
   final double price;
   final int quantity;
   final Function(int) onQuantitySelected;
+  final double? salePrice;
 
   @override
   State<BreadQuantityRow> createState() {
@@ -45,8 +47,12 @@ class _BreadQuantityRowState extends State<BreadQuantityRow> {
     return Container(
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
-        color:
-            const Color.fromARGB(255, 222, 210, 206), // Light background color
+        color: const Color.fromARGB(
+          255,
+          222,
+          210,
+          206,
+        ), // Light background color
         borderRadius: BorderRadius.circular(12.r), // Rounded corners
         boxShadow: const [
           BoxShadow(
@@ -62,16 +68,16 @@ class _BreadQuantityRowState extends State<BreadQuantityRow> {
         children: [
           Text(
             widget.name,
-            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 8.h),
           Text(
             '(מעורבב עם קמח מלא בלי תוספת סוכר)',
             style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                  color: const Color.fromARGB(255, 88, 88, 88),
-                ),
+              color: const Color.fromARGB(255, 88, 88, 88),
+            ),
           ),
           SizedBox(height: 8.h),
           Row(
@@ -81,14 +87,41 @@ class _BreadQuantityRowState extends State<BreadQuantityRow> {
                 flex: 1,
                 child: Container(
                   alignment: Alignment.center,
-                  child: Text(
-                    '₪ ${widget.price.toStringAsFixed(2)}',
-                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                  ),
+                  child:
+                      widget.salePrice != null &&
+                              widget.salePrice! < widget.price
+                          ? Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                '₪${widget.price.toStringAsFixed(2)}',
+                                style: Theme.of(
+                                  context,
+                                ).textTheme.bodyMedium!.copyWith(
+                                  decoration: TextDecoration.lineThrough,
+                                  color: Colors.red,
+                                ),
+                              ),
+                              SizedBox(height: 4.h),
+                              Text(
+                                '₪${widget.salePrice!.toStringAsFixed(2)}',
+                                style: Theme.of(
+                                  context,
+                                ).textTheme.bodyMedium!.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.green,
+                                ),
+                              ),
+                            ],
+                          )
+                          : Text(
+                            '₪${widget.price.toStringAsFixed(2)}',
+                            style: Theme.of(context).textTheme.bodyMedium!
+                                .copyWith(fontWeight: FontWeight.bold),
+                          ),
                 ),
               ),
+
               // Quantity control section
               Expanded(
                 flex: 2,
@@ -108,10 +141,12 @@ class _BreadQuantityRowState extends State<BreadQuantityRow> {
                       ),
                     ),
                     SizedBox(width: 8.w),
-                    Text(quantity.toString(),
-                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                              fontWeight: FontWeight.bold,
-                            )),
+                    Text(
+                      quantity.toString(),
+                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     SizedBox(width: 8.w),
                     InkWell(
                       onTap: decreaseQuantity,
@@ -136,8 +171,8 @@ class _BreadQuantityRowState extends State<BreadQuantityRow> {
                   child: Text(
                     '${widget.quantity} יח',
                     style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),

@@ -23,19 +23,26 @@ class _BreadPriceUpdateScreenState extends State<BreadPriceUpdateScreen> {
 
   // Fetch all breads from the API
   Future<void> fetchBreads() async {
-    final response =
-        await http.get(Uri.parse('http://$ipAddress/api/showAllBreadTypes'));
+    final response = await http.get(
+      Uri.parse('http://$ipAddress/api/showAllBreadTypes'),
+    );
 
     if (response.statusCode == 200) {
       final List<dynamic> breadJson = json.decode(response.body);
       setState(() {
-        breads = breadJson.map((json) {
-          return Bread(
-              id: json['id'],
-              name: json['name'],
-              price: double.parse(json['price'].toString()),
-              quantity: int.parse(json['quantity'].toString()));
-        }).toList();
+        breads =
+            breadJson.map((json) {
+              return Bread(
+                id: json['id'],
+                name: json['name'],
+                price: double.parse(json['price'].toString()),
+                quantity: int.parse(json['quantity'].toString()),
+                salePrice:
+                    json['salePrice'] != null
+                        ? double.tryParse(json['salePrice'].toString())
+                        : null,
+              );
+            }).toList();
         isLoading = false;
       });
     } else {
@@ -44,11 +51,38 @@ class _BreadPriceUpdateScreenState extends State<BreadPriceUpdateScreen> {
   }
 
   // Update the price of the bread
-  Future<void> updatePrice(int id, double newPrice) async {
+  Future<void> updatePrice(
+    int id,
+    double newPrice,
+    double? newSalePrice,
+  ) async {
+    if (newSalePrice != null && newSalePrice >= newPrice) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('מחיר המבצע חייב להיות נמוך ממחיר הרגיל'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+      return;
+    }
+
+    if (newPrice <= 0 || (newSalePrice != null && newSalePrice <= 0)) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('מחיר חייב להיות גדול מאפס'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+      return;
+    }
     final response = await http.post(
       Uri.parse('http://$ipAddress/api/updateBreadPrice/$id'),
       headers: {'Content-Type': 'application/json'},
-      body: json.encode({'newPrice': newPrice}),
+      body: json.encode({'newPrice': newPrice, 'newSalePrice': newSalePrice}),
     );
 
     if (response.statusCode == 200) {
@@ -76,113 +110,162 @@ class _BreadPriceUpdateScreenState extends State<BreadPriceUpdateScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(
-        title: 'עדכון מחירים',
-      ),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : Directionality(
-            textDirection: TextDirection.rtl,
-            child: Padding(
-                padding: EdgeInsets.all(
-                    16.0.w), // Add padding around the whole body
-                child: ListView.builder(
-                  itemCount: breads.length,
-                  itemBuilder: (context, index) {
-                    final bread = breads[index];
-                    TextEditingController priceController =
-                        TextEditingController(text: bread.price.toString());
-            
-                    return Card(
-                      elevation: 8,
-                      margin: EdgeInsets.symmetric(vertical: 8.h),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16.w),
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.all(
-                            16.0.w), // Padding inside the card
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    bread.name,
-                                    style: TextStyle(
-                                      fontSize: 20.sp,
-                                      fontWeight: FontWeight.bold,
+      appBar: const CustomAppBar(title: 'עדכון מחירים'),
+      body:
+          isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : Directionality(
+                textDirection: TextDirection.rtl,
+                child: Padding(
+                  padding: EdgeInsets.all(
+                    16.0.w,
+                  ), // Add padding around the whole body
+                  child: ListView.builder(
+                    itemCount: breads.length,
+                    itemBuilder: (context, index) {
+                      final bread = breads[index];
+                      TextEditingController priceController =
+                          TextEditingController(text: bread.price.toString());
+                      TextEditingController salePriceController =
+                          TextEditingController(
+                            text: bread.salePrice?.toString() ?? '',
+                          );
+                      return Card(
+                        elevation: 8,
+                        margin: EdgeInsets.symmetric(vertical: 8.h),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16.w),
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.all(
+                            16.0.w,
+                          ), // Padding inside the card
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      bread.name,
+                                      style: TextStyle(
+                                        fontSize: 20.sp,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    'כמות: ${bread.quantity}',
-                                    style: TextStyle(
-                                      fontSize: 16.sp,
-                                      color: Colors.grey,
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      'כמות: ${bread.quantity}',
+                                      style: TextStyle(
+                                        fontSize: 16.sp,
+                                        color: Colors.grey,
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
-                            const SizedBox(width: 16),
-                            SizedBox(
-                              width: 140.w,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  TextField(
-                                    controller: priceController,
-                                    keyboardType:
-                                        const TextInputType.numberWithOptions(
-                                            decimal: true),
-                                    decoration: InputDecoration(
-                                      labelText: 'מחיר',
-                                      labelStyle: const TextStyle(
-                                        color: Colors.brown,
-                                      ),
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(8.sp),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderSide: const BorderSide(
+                              const SizedBox(width: 16),
+                              SizedBox(
+                                width: 140.w,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    TextField(
+                                      controller: priceController,
+                                      keyboardType:
+                                          const TextInputType.numberWithOptions(
+                                            decimal: true,
+                                          ),
+                                      decoration: InputDecoration(
+                                        labelText: 'מחיר רגיל',
+                                        labelStyle: const TextStyle(
                                           color: Colors.brown,
                                         ),
-                                        borderRadius: BorderRadius.circular(8.sp),
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            8.sp,
+                                          ),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderSide: const BorderSide(
+                                            color: Colors.brown,
+                                          ),
+                                          borderRadius: BorderRadius.circular(
+                                            8.sp,
+                                          ),
+                                        ),
+                                      ),
+                                      style: TextStyle(fontSize: 16.sp),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    TextField(
+                                      controller: salePriceController,
+                                      keyboardType:
+                                          const TextInputType.numberWithOptions(
+                                            decimal: true,
+                                          ),
+                                      decoration: InputDecoration(
+                                        labelText: 'מחיר מבצע',
+                                        labelStyle: const TextStyle(
+                                          color: Colors.brown,
+                                        ),
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            8.sp,
+                                          ),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderSide: const BorderSide(
+                                            color: Colors.brown,
+                                          ),
+                                          borderRadius: BorderRadius.circular(
+                                            8.sp,
+                                          ),
+                                        ),
+                                      ),
+                                      style: TextStyle(fontSize: 16.sp),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        final newPrice = double.tryParse(
+                                          priceController.text,
+                                        );
+                                        final newSalePrice =
+                                            salePriceController.text.isNotEmpty
+                                                ? double.tryParse(
+                                                  salePriceController.text,
+                                                )
+                                                : null;
+                                        if (newPrice != null) {
+                                          updatePrice(
+                                            bread.id,
+                                            newPrice,
+                                            newSalePrice,
+                                          );
+                                        }
+                                      },
+                                      child: const Padding(
+                                        padding: EdgeInsets.symmetric(
+                                          vertical: 8.0,
+                                        ),
+                                        child: Icon(
+                                          Icons.save,
+                                          color: Colors.white,
+                                        ),
                                       ),
                                     ),
-                                    style: TextStyle(fontSize: 16.sp),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      final newPrice =
-                                          double.tryParse(priceController.text);
-                                      if (newPrice != null) {
-                                        updatePrice(bread.id, newPrice);
-                                      }
-                                    },
-                                    child: const Padding(
-                                      padding:
-                                          EdgeInsets.symmetric(vertical: 8.0),
-                                      child: Icon(
-                                        Icons.save,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
               ),
-          ),
     );
   }
 }

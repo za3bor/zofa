@@ -408,16 +408,27 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
                                 children: [
                                   if (_isCouponApplied) ...[
                                     Text(
-                                      'סך הכל: ₪ ${widget.totalPrice.toStringAsFixed(2)}',
+                                      'תשלום וקבלה רק בחנות',
                                       style: Theme.of(
                                         context,
                                       ).textTheme.bodyMedium!.copyWith(
+                                        color: Colors.red,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
                                     SizedBox(height: 8.h),
                                     Text(
-                                      'מחיר לאחר הנחה: ₪ ${_discountedPrice.toStringAsFixed(2)}',
+                                      'סה"כ לתשלום: ₪ ${widget.totalPrice.toStringAsFixed(2)}',
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.bodyMedium!.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        decoration: TextDecoration.lineThrough
+                                      ),
+                                    ),
+                                    SizedBox(height: 8.h),
+                                    Text(
+                                      'סה"כ לתשלום לאחר הנחה: ₪ ${_discountedPrice.toStringAsFixed(2)}',
                                       style: Theme.of(
                                         context,
                                       ).textTheme.bodyMedium!.copyWith(
@@ -427,7 +438,17 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
                                     ),
                                   ] else ...[
                                     Text(
-                                      'סך הכל: ₪ ${widget.totalPrice.toStringAsFixed(2)}',
+                                      'תשלום וקבלה רק בחנות',
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.bodyMedium!.copyWith(
+                                        color: Colors.red,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    SizedBox(height: 8.h),
+                                    Text(
+                                      'סה"כ לתשלום: ₪ ${widget.totalPrice.toStringAsFixed(2)}',
                                       style: Theme.of(
                                         context,
                                       ).textTheme.bodyMedium!.copyWith(

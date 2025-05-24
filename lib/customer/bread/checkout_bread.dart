@@ -26,7 +26,8 @@ class _CheckoutBreadScreenState extends State<CheckoutBreadScreen> {
 
   double totalPrice() {
     return widget.selectedItems.fold(0.0, (sum, entry) {
-      return sum + (entry.key.price * entry.value);
+      final price = entry.key.salePrice ?? entry.key.price;
+      return sum + (price * entry.value);
     });
   }
 
@@ -183,20 +184,58 @@ class _CheckoutBreadScreenState extends State<CheckoutBreadScreen> {
                                                 ).textTheme.bodyMedium,
                                           ),
                                         ),
-                                        Row(
-                                          children: [
-                                            Directionality(
-                                              textDirection: TextDirection.ltr,
-                                              child: Text(
-                                                '${entry.value} X ${entry.key.price.toStringAsFixed(2)} = ${itemTotal.toStringAsFixed(2)} ₪',
-                                                style:
-                                                    Theme.of(
-                                                      context,
-                                                    ).textTheme.bodyMedium,
-                                              ),
+                                        entry.key.salePrice != null
+                                            ? Column(
+                                              children: [
+                                                Directionality(
+                                                  textDirection:
+                                                      TextDirection.ltr,
+                                                  child: Text(
+                                                    '${entry.value} X ${entry.key.price.toStringAsFixed(2)} = ${(entry.key.price * entry.value).toStringAsFixed(2)} ₪',
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .bodyMedium!
+                                                        .copyWith(
+                                                          decoration:
+                                                              TextDecoration
+                                                                  .lineThrough,
+                                                          color: Colors.red,
+                                                        ),
+                                                  ),
+                                                ),
+                                                SizedBox(width: 8.w),
+                                                Directionality(
+                                                  textDirection:
+                                                      TextDirection.ltr,
+                                                  child: Text(
+                                                    '${entry.value} X ${entry.key.salePrice!.toStringAsFixed(2)} = ${(entry.key.salePrice! * entry.value).toStringAsFixed(2)} ₪',
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .bodyMedium!
+                                                        .copyWith(
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          color: Colors.green,
+                                                        ),
+                                                  ),
+                                                ),
+                                              ],
+                                            )
+                                            : Row(
+                                              children: [
+                                                Directionality(
+                                                  textDirection:
+                                                      TextDirection.ltr,
+                                                  child: Text(
+                                                    '${entry.value} X ${entry.key.price.toStringAsFixed(2)} = ${itemTotal.toStringAsFixed(2)} ₪',
+                                                    style:
+                                                        Theme.of(
+                                                          context,
+                                                        ).textTheme.bodyMedium,
+                                                  ),
+                                                ),
+                                              ],
                                             ),
-                                          ],
-                                        ),
                                         Divider(
                                           color: Colors.grey,
                                           thickness: 1.h,
@@ -207,20 +246,52 @@ class _CheckoutBreadScreenState extends State<CheckoutBreadScreen> {
                                   }).toList(),
                             ),
                             SizedBox(height: 10.h),
-                            Text(
-                              'סה"כ: ₪ ${totalPrice().toStringAsFixed(2)}',
-                              style: Theme.of(context).textTheme.bodyMedium!
-                                  .copyWith(fontWeight: FontWeight.bold),
-                            ),
-                            SizedBox(height: 5.h),
-                            Text(
-                              'תשלום וקבלה רק בחנות',
-                              style: Theme.of(
-                                context,
-                              ).textTheme.bodyMedium!.copyWith(
-                                color: Colors.red,
-                                fontWeight: FontWeight.bold,
-                              ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'תשלום וקבלה רק בחנות',
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.bodyMedium!.copyWith(
+                                    color: Colors.red,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                SizedBox(height: 4.h),
+                                if (widget.selectedItems.any(
+                                  (entry) => entry.key.salePrice != null,
+                                )) ...[
+                                  Text(
+                                    'סה"כ לתשלום: ₪ ${widget.selectedItems.fold(0.0, (sum, entry) => sum + (entry.key.price * entry.value)).toStringAsFixed(2)}',
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.bodyMedium!.copyWith(
+                                      decoration: TextDecoration.lineThrough,
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  SizedBox(height: 4.h),
+                                  Text(
+                                    'סה"כ לתשלום לאחר הנחה: ₪ ${totalPrice().toStringAsFixed(2)}',
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.bodyMedium!.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.green,
+                                    ),
+                                  ),
+                                ] else ...[
+                                  Text(
+                                    'סה"כ לתשלום: ₪ ${totalPrice().toStringAsFixed(2)}',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium!
+                                        .copyWith(fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ],
                             ),
                           ],
                         ),

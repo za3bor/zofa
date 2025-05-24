@@ -15,17 +15,32 @@ class _AddNewBreadState extends State<AddNewBread> {
   final _breadNameController = TextEditingController();
   final _breadPriceController = TextEditingController();
   final _breadQuantityController = TextEditingController();
+  final _breadSalePriceController = TextEditingController();
 
   Future<void> _saveNewBread() async {
     final enteredName = _breadNameController.text.trim();
     final enteredAmount = double.tryParse(_breadPriceController.text);
     final enteredQuantity = int.tryParse(_breadQuantityController.text);
+    final enteredSalePrice = double.tryParse(_breadSalePriceController.text);
+
+    if (enteredSalePrice != null && enteredSalePrice < 0) {
+      _showSnackBar('מחיר מבצע לא יכול להיות שלילי', Colors.red);
+      return;
+    }
 
     // Validate inputs
-    if (enteredName.isEmpty || 
-        enteredAmount == null || 
-        enteredAmount <= 0 || 
-        enteredQuantity == null || 
+    if (enteredSalePrice != null) {
+      if (enteredAmount! <= enteredSalePrice) {
+        _showSnackBar('מחיר הנחה גדול ממחיר רגיל', Colors.red);
+        return;
+      }
+    }
+
+    // Validate inputs
+    if (enteredName.isEmpty ||
+        enteredAmount == null ||
+        enteredAmount <= 0 ||
+        enteredQuantity == null ||
         enteredQuantity <= 0) {
       _showSnackBar('נא למלא את כל השדות עם ערכים תקינים.', Colors.red);
       return;
@@ -40,6 +55,7 @@ class _AddNewBreadState extends State<AddNewBread> {
           'name': enteredName,
           'price': enteredAmount,
           'quantity': enteredQuantity,
+          'salePrice': enteredSalePrice,
         }),
       );
 
@@ -63,10 +79,7 @@ class _AddNewBreadState extends State<AddNewBread> {
   void _showSnackBar(String message, Color backgroundColor) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(
-          message,
-          textDirection: TextDirection.rtl,
-        ),
+        content: Text(message, textDirection: TextDirection.rtl),
         backgroundColor: backgroundColor,
         duration: const Duration(seconds: 3),
       ),
@@ -78,15 +91,15 @@ class _AddNewBreadState extends State<AddNewBread> {
     _breadNameController.dispose();
     _breadPriceController.dispose();
     _breadQuantityController.dispose();
+    _breadSalePriceController.dispose();
+
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(
-        title: 'הוספת סוג לחם חדש',
-      ),
+      appBar: const CustomAppBar(title: 'הוספת סוג לחם חדש'),
       body: Directionality(
         textDirection: TextDirection.rtl,
         child: SingleChildScrollView(
@@ -97,9 +110,7 @@ class _AddNewBreadState extends State<AddNewBread> {
               TextField(
                 controller: _breadNameController,
                 maxLength: 100,
-                decoration: const InputDecoration(
-                  labelText: 'לחם חדש',
-                ),
+                decoration: const InputDecoration(labelText: 'לחם חדש'),
                 autocorrect: false,
                 textCapitalization: TextCapitalization.none,
               ),
@@ -108,19 +119,23 @@ class _AddNewBreadState extends State<AddNewBread> {
                 keyboardType: TextInputType.number,
                 controller: _breadQuantityController,
                 maxLength: 100,
-                decoration: const InputDecoration(
-                  labelText: 'כמות',
-                ),
+                decoration: const InputDecoration(labelText: 'כמות'),
               ),
               SizedBox(height: 5.h),
               TextField(
                 keyboardType: TextInputType.number,
                 controller: _breadPriceController,
                 maxLength: 100,
-                decoration: const InputDecoration(
-                  labelText: 'מחיר',
-                ),
+                decoration: const InputDecoration(labelText: 'מחיר'),
               ),
+              SizedBox(height: 5.h),
+              TextField(
+                keyboardType: TextInputType.number,
+                controller: _breadSalePriceController,
+                maxLength: 100,
+                decoration: const InputDecoration(labelText: 'מחיר מבצע'),
+              ),
+
               ElevatedButton(
                 onPressed: _saveNewBread,
                 child: const Text('הוספה לחם'),
