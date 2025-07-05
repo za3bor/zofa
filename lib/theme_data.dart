@@ -85,7 +85,7 @@ ThemeData buildThemeData() {
     iconTheme: IconThemeData(color: iconColor, size: 24.sp),
 
     // Card Theme
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       elevation: 4.0,
       color: const Color.fromARGB(255, 222, 210, 206),
       shape: RoundedRectangleBorder(
@@ -115,7 +115,7 @@ ThemeData buildThemeData() {
       actionTextColor: accentColor,
     ),
 
-    dialogTheme: DialogTheme(
+    dialogTheme: DialogThemeData(
       backgroundColor: const Color.fromARGB(255, 222, 210, 206),
       titleTextStyle: GoogleFonts.rubik(
         fontSize: 24.sp,

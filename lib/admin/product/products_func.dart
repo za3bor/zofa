@@ -5,13 +5,14 @@ import 'package:zofa/admin/product/admin_p_orders.dart';
 import 'package:zofa/admin/product/custom_nutritional_values.dart';
 import 'package:zofa/admin/product/delete_category.dart';
 import 'package:zofa/admin/product/edit_product_stock.dart';
+import 'package:zofa/admin/sales/create_sale_page.dart';
+import 'package:zofa/admin/sales/sales_list.dart';
 import 'package:zofa/widgets/custom_appbar.dart';
 import 'package:zofa/widgets/custom_elevated_but.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ProductFuncScreen extends StatelessWidget {
   const ProductFuncScreen({super.key});
-
   bool isFoldableDevice(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
     final screenWidth = mediaQuery.size.width;
@@ -40,30 +41,38 @@ class ProductFuncScreen extends StatelessWidget {
                 isFoldableDevice(context)
                     ? 1.15.w
                     : 1.4.w, // Slightly adjusted aspect ratio
-            children: const [
-              CustomElevatedButton(
+            children: [
+              const CustomElevatedButton(
                 label: 'הוספת קטגוריה חדשה',
                 targetPage: AddNewCategory(),
               ),
-              CustomElevatedButton(
+              const CustomElevatedButton(
                 label: 'הוספת מוצר חדש',
                 targetPage: AddNewProductScreen(),
               ),
-              CustomElevatedButton(
+              const CustomElevatedButton(
                 label: 'הוספת ערכים תזונתיים נוספים',
                 targetPage: CustomNutritionalValues(),
               ),
-              CustomElevatedButton(
+              const CustomElevatedButton(
                 label: 'צפייה בהזמנות מוצרים',
                 targetPage: ProductOrdersScreen(),
               ),
-              CustomElevatedButton(
+              const CustomElevatedButton(
                 label: 'עריכת מוצר',
                 targetPage: EditProductStockScreen(),
               ),
-              CustomElevatedButton(
+              const CustomElevatedButton(
                 label: 'מחיקת קטגוריה',
                 targetPage: DeleteCategory(),
+              ),
+              CustomElevatedButton(
+                label: 'Create sale',
+                targetPage: ProductSelectionPage(),
+              ),
+              CustomElevatedButton(
+                label: 'Delete sale',
+                targetPage: SalesButtonsScreen(),
               ),
             ],
           ),

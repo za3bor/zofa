@@ -6,13 +6,22 @@ import 'package:zofa/customer/tabs.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ProductCheckoutPage extends StatefulWidget {
-  final double totalPrice;
+  final double salesTotalPrice;
+  final double regularTotalPrice;
+  final double seedsTotalPrice;
   final List<Map<String, dynamic>> cartItems;
+  final List<Map<String, dynamic>> saleCartItems;
+  final List<Map<String, dynamic>> seedsCartItems;
 
   const ProductCheckoutPage({
     super.key,
-    required this.totalPrice,
+    required this.salesTotalPrice,
+    required this.regularTotalPrice,
+    required this.seedsTotalPrice,
+
     required this.cartItems,
+    required this.saleCartItems,
+    required this.seedsCartItems,
   });
 
   @override
@@ -39,7 +48,7 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
     super.initState();
     _couponFocus = FocusNode();
     _nameFocus = FocusNode();
-    _discountedPrice = widget.totalPrice;
+    _discountedPrice = price();
   }
 
   void _applyCoupon() async {
@@ -66,14 +75,24 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
       final discountPercentage =
           double.tryParse(data['percentage'].toString()) ?? 0.0;
 
-      setState(() {
-        _discountedPrice =
-            widget.totalPrice *
-            (1 - discountPercentage / 100); // Apply percentage discount
-        _isCouponApplied = true;
-        _couponColor = Colors.green; // Change color to green
-        _couponMessage = 'קופון יושם בהצלחה!'; // Success message
-      });
+      if (widget.cartItems.isNotEmpty || widget.seedsCartItems.isNotEmpty) {
+        setState(() {
+          _discountedPrice =
+              ((widget.regularTotalPrice + widget.seedsTotalPrice) *
+                      (1 - (discountPercentage / 100)) +
+                  widget.salesTotalPrice); // Apply percentage discount
+          _isCouponApplied = true;
+          _couponColor = Colors.green; // Change color to green
+          _couponMessage = 'קופון יושם בהצלחה!'; // Success message
+        });
+      } else {
+        setState(() {
+          _isCouponApplied = false;
+          _couponColor = Colors.red; // Change color to green
+          _couponMessage = 'קופון לא תקף על מבצעים!'; // Success message
+        });
+        return;
+      }
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -91,7 +110,10 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
         _couponMessage = 'קוד קופון לא תקף'; // Invalid coupon message
 
         // Reset the price to the original price when the coupon is invalid
-        _discountedPrice = widget.totalPrice;
+        _discountedPrice =
+            widget.regularTotalPrice +
+            widget.salesTotalPrice +
+            widget.seedsTotalPrice;
         _isCouponApplied = false;
       });
 
@@ -106,10 +128,44 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
   }
 
   void _saveProductOrder() async {
-    String orderDetails =
-        widget.cartItems
-            .map((item) => '${item['id']}:${item['quantity']}\n')
-            .join();
+    final Map<int, double> combinedQuantities = {};
+
+    // Helper function to add products to combinedQuantities
+    void addProduct(int id, double quantity) {
+      if (combinedQuantities.containsKey(id)) {
+        combinedQuantities[id] = combinedQuantities[id]! + quantity;
+      } else {
+        combinedQuantities[id] = quantity;
+      }
+    }
+
+    // 1. Flatten products from salesBundles and add them
+    for (var sale in widget.saleCartItems) {
+      List<dynamic> products = sale['products'] ?? [];
+      for (var product in products) {
+        int id = product['id'];
+        int quantity = product['quantity'];
+        addProduct(id, quantity.toDouble());
+      }
+    }
+
+    // 2. Add products from simpleCart
+    for (var product in widget.cartItems) {
+      int id = product['id'];
+      int quantity = product['quantity'];
+      addProduct(id, quantity.toDouble());
+    }
+
+    // 2. Add products from simpleCart
+    for (var product in widget.seedsCartItems) {
+      int id = product['id'];
+      double weight = product['weight'];
+      addProduct(id, weight);
+    }
+
+    String orderDetails = combinedQuantities.entries
+        .map((entry) => '${entry.key}:${entry.value}')
+        .join('\n');
 
     if (_nameController.text.trim().isEmpty) {
       showDialog(
@@ -150,7 +206,6 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
         'totalPrice': _discountedPrice,
         'status': 'Received',
         'email': 'EMPTY',
-        'couponCode': _couponController.text,
       }),
     );
 
@@ -159,6 +214,10 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
       _couponController.clear();
 
       var box = await Hive.openBox('cart');
+      var salebox = await Hive.openBox('salecart');
+      var seedsbox = await Hive.openBox('seedscart');
+      await seedsbox.clear();
+      await salebox.clear();
       await box.clear();
 
       if (mounted) {
@@ -188,6 +247,12 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
         );
       }
     }
+  }
+
+  double price() {
+    return widget.regularTotalPrice +
+        widget.salesTotalPrice +
+        widget.seedsTotalPrice;
   }
 
   @override
@@ -292,7 +357,6 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      SizedBox(height: 24.h),
 
                       // Product Section
                       Card(
@@ -305,92 +369,200 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // Header Text
-                              Text(
-                                'מוצרים שנבחרו:',
-                                style: Theme.of(
-                                  context,
-                                ).textTheme.bodyMedium!.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18.sp,
+                              if (widget.cartItems.isNotEmpty) ...[
+                                Text(
+                                  'מוצרים שנבחרו:',
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.bodyMedium!.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18.sp,
+                                  ),
                                 ),
-                              ),
-                              const Divider(
-                                thickness: 1.5,
-                                color: Colors.black,
-                              ),
-                              SizedBox(height: 12.h),
+                                const Divider(
+                                  thickness: 1.5,
+                                  color: Colors.black,
+                                ),
+                                SizedBox(height: 5.h),
 
-                              // List of Products with Dividers
-                              ...widget.cartItems.asMap().entries.map((entry) {
-                                int index = entry.key;
-                                var item = entry.value;
-
-                                return Column(
-                                  children: [
-                                    // Product Row
-                                    Row(
-                                      children: [
-                                        // Product Icon
-                                        const Icon(
-                                          Icons.shopping_cart,
-                                          color: Color(0xFF7A6244),
-                                          size: 24,
+                                // Regular cart items
+                                ...widget.cartItems.asMap().entries.map((
+                                  entry,
+                                ) {
+                                  final idx = entry.key;
+                                  final item = entry.value;
+                                  return Column(
+                                    children: [
+                                      _buildProductRow(
+                                        icon: Icons.shopping_cart,
+                                        name: item['name'],
+                                        quantity: item['quantity'],
+                                        backgroundColor: Colors.brown.shade50,
+                                      ),
+                                      if (idx <
+                                          widget.cartItems.length - 1) ...[
+                                        const Divider(
+                                          thickness: 1,
+                                          color: Colors.black,
                                         ),
-                                        SizedBox(width: 12.w),
+                                        SizedBox(height: 8.h),
+                                      ],
+                                    ],
+                                  );
+                                }),
+                              ],
+                              if (widget.saleCartItems.isNotEmpty &&
+                                  widget.cartItems.isEmpty) ...[
+                                SizedBox(height: 16.h),
+                              ],
 
-                                        // Product Name and Quantity
-                                        Expanded(
-                                          child: Text(
-                                            item['name'],
-                                            style:
-                                                Theme.of(
-                                                  context,
-                                                ).textTheme.bodyMedium,
+                              // Divider before sale bundles
+                              if (widget.saleCartItems.isNotEmpty) ...[
+                                Text(
+                                  'עסקאות במבצע:',
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.bodyMedium!.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18.sp,
+                                  ),
+                                ),
+                                const Divider(
+                                  thickness: 1.5,
+                                  color: Colors.black,
+                                ),
+                                SizedBox(height: 5.h),
+
+                                // One card per deal
+                                ...widget.saleCartItems.map((deal) {
+                                  final products =
+                                      deal['products'] as List<dynamic>;
+                                  return Padding(
+                                    padding: EdgeInsets.all(12.w),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        // Optional: show the deal name as header
+                                        Text(
+                                          deal['name'] as String,
+                                          style: Theme.of(
+                                            context,
+                                          ).textTheme.bodyMedium!.copyWith(
+                                            fontWeight: FontWeight.bold,
                                           ),
                                         ),
+                                        SizedBox(height: 8.h),
 
-                                        // Quantity Badge
+                                        // Now list each product in this deal
+                                        ...products.map<Widget>((p) {
+                                          final prodName = p['name'] as String;
+                                          final prodQty =
+                                              (p['quantity'] * deal['quantity'])
+                                                  as int;
+                                          return Padding(
+                                            padding: EdgeInsets.symmetric(
+                                              vertical: 4.h,
+                                            ),
+                                            child: Row(
+                                              children: [
+                                                Icon(
+                                                  Icons.local_offer,
+                                                  color: Color(0xFF7A6244),
+                                                ),
+                                                SizedBox(width: 8.w),
+                                                Expanded(child: Text(prodName)),
+                                                Container(
+                                                  padding: EdgeInsets.symmetric(
+                                                    vertical: 4.h,
+                                                    horizontal: 8.w,
+                                                  ),
+                                                  decoration: BoxDecoration(
+                                                    color: Color(0xFF7A6244),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          6,
+                                                        ),
+                                                  ),
+                                                  child: Text(
+                                                    'x$prodQty',
+                                                    style: TextStyle(
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                        }),
+                                      ],
+                                    ),
+                                  );
+                                }),
+                              ],
+                              if (widget.seedsCartItems.isNotEmpty) ...[
+                                SizedBox(height: 5.h),
+                                Text(
+                                  'זרעים שנבחרו:',
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.bodyMedium!.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18.sp,
+                                  ),
+                                ),
+                                const Divider(
+                                  thickness: 1.5,
+                                  color: Colors.black,
+                                ),
+                                SizedBox(height: 5.h),
+                                // one row per seed item
+                                ...widget.seedsCartItems.map<Widget>((seed) {
+                                  final name = seed['name'] as String;
+                                  final weight =
+                                      (seed['weight'] as num).toDouble();
+                                  return Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      vertical: 4.h,
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.spa,
+                                          color: Color(0xFF7A6244),
+                                        ),
+                                        SizedBox(width: 8.w),
+                                        Expanded(child: Text(name)),
+                                        // show weight
                                         Container(
                                           padding: EdgeInsets.symmetric(
                                             vertical: 4.h,
                                             horizontal: 8.w,
                                           ),
                                           decoration: BoxDecoration(
-                                            color: const Color(0xFF7A6244),
+                                            color: Color(0xFF7A6244),
                                             borderRadius: BorderRadius.circular(
-                                              8,
+                                              6,
                                             ),
                                           ),
                                           child: Text(
-                                            'x${item['quantity']}',
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodyMedium!
-                                                .copyWith(color: Colors.white),
+                                            '${weight.toStringAsFixed(0)} גרם',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                            ),
                                           ),
                                         ),
                                       ],
                                     ),
-
-                                    // Add Divider Below Except for Last Item
-                                    if (index <
-                                        widget.cartItems.length - 1) ...[
-                                      SizedBox(height: 8.h),
-                                      const Divider(
-                                        thickness: 1,
-                                        color: Colors.black,
-                                      ),
-                                      SizedBox(height: 8.h),
-                                    ],
-                                  ],
-                                );
-                              }),
+                                  );
+                                }),
+                              ],
                             ],
                           ),
                         ),
                       ),
-                      SizedBox(height: 24.h),
+
+                      SizedBox(height: 17.h),
 
                       // Price Section
                       Center(
@@ -418,12 +590,12 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
                                     ),
                                     SizedBox(height: 8.h),
                                     Text(
-                                      'סה"כ לתשלום: ₪ ${widget.totalPrice.toStringAsFixed(2)}',
+                                      'סה"כ לתשלום: ₪ ${price().toStringAsFixed(2)}',
                                       style: Theme.of(
                                         context,
                                       ).textTheme.bodyMedium!.copyWith(
                                         fontWeight: FontWeight.bold,
-                                        decoration: TextDecoration.lineThrough
+                                        decoration: TextDecoration.lineThrough,
                                       ),
                                     ),
                                     SizedBox(height: 8.h),
@@ -448,7 +620,7 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
                                     ),
                                     SizedBox(height: 8.h),
                                     Text(
-                                      'סה"כ לתשלום: ₪ ${widget.totalPrice.toStringAsFixed(2)}',
+                                      'סה"כ לתשלום: ₪ ${price().toStringAsFixed(2)}',
                                       style: Theme.of(
                                         context,
                                       ).textTheme.bodyMedium!.copyWith(
@@ -456,6 +628,15 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
                                       ),
                                     ),
                                   ],
+                                  SizedBox(height: 10.h),
+
+                                  Text(
+                                    'קופון תקף רק על מוצרים רגילים ולא על מבצעים',
+                                    style: TextStyle(
+                                      fontSize: 12.sp,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
@@ -479,6 +660,7 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
                           ),
                         ),
                       ),
+                      SizedBox(height: 10.h),
                     ],
                   ),
                 ),
@@ -486,6 +668,43 @@ class _CheckoutPageState extends State<ProductCheckoutPage> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildProductRow({
+    required IconData icon,
+    required String name,
+    required int quantity,
+    String? trailingText,
+    Color? backgroundColor,
+  }) {
+    return Padding(
+      padding: EdgeInsets.all(13.w),
+      child: Row(
+        children: [
+          Icon(icon, color: const Color(0xFF7A6244), size: 24),
+          SizedBox(width: 12.w),
+          Expanded(child: Text(name)),
+          Container(
+            padding: EdgeInsets.symmetric(vertical: 4.h, horizontal: 8.w),
+            decoration: BoxDecoration(
+              color: const Color(0xFF7A6244),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              'x$quantity',
+              style: const TextStyle(color: Colors.white),
+            ),
+          ),
+          if (trailingText != null) ...[
+            SizedBox(width: 12.w),
+            Text(
+              trailingText,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ],
+        ],
       ),
     );
   }

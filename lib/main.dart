@@ -23,10 +23,11 @@ void main() async {
   // Initialize Hive
   final appDocumentDirectory = await getApplicationDocumentsDirectory();
   Hive.init(appDocumentDirectory.path); // Set the path where Hive stores data
-
   // Open boxes to store user login and admin status
   await Hive.openBox('userStatus');
   await Hive.openBox('cart'); // You can still keep the cart box open
+  await Hive.openBox('salecart'); // You can still keep the cart box open
+  await Hive.openBox('seedscart'); // You can still keep the cart box open
 
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]).then((
     _,

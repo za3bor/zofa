@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:zofa/constant.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:zofa/customer/sales/sale_details_screen.dart';
 
 class ProductDetailsScreen extends StatefulWidget {
   final int productId;
@@ -15,12 +16,19 @@ class ProductDetailsScreen extends StatefulWidget {
 
 class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   late Future<Map<String, dynamic>> productDetails;
+  List<int> saleIds = [];
 
   @override
   void initState() {
     super.initState();
     // Fetch product details when the screen is loaded
     productDetails = fetchProductDetails(widget.productId);
+    // Fetch sale IDs for this product
+    fetchSaleIdsForProduct(widget.productId).then((ids) {
+      setState(() {
+        saleIds = ids;
+      });
+    });
   }
 
   Future<Map<String, dynamic>> fetchProductDetails(int productId) async {
@@ -32,6 +40,37 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     } else {
       throw Exception('Failed to load product details');
     }
+  }
+
+  Future<List<int>> fetchSaleIdsForProduct(int productId) async {
+    final uri = Uri.parse('http://$ipAddress/api/salesProduct/$productId');
+
+    try {
+      final response = await http.get(uri);
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data != null && data['saleIds'] is List) {
+          return List<int>.from(data['saleIds']);
+        }
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Failed to fetch sale IDs: ${response.statusCode}'),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error fetching sale IDs: $e')));
+      }
+    }
+
+    return [];
   }
 
   @override
@@ -80,7 +119,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 final customnutritionalValues =
                     productData['customnutritionalValues'] ?? {};
                 final stock = productData['in_stock'];
-
+                final isSeeds = productData['is_seeds'];
+print(isSeeds);
                 return SingleChildScrollView(
                   child: Padding(
                     padding: EdgeInsets.all(16.w),
@@ -157,7 +197,53 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                           ),
                           SizedBox(height: 8.h),
                         ],
+                        if (saleIds.isNotEmpty) ...[
+                          Text(
+                            'מוצר זה נמצא במבצע!',
+                            style: Theme.of(
+                              context,
+                            ).textTheme.bodyMedium!.copyWith(
+                              color: Colors.green,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: 8.h),
 
+                          // Add buttons for each sale ID
+                          Wrap(
+                            spacing: 8.w,
+                            runSpacing: 10.h,
+                            children:
+                                saleIds.asMap().entries.map((entry) {
+                                  final index = entry.key;
+                                  final saleId = entry.value;
+                                  return ElevatedButton.icon(
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder:
+                                              (context) => SaleDetailsScreen(
+                                                saleId: saleId,
+                                              ),
+                                        ),
+                                      );
+                                    },
+                                    icon: const Icon(Icons.local_offer),
+                                    label: Text('לצפייה במבצע ${index + 1}'),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.brown.shade200,
+                                      foregroundColor: Colors.black,
+                                      textStyle: TextStyle(fontSize: 14.sp),
+                                    ),
+                                  );
+                                }).toList(),
+                          ),
+
+                          SizedBox(height: 8.h),
+                        ],
+
+                        SizedBox(height: 8.h),
                         // Use helper for standard sections
                         buildTextSection(
                           value: productData['name'],
@@ -167,7 +253,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
 
                         buildTextSection(
                           value: productData['price'],
-                          label: 'מחיר',
+                          label: (isSeeds == 1) ? 'מחיר לק״ג' : 'מחיר',
                           fallback: 'לא נמצא מחיר המוצר',
                         ),
 

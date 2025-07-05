@@ -5,6 +5,7 @@ import 'package:zofa/constant.dart';
 import 'package:zofa/models/category.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:zofa/models/health_marking.dart';
 
 class AddNewProductScreen extends StatefulWidget {
   const AddNewProductScreen({super.key});
@@ -50,14 +51,12 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
   final _zincController = TextEditingController();
 
   // Dropdown and toggle states
-  bool _inStock = false;
+  bool _inStock = true;
   bool _isDrink = false;
   bool _isSeeds = false;
 
-  bool _containsSodium = false;
-  bool _containsSugar = false;
-  bool _containsFat = false;
-  bool _isGreen = false;
+  List<HealthMarking> _healthMarkings = [];
+  final Map<int, bool> _healthMarkingSelections = {};
 
   bool _ofWhichF = false;
   bool _ofWhichC = false;
@@ -71,6 +70,36 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
   void initState() {
     super.initState();
     _fetchCategories(); // Fetch categories on initialization
+    _fetchHealthMarkings();
+  }
+
+  Future<void> _fetchHealthMarkings() async {
+    try {
+      final res = await http.get(
+        Uri.parse('http://$ipAddress/api/getAllHealthMarking'),
+      );
+      if (res.statusCode == 200) {
+        final list = jsonDecode(res.body) as List;
+        setState(() {
+          _healthMarkings =
+              list
+                  .map((e) => HealthMarking(id: e['id'], name: e['name']))
+                  .toList();
+          _healthMarkingSelections.clear();
+          for (var h in _healthMarkings) {
+            _healthMarkingSelections[h.id] = false;
+          }
+        });
+      } else {
+        throw Exception('Failed to load health markings');
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error loading health markings: $e')),
+        );
+      }
+    }
   }
 
   Future<void> _pickImage() async {
@@ -230,11 +259,11 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
               .map((entry) => entry.key)
               .toList();
 
-      List<int> healthSymbols = [];
-      if (_containsSodium) healthSymbols.add(1); // Example IDs
-      if (_containsSugar) healthSymbols.add(2);
-      if (_containsFat) healthSymbols.add(3);
-      if (_isGreen) healthSymbols.add(4);
+      final selectedHealth =
+          _healthMarkingSelections.entries
+              .where((e) => e.value)
+              .map((e) => e.key)
+              .toList();
 
       final product = {
         "barcode": int.parse(_barcodeController.text),
@@ -272,7 +301,7 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
           "lauricAcid": _lauricAcidController.text,
           "zinc": _zincController.text,
         },
-        "healthSymbols": healthSymbols,
+        "healthSymbols": selectedHealth,
       };
 
       try {
@@ -387,7 +416,9 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
 
                 TextFormField(
                   controller: _priceController,
-                  decoration: const InputDecoration(labelText: 'מחיר'),
+                  decoration: InputDecoration(
+                    labelText: _isSeeds ? 'מחיר לק״ג' : 'מחיר',
+                  ),
                   keyboardType: TextInputType.number,
                 ),
                 SizedBox(height: 10.h),
@@ -448,52 +479,25 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
                   );
                 }),
                 SizedBox(height: 12.h),
-                Text(
-                  'סימנים',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 10.h),
-
-                SwitchListTile(
-                  title: Text(
-                    'נתרו',
-                    style: Theme.of(context).textTheme.bodyLarge,
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 12.h),
+                  child: Text(
+                    'סימנים בריאותיים',
+                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                  value: _containsSodium,
-                  onChanged: (value) => setState(() => _containsSodium = value),
                 ),
-                SizedBox(height: 10.h),
-
-                SwitchListTile(
-                  title: Text(
-                    'סוכר',
-                    style: Theme.of(context).textTheme.bodyLarge,
+                ..._healthMarkings.map(
+                  (h) => SwitchListTile(
+                    title: Text(h.name),
+                    value: _healthMarkingSelections[h.id] ?? false,
+                    onChanged:
+                        (v) =>
+                            setState(() => _healthMarkingSelections[h.id] = v),
                   ),
-                  value: _containsSugar,
-                  onChanged: (value) => setState(() => _containsSugar = value),
                 ),
-                SizedBox(height: 10.h),
 
-                SwitchListTile(
-                  title: Text(
-                    'שומן',
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
-                  value: _containsFat,
-                  onChanged: (value) => setState(() => _containsFat = value),
-                ),
-                SizedBox(height: 10.h),
-
-                SwitchListTile(
-                  title: Text(
-                    'ירוק',
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
-                  value: _isGreen,
-                  onChanged: (value) => setState(() => _isGreen = value),
-                ),
                 SizedBox(height: 10.h),
 
                 // Nutrition Fields

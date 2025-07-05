@@ -22,7 +22,7 @@ class EmptyGuestCartWidget extends StatelessWidget {
                 Icon(
                   Icons.shopping_cart_outlined,
                   size: 150.h,
-                  color: brown.withValues(alpha: 0.8),
+                  color: brown,
                 ),
                 SizedBox(height: 20.h),
                 Text(

@@ -181,6 +181,7 @@ class _ProductsScreenState extends State<ProductsScreen>
                           ? double.parse(item['price'])
                           : item['price'],
                   stock: item['in_stock'] > 0, // Update stock handling
+                  isSeeds: item['is_seeds'] > 0, // Handle isSeeds field
                 );
               }).toList();
           _filteredProducts = List.from(_products);
@@ -229,6 +230,93 @@ class _ProductsScreenState extends State<ProductsScreen>
     });
   }
 
+  void _addToSeedsCart(int productId, double grams) async {
+    var userBox = await Hive.openBox('userStatus');
+    bool isGuest = userBox.get('isGuest', defaultValue: false);
+
+    if (isGuest) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('עליך להירשם כדי להוסיף מוצרים לעגלה')),
+        );
+      }
+      return;
+    }
+
+    var seedsBox = await Hive.openBox('seedscart');
+    var saleCartBox = await Hive.openBox('salecart');
+    var regularCartBox = await Hive.openBox('cart');
+
+    // Load existing seeds cart data, expecting Map<int, Map<String, dynamic>>
+    Map<dynamic, dynamic> seedsCartData = seedsBox.get(
+      'seedscart',
+      defaultValue: <int, Map<String, dynamic>>{},
+    );
+
+    Map<dynamic, dynamic> saleCartData = saleCartBox.get(
+      'salecart',
+      defaultValue: <dynamic, dynamic>{},
+    );
+    Map<dynamic, dynamic> regularCartData = regularCartBox.get(
+      'cart',
+      defaultValue: <int, Map<String, dynamic>>{},
+    );
+
+    // Find product info
+    Product product = _filteredProducts.firstWhere((p) => p.id == productId);
+
+    // Current total weight for this seed in cart
+    double totalWeight = grams;
+    if (seedsCartData.containsKey(productId)) {
+      var existingEntry = seedsCartData[productId];
+      if (existingEntry is Map && existingEntry['weight'] is num) {
+        totalWeight += (existingEntry['weight'] as num).toDouble();
+      }
+    }
+
+    // Save the entry with name, weight, price
+    seedsCartData[productId] = {
+      'name': product.name,
+      'weight': totalWeight,
+      'price': product.price,
+    };
+
+    // Save updated seeds cart
+    await seedsBox.put('seedscart', seedsCartData);
+
+    // Calculate counts for badge/total items
+    int regularCartItems = regularCartData.values.fold<int>(
+      0,
+      (sum, item) => sum + (item['quantity'] as int),
+    );
+
+    int totalSaleItems = saleCartData.values.fold<int>(0, (sum, item) {
+      final dealQuantity = item['quantity'] as int;
+      final products = item['products'] as List<dynamic>;
+
+      final totalProductsInDeal = products.fold<int>(0, (pSum, p) {
+        return pSum + (p['quantity'] as int);
+      });
+
+      return sum + (dealQuantity * totalProductsInDeal);
+    });
+
+    int totalSeedsAsUnits = seedsCartData.length;
+
+    cartItemCountNotifier.value =
+        regularCartItems + totalSaleItems + totalSeedsAsUnits;
+
+    if (mounted) {
+      final tabsScreenState =
+          context.findAncestorStateOfType<TabsScreenState>();
+      tabsScreenState?.triggerCartSpin();
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${product.name} המוצר הוסף לעגלה')),
+      );
+    }
+  }
+
   void _addToCart(int productId) async {
     var userBox = await Hive.openBox('userStatus');
     bool isGuest = userBox.get('isGuest', defaultValue: false);
@@ -243,12 +331,27 @@ class _ProductsScreenState extends State<ProductsScreen>
     }
 
     var box = await Hive.openBox('cart');
+    var saleCartBox = await Hive.openBox(
+      'salecart',
+    ); // <-- Open sale cart box too
+
     int quantity = _productQuantities[productId] ?? 0;
 
     if (quantity > 0) {
       // Get the existing cart data (it should be a Map<int, Map<String, dynamic>>)
       Map<dynamic, dynamic> cartData = box.get(
         'cart',
+        defaultValue: <int, Map<String, dynamic>>{},
+      );
+      Map<dynamic, dynamic> saleCartData = saleCartBox.get(
+        'salecart',
+        defaultValue: <dynamic, dynamic>{},
+      );
+
+      var seedsBox = await Hive.openBox('seedscart');
+
+      Map<dynamic, dynamic> seedsCartData = seedsBox.get(
+        'seedscart',
         defaultValue: <int, Map<String, dynamic>>{},
       );
 
@@ -270,18 +373,27 @@ class _ProductsScreenState extends State<ProductsScreen>
 
       // Save the updated cart data directly to the box
       await box.put('cart', cartData);
-
-      // Update the global cart count
-
-      // cartItemCountNotifier.value = cartData.values.fold<int>(
-      //0,
-      // (sum, item) => sum + ((item['quantity'] ?? 0) as int),
-      // );
       int newCount = cartData.values.fold<int>(
         0,
         (sum, item) => sum + (item['quantity'] as int), // Explicit cast to int
       );
-      cartItemCountNotifier.value = newCount; // Update the global cart count
+      // Calculate total items from sale cart
+      int totalSaleItems = saleCartData.values.fold<int>(0, (sum, item) {
+        final dealQuantity = item['quantity'] as int;
+        final products = item['products'] as List<dynamic>;
+
+        final totalProductsInDeal = products.fold<int>(0, (pSum, p) {
+          return pSum + (p['quantity'] as int);
+        });
+
+        return sum + (dealQuantity * totalProductsInDeal);
+      });
+      int totalSeedsAsUnits = seedsCartData.length;
+
+      cartItemCountNotifier.value =
+          newCount +
+          totalSaleItems +
+          totalSeedsAsUnits; // Update the global cart count
       setState(() {
         _productQuantities[productId] = 0;
       });
@@ -529,6 +641,7 @@ class _ProductsScreenState extends State<ProductsScreen>
                           : Padding(
                             padding: EdgeInsets.all(8.0.w),
                             child: SingleChildScrollView(
+                              physics: const BouncingScrollPhysics(),
                               child: LayoutGrid(
                                 columnSizes: List.generate(
                                   _getCrossAxisCount(),
@@ -568,6 +681,7 @@ class _ProductsScreenState extends State<ProductsScreen>
                                           onIncrement: _incrementQuantity,
                                           onDecrement: _decrementQuantity,
                                           onAddToCart: _addToCart,
+                                          onAddSeedsToCart: _addToSeedsCart,
                                         ),
                                       );
                                     }).toList(),

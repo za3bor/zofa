@@ -10,6 +10,7 @@ import 'package:zofa/customer/product/checkout_page.dart';
 import 'package:zofa/customer/contact_us.dart';
 import 'package:zofa/customer/product/products.dart';
 import 'package:zofa/customer/rate_app.dart';
+import 'package:zofa/customer/sales/offer_screen.dart';
 import 'package:zofa/customer/share_app.dart';
 import 'package:zofa/customer/term_of_use.dart';
 import 'package:hive/hive.dart';
@@ -34,7 +35,7 @@ class TabsScreen extends StatefulWidget {
 class TabsScreenState extends State<TabsScreen>
     with SingleTickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  int _selectedPageIndex = 0;
+  int _selectedPageIndex = 1;
   int cartItemCount = 0;
   // AnimationController for the spin effect
   late AnimationController _controller;
@@ -58,13 +59,36 @@ class TabsScreenState extends State<TabsScreen>
 
   /// Directly read `cartItemCountNotifier.value` on load
   void _loadInitialCartItemCount() async {
-    var box = await Hive.openBox('cart');
-    Map cartData = box.get('cart', defaultValue: {});
+    var cartBox = await Hive.openBox('cart');
+    var saleCartBox = await Hive.openBox('salecart');
+    var seedsBox = await Hive.openBox('seedscart');
 
-    cartItemCountNotifier.value = cartData.values.fold<int>(
+    Map<dynamic, dynamic> seedsCartData = seedsBox.get(
+      'seedscart',
+      defaultValue: <int, Map<String, dynamic>>{},
+    );
+    Map cartData = cartBox.get('cart', defaultValue: {});
+    Map saleCartData = saleCartBox.get('salecart', defaultValue: {});
+
+    int totalRegularItems = cartData.values.fold<int>(
       0,
       (sum, item) => sum + ((item['quantity'] ?? 0) as int),
     );
+
+    int totalSaleItems = saleCartData.values.fold<int>(0, (sum, item) {
+      int dealQuantity = (item['quantity'] ?? 0) as int;
+      List<dynamic> products = item['products'] as List<dynamic>;
+
+      int totalItemsInDeal = products.fold<int>(0, (pSum, p) {
+        return pSum + ((p['quantity'] ?? 0) as int);
+      });
+
+      return sum + (dealQuantity * totalItemsInDeal);
+    });
+    int totalSeedsAsUnits = seedsCartData.length;
+
+    cartItemCountNotifier.value =
+        totalRegularItems + totalSaleItems + totalSeedsAsUnits;
   }
 
   /// Trigger the cart spin animation from the "Add to Cart" action
@@ -177,6 +201,14 @@ class TabsScreenState extends State<TabsScreen>
       if (response.statusCode == 200) {
         // Clear Hive data
         final userStatusBox = Hive.box('userStatus');
+        var box = await Hive.openBox('cart');
+        var salebox = await Hive.openBox('salecart');
+        var seedsCart = await Hive.openBox('seedscart');
+
+        await salebox.clear();
+        await box.clear();
+        await seedsCart.clear();
+
         await userStatusBox.put('isGuest', true);
         await userStatusBox.clear(); // Removes all user-related data
 
@@ -219,8 +251,13 @@ class TabsScreenState extends State<TabsScreen>
     final isGuest = userStatusBox.get('isGuest', defaultValue: false);
     final isAdmin = userStatusBox.get('isAdmin', defaultValue: false);
 
-    if (_selectedPageIndex == 1) {
-      // Active page for BreadOrderScreen (as an example)
+    if (_selectedPageIndex == 0) {
+      activePage = const OfferScreen();
+      activePageTitle = 'מבצעים';
+    } else if (_selectedPageIndex == 1) {
+      activePage = const ProductsScreen();
+      activePageTitle = 'מוצרים';
+    } else if (_selectedPageIndex == 2) {
       activePage = const BreadOrderScreen();
       activePageTitle = 'לחמים';
     }
@@ -238,7 +275,7 @@ class TabsScreenState extends State<TabsScreen>
                 : null,
         title: Text(activePageTitle),
         leading:
-            _selectedPageIndex == 1 && isAdmin
+            _selectedPageIndex == 2 && isAdmin
                 ? IconButton(
                   icon: const Icon(Icons.arrow_back),
                   onPressed: () {
@@ -251,7 +288,7 @@ class TabsScreenState extends State<TabsScreen>
                     );
                   },
                 )
-                : (_selectedPageIndex == 0
+                : (_selectedPageIndex == 0 || _selectedPageIndex == 1
                     ? ValueListenableBuilder<int>(
                       valueListenable: cartItemCountNotifier,
                       builder: (context, cartCount, child) {
@@ -416,6 +453,33 @@ class TabsScreenState extends State<TabsScreen>
         color: Theme.of(context).colorScheme.secondary,
         activeColor: Theme.of(context).colorScheme.secondary,
         items: [
+          TabItem(
+            icon:
+                isChristmas
+                    ? Image.asset(
+                      'assets/christmas/discount.png',
+                      width: 24,
+                      height: 24,
+                    )
+                    : isEaster
+                    ? Image.asset(
+                      'assets/easter/discount.png',
+                      width: 24,
+                      height: 24,
+                    )
+                    : isRamadan
+                    ? Image.asset(
+                      'assets/ramadan/discount.png',
+                      width: 24,
+                      height: 24,
+                    )
+                    : Icon(
+                      Icons.local_offer,
+                      color: Theme.of(context).colorScheme.secondary,
+                      size: 30.sp,
+                    ),
+            title: 'מבצעים',
+          ),
           TabItem(
             icon:
                 isChristmas

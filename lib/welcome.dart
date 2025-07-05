@@ -23,9 +23,7 @@ class WelcomeScreen extends StatelessWidget {
 
             // Semi-transparent overlay
             Positioned.fill(
-              child: Container(
-                color: Colors.black.withValues(alpha:  0.4),
-              ),
+              child: Container(color: Colors.black.withValues(alpha: 0.4)),
             ),
 
             // Main content
@@ -123,12 +121,13 @@ class WelcomeScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(30),
                         ),
                         elevation: 6,
-                        shadowColor: Colors.black.withValues(alpha:  0.2),
+                        shadowColor: Colors.black.withValues(alpha: 0.2),
                       ),
                       onPressed: () {
-                        Navigator.of(context).pushReplacement(
+                        Navigator.push(
+                          context,
                           MaterialPageRoute(
-                            builder: (_) => const SignupScreen(),
+                            builder: (context) => const SignupScreen(),
                           ),
                         );
                       },
