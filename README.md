@@ -49,3 +49,7 @@ Bread Availability Management:
 
 ## Server:
 - Hosting: The backend is hosted on an EC2 server, ensuring scalability and reliability for handling real-time data and requests.
+
+## App:
+- Android app: https://play.google.com/store/apps/details?id=com.zofa_client
+- IOS app: https://apps.apple.com/app/id6744275359
