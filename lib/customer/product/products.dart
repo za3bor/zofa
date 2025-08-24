@@ -10,7 +10,8 @@ import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:zofa/global.dart';
 import 'package:zofa/customer/tabs.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:zofa/widgets/product_card.dart';
+import 'package:zofa/widgets/product_gridview_card.dart';
+import 'package:zofa/widgets/product_list_card.dart';
 
 class ProductsScreen extends StatefulWidget {
   const ProductsScreen({super.key});
@@ -42,6 +43,7 @@ class _ProductsScreenState extends State<ProductsScreen>
   late IO.Socket _socket; // Declare the socket instance
   int flag = 0;
   late FocusNode _searchFocus;
+  bool _isGridView = true; // Track view mode
 
   @override
   void initState() {
@@ -466,41 +468,105 @@ class _ProductsScreenState extends State<ProductsScreen>
           ),
           Column(
             children: [
-              // Search bar
+              // Search bar with view toggle
               Padding(
                 padding: EdgeInsets.all(16.w),
-                child: TextField(
-                  focusNode: _searchFocus,
-                  controller: _searchController,
-                  textAlign: TextAlign.right,
-                  decoration: InputDecoration(
-                    prefixIcon: const Icon(Icons.search),
-                    hintText: '...חיפוש מוצר',
-                    hintStyle: TextStyle(
-                      fontSize:
-                          16.sp, // Adjust font size for better readability
+                child: Row(
+                  children: [
+                    // View toggle button
+                    Container(
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 222, 210, 206),
+                        borderRadius: BorderRadius.circular(30.r),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          // Grid view button
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _isGridView = true;
+                              });
+                            },
+                            child: Container(
+                              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 9.h),
+                              decoration: BoxDecoration(
+                                color: _isGridView 
+                                    ? const Color(0xFF7A6244) 
+                                    : Colors.transparent,
+                                borderRadius: BorderRadius.circular(30.r),
+                              ),
+                              child: Icon(
+                                Icons.grid_view,
+                                color: _isGridView ? Colors.white : Colors.brown[700],
+                                size: 24.sp,
+                              ),
+                            ),
+                          ),
+                          // List view button
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _isGridView = false;
+                              });
+                            },
+                            child: Container(
+                              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 9.h),
+                              decoration: BoxDecoration(
+                                color: !_isGridView 
+                                    ? const Color(0xFF7A6244) 
+                                    : Colors.transparent,
+                                borderRadius: BorderRadius.circular(30.r),
+                              ),
+                              child: Icon(
+                                Icons.view_list,
+                                color: !_isGridView ? Colors.white : Colors.brown[700],
+                                size: 24.sp,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    suffixIcon:
-                        _searchController.text.isNotEmpty
-                            ? IconButton(
-                              icon: const Icon(Icons.clear),
-                              onPressed: () {
-                                _searchController.clear();
-                                _fetchProducts(); // Re-fetch products when search is cleared
-                              },
-                            )
-                            : null,
-                    filled: true,
-                    fillColor: const Color.fromARGB(255, 222, 210, 206),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30.r),
-                      borderSide: BorderSide.none,
+                    
+                    SizedBox(width: 12.w),
+                    
+                    // Search field
+                    Expanded(
+                      child: TextField(
+                        focusNode: _searchFocus,
+                        controller: _searchController,
+                        textAlign: TextAlign.right,
+                        decoration: InputDecoration(
+                          prefixIcon: const Icon(Icons.search),
+                          hintText: '...חיפוש מוצר',
+                          hintStyle: TextStyle(
+                            fontSize: 16.sp,
+                          ),
+                          suffixIcon: _searchController.text.isNotEmpty
+                              ? IconButton(
+                                  icon: const Icon(Icons.clear),
+                                  onPressed: () {
+                                    _searchController.clear();
+                                    _fetchProducts();
+                                  },
+                                )
+                              : null,
+                          filled: true,
+                          fillColor: const Color.fromARGB(255, 222, 210, 206),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30.r),
+                            borderSide: BorderSide.none,
+                          ),
+                          contentPadding: EdgeInsets.symmetric(
+                            horizontal: 20.w,
+                            vertical: 9.h,
+                          ),
+                        ),
+                      ),
                     ),
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 20.w,
-                      vertical: 9.h,
-                    ),
-                  ),
+                  ],
                 ),
               ),
 
@@ -626,74 +692,107 @@ class _ProductsScreenState extends State<ProductsScreen>
               Directionality(
                 textDirection: TextDirection.rtl,
                 child: Expanded(
-                  child:
-                      _filteredProducts.isEmpty
-                          ? Center(
-                            child: Text(
-                              _searchController.text.isNotEmpty
-                                  ? 'אין מוצרים להצגה'
-                                  : _products.isEmpty
-                                  ? 'אין מוצרים להצגה'
-                                  : 'שגיאה בטעינת המוצרים, נסה שוב מאוחר יותר',
-                              style: Theme.of(context).textTheme.bodyMedium,
-                            ),
-                          )
-                          : Padding(
-                            padding: EdgeInsets.all(8.0.w),
-                            child: SingleChildScrollView(
-                              physics: const BouncingScrollPhysics(),
-                              child: LayoutGrid(
-                                columnSizes: List.generate(
-                                  _getCrossAxisCount(),
-                                  (_) => 1.fr,
-                                ), // Define column sizes
-                                rowSizes: List.generate(
-                                  (_filteredProducts.length /
-                                          _getCrossAxisCount())
-                                      .ceil(),
-                                  (_) => auto, // Define row sizes
-                                ),
-                                rowGap: 10.h,
-                                columnGap: 10.w,
-                                children:
-                                    _filteredProducts.map((product) {
-                                      final imageUrl =
-                                          'https://d1qq705dywrog2.cloudfront.net/images/${product.id}.jpeg';
-
-                                      return GestureDetector(
-                                        onTap: () {
-                                          _searchFocus.unfocus();
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder:
-                                                  (context) =>
-                                                      ProductDetailsScreen(
-                                                        productId: product.id,
-                                                      ),
-                                            ),
-                                          );
-                                        },
-                                        child: ProductCard(
-                                          product: product,
-                                          imageUrl: imageUrl,
-                                          productQuantities: _productQuantities,
-                                          onIncrement: _incrementQuantity,
-                                          onDecrement: _decrementQuantity,
-                                          onAddToCart: _addToCart,
-                                          onAddSeedsToCart: _addToSeedsCart,
-                                        ),
-                                      );
-                                    }).toList(),
-                              ),
-                            ),
+                  child: _filteredProducts.isEmpty
+                      ? Center(
+                          child: Text(
+                            _searchController.text.isNotEmpty
+                                ? 'אין מוצרים להצגה'
+                                : _products.isEmpty
+                                    ? 'אין מוצרים להצגה'
+                                    : 'שגיאה בטעינת המוצרים, נסה שוב מאוחר יותר',
+                            style: Theme.of(context).textTheme.bodyMedium,
                           ),
+                        )
+                      : Padding(
+                          padding: EdgeInsets.all(8.0.w),
+                          child: _isGridView
+                              ? _buildGridView()
+                              : _buildListView(),
+                        ),
                 ),
               ),
             ],
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildGridView() {
+    return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
+      child: LayoutGrid(
+        columnSizes: List.generate(
+          _getCrossAxisCount(),
+          (_) => 1.fr,
+        ),
+        rowSizes: List.generate(
+          (_filteredProducts.length / _getCrossAxisCount()).ceil(),
+          (_) => auto,
+        ),
+        rowGap: 10.h,
+        columnGap: 10.w,
+        children: _filteredProducts.map((product) {
+          final imageUrl = 'https://d1qq705dywrog2.cloudfront.net/images/${product.id}.jpeg';
+
+          return GestureDetector(
+            onTap: () {
+              _searchFocus.unfocus();
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ProductDetailsScreen(
+                    productId: product.id,
+                  ),
+                ),
+              );
+            },
+            child: ProductCard(
+              product: product,
+              imageUrl: imageUrl,
+              productQuantities: _productQuantities,
+              onIncrement: _incrementQuantity,
+              onDecrement: _decrementQuantity,
+              onAddToCart: _addToCart,
+              onAddSeedsToCart: _addToSeedsCart,
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget _buildListView() {
+    return ListView.builder(
+      physics: const BouncingScrollPhysics(),
+      itemCount: _filteredProducts.length,
+      itemBuilder: (context, index) {
+        final product = _filteredProducts[index];
+        final imageUrl = 'https://d1qq705dywrog2.cloudfront.net/images/${product.id}.jpeg';
+
+        return GestureDetector(
+          onTap: () {
+            _searchFocus.unfocus();
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ProductDetailsScreen(
+                  productId: product.id,
+                ),
+              ),
+            );
+          },
+          child: ProductListCard(
+            product: product,
+            imageUrl: imageUrl,
+            productQuantities: _productQuantities,
+            onIncrement: _incrementQuantity,
+            onDecrement: _decrementQuantity,
+            onAddToCart: _addToCart,
+            onAddSeedsToCart: _addToSeedsCart,
+          ),
+        );
+      },
     );
   }
 }

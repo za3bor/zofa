@@ -8,7 +8,7 @@ class EmptyGuestCartWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color brown = const Color(0xFF6D4C41); // Match your brand
+    final Color brown = const Color(0xFF7A6244); // Match your brand
 
     return Directionality(
       textDirection: TextDirection.rtl,

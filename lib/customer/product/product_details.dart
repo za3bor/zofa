@@ -120,7 +120,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     productData['customnutritionalValues'] ?? {};
                 final stock = productData['in_stock'];
                 final isSeeds = productData['is_seeds'];
-print(isSeeds);
                 return SingleChildScrollView(
                   child: Padding(
                     padding: EdgeInsets.all(16.w),

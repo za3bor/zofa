@@ -111,7 +111,7 @@ class _ForceUpdateWrapperState extends State<ForceUpdateWrapper> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text(
-                'יש עדכון חדש. נא לעדכן כדי להמשיך.',
+                '.יש עדכון חדש. נא לעדכן כדי להמשיך',
                 style: TextStyle(fontSize: 18),
               ),
               const SizedBox(height: 20),
