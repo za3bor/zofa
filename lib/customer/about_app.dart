@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:zofa/constant.dart';
 
 class AboutAppScreen extends StatefulWidget {
@@ -12,58 +13,74 @@ class AboutAppScreen extends StatefulWidget {
 }
 
 class _AboutAppScreenState extends State<AboutAppScreen> {
-  // Helper function to launch a URL
-  Future<void> _launchURL(String url) async {
-    final Uri uri = Uri.parse(url); // Parse the URL to a Uri object
+  String? _appVersion;
+  bool _versionLoadFailed = false;
 
+  Future<void> _launchURL(String url) async {
+    final Uri uri = Uri.parse(url);
     try {
-      if (await canLaunchUrl(uri)) {
-        // Check if the URL can be launched
-        await launchUrl(
-          uri,
-          mode: LaunchMode.externalApplication,
-        ); // Try to open in the app
-      } else {
-        // If app can't open, open it in the browser
-        await launchUrl(uri, mode: LaunchMode.externalNonBrowserApplication);
+      final bool canLaunch = await canLaunchUrl(uri);
+      final bool launched = await launchUrl(
+        uri,
+        mode: canLaunch ? LaunchMode.externalApplication : LaunchMode.platformDefault,
+      );
+      if (!launched && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('לא ניתן לפתוח את הקישור')),
+        );
       }
-    } catch (e) {
-      throw 'Could not launch $url: $e'; // Handle error if URL cannot be launched
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('אירעה שגיאה בפתיחת הקישור')),
+        );
+      }
     }
   }
 
   @override
   void initState() {
     super.initState();
-    _checkAppVersion();
+    _loadAppVersion();
   }
 
-  Future<String> _checkAppVersion() async {
+  Future<void> _loadAppVersion() async {
     try {
-      final packageInfo = await PackageInfo.fromPlatform();
-      final currentVersion = packageInfo.version;
-      return currentVersion; // Return the current version
-    } catch (e) {
+      final PackageInfo packageInfo = await PackageInfo.fromPlatform();
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('בדיקת הגרסה נכשלה. אנא נסה שוב מאוחר יותר.'),
-            backgroundColor: Colors.redAccent,
-          ),
-        );
+        setState(() {
+          _appVersion = packageInfo.version;
+          _versionLoadFailed = false;
+        });
       }
-      return ''; // Return a default value in case of error
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          _versionLoadFailed = true;
+        });
+      }
     }
   }
 
-  // Build Icon Button with image from URL
-  Widget _buildIconButton({
-    required String iconUrl,
-    required VoidCallback onPressed,
+  Widget _buildActionTile({
+    required IconData icon,
+    required String label,
+    VoidCallback? onTap,
+    Widget? trailing,
   }) {
-    return GestureDetector(
-      onTap: onPressed,
-      child: Image.network(iconUrl, width: 30.w, height: 30.h),
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      leading: Icon(icon, size: 24.w),
+      title: Text(
+        label,
+        style: Theme.of(context).textTheme.bodyMedium,
+        textAlign: TextAlign.right,
+      ),
+      onTap: onTap,
+      trailing: trailing,
+      visualDensity: VisualDensity.compact,
+      dense: true,
+      horizontalTitleGap: 8.w,
     );
   }
 
@@ -71,106 +88,94 @@ class _AboutAppScreenState extends State<AboutAppScreen> {
   Widget build(BuildContext context) {
     // Replace with your actual URLs
     const String linkedinUrl = 'https://www.linkedin.com/in/fadi-srour';
-    const String emailUrl = 'mailto:fadisrour.za3bor@gmail.com';
 
     return Scaffold(
       appBar: const CustomAppBar(title: 'אודות האפליקציה'),
       body: Directionality(
         textDirection: TextDirection.rtl,
-        child: Padding(
-          padding: EdgeInsets.all(16.0.w),
-          child: Column(
-            crossAxisAlignment:
-                CrossAxisAlignment.start, // Align content to the right
+        child: SafeArea(
+          child: ListView(
+            padding: EdgeInsets.all(16.0.w),
             children: [
-              // App name
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(12.r),
+                    child: Image.asset(
+                      'assets/background.jpg',
+                      width: 64.w,
+                      height: 64.w,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  SizedBox(width: 12.w),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Zofa Health Shop',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                        SizedBox(height: 6.h),
+                        if (_appVersion == null && !_versionLoadFailed)
+                          Text('בודק גרסה...',
+                              style: Theme.of(context).textTheme.bodyMedium)
+                        else if (_versionLoadFailed)
+                          Text('שגיאה בקבלת גרסה',
+                              style: Theme.of(context).textTheme.bodyMedium)
+                        else
+                          Text('גרסה: $_appVersion',
+                              style: Theme.of(context).textTheme.bodyMedium),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 24.h),
               Text(
-                'שם האפליקציה: Zofa Health Shop', // App name in Hebrew
+                'מפתח: פאדי סרור',
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
-              SizedBox(height: 20.h),
-              FutureBuilder<String>(
-                future: _checkAppVersion(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Text(
-                      'בודק גרסה...', // "Checking version..."
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    );
-                  } else if (snapshot.hasError ||
-                      !snapshot.hasData ||
-                      snapshot.data!.isEmpty) {
-                    return Text(
-                      'שגיאה בקבלת גרסה', // "Error fetching version"
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    );
-                  } else {
-                    return Text(
-                      'גרסה: ${snapshot.data}', // Display the version
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    );
-                  }
-                },
-              ),
-
-              SizedBox(height: 20.h),
-              // Developer name
-              Text(
-                'מפתח: פאדי סרור', // Developer's name in Hebrew
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              SizedBox(height: 20.h),
-              // Contact section title
+              SizedBox(height: 24.h),
               Text(
                 'צור קשר:',
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.bold),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium!
+                    .copyWith(fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 20.h),
-              // LinkedIn link
-              Row(
-                mainAxisAlignment:
-                    MainAxisAlignment
-                        .start, // Align icons and text to the right
-                children: [
-                  _buildIconButton(
-                    iconUrl:
-                        "https://img.icons8.com/ios-glyphs/60/000000/linkedin.png", // LinkedIn icon
-                    onPressed: () => _launchURL(linkedinUrl),
-                  ),
-                  SizedBox(width: 8.w),
-                  GestureDetector(
-                    onTap: () => _launchURL(linkedinUrl),
-                    child: Text(
-                      'פאדי סרור', // LinkedIn name in Hebrew
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                  ),
-                ],
+              SizedBox(height: 12.h),
+              _buildActionTile(
+                icon: Icons.person_outline,
+                label: 'פאדי סרור (LinkedIn)',
+                onTap: () => _launchURL(linkedinUrl),
               ),
-              SizedBox(height: 20.h),
-
-              // Email link
-              Row(
-                mainAxisAlignment:
-                    MainAxisAlignment
-                        .start, // Align icons and text to the right
-                children: [
-                  _buildIconButton(
-                    iconUrl:
-                        "https://img.icons8.com/ios-glyphs/60/000000/email.png", // Email icon
-                    onPressed: () => _launchURL(emailUrl),
-                  ),
-                  SizedBox(width: 8.w),
-                  GestureDetector(
-                    onTap: () => _launchURL(emailUrl),
-                    child: Text(
-                      'fadisrour.za3bor@gmail.com', // Email address in Hebrew
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                  ),
-                ],
+              _buildActionTile(
+                icon: Icons.email_outlined,
+                label: 'fadisrour.za3bor@gmail.com',
+                onTap: () {
+                  final Uri mailUri = Uri(
+                    scheme: 'mailto',
+                    path: 'fadisrour.za3bor@gmail.com',
+                  );
+                  _launchURL(mailUri.toString());
+                },
+                trailing: IconButton(
+                  tooltip: 'העתק',
+                  icon: const Icon(Icons.copy, size: 18),
+                  onPressed: () async {
+                    await Clipboard.setData(
+                      const ClipboardData(text: 'fadisrour.za3bor@gmail.com'),
+                    );
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('האימייל הועתק')),
+                      );
+                    }
+                  },
+                ),
               ),
             ],
           ),

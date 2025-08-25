@@ -33,48 +33,79 @@ class ProductFuncScreen extends StatelessWidget {
         textDirection: TextDirection.rtl,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: GridView.count(
-            crossAxisCount: 2, // Two columns
-            mainAxisSpacing: 16.0.w, // Adjusted spacing for a cleaner look
-            crossAxisSpacing: 16.0.h, // Adjusted spacing
-            childAspectRatio:
-                isFoldableDevice(context)
-                    ? 1.15.w
-                    : 1.4.w, // Slightly adjusted aspect ratio
-            children: [
-              const CustomElevatedButton(
-                label: 'הוספת קטגוריה חדשה',
-                targetPage: AddNewCategory(),
-              ),
-              const CustomElevatedButton(
-                label: 'הוספת מוצר חדש',
-                targetPage: AddNewProductScreen(),
-              ),
-              const CustomElevatedButton(
-                label: 'הוספת ערכים תזונתיים נוספים',
-                targetPage: CustomNutritionalValues(),
-              ),
-              const CustomElevatedButton(
-                label: 'צפייה בהזמנות מוצרים',
-                targetPage: ProductOrdersScreen(),
-              ),
-              const CustomElevatedButton(
-                label: 'עריכת מוצר',
-                targetPage: EditProductStockScreen(),
-              ),
-              const CustomElevatedButton(
-                label: 'מחיקת קטגוריה',
-                targetPage: DeleteCategory(),
-              ),
-              CustomElevatedButton(
-                label: 'Create sale',
-                targetPage: ProductSelectionPage(),
-              ),
-              CustomElevatedButton(
-                label: 'Delete sale',
-                targetPage: SalesButtonsScreen(),
-              ),
-            ],
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final double width = constraints.maxWidth;
+              int crossAxisCount = 2;
+              if (width >= 1200) {
+                crossAxisCount = 4;
+              } else if (width >= 800) {
+                crossAxisCount = 3;
+              }
+
+              return GridView.builder(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: crossAxisCount,
+                  mainAxisSpacing: 16.0.h,
+                  crossAxisSpacing: 16.0.w,
+                  childAspectRatio: isFoldableDevice(context) ? 1.05.w : 1.25.w,
+                ),
+                itemCount: 8,
+                itemBuilder: (context, index) {
+                  switch (index) {
+                    case 0:
+                      return const CustomElevatedButton(
+                        label: 'הוספת מוצר חדש',
+                        targetPage: AddNewProductScreen(),
+                        icon: Icons.add_box_outlined,
+                      );
+
+                    case 1:
+                      return const CustomElevatedButton(
+                        label: 'הוספת קטגוריה חדשה',
+                        targetPage: AddNewCategory(),
+                        icon: Icons.category_outlined,
+                      );
+                    case 2:
+                      return const CustomElevatedButton(
+                        label: 'הוספת ערכים תזונתיים נוספים',
+                        targetPage: CustomNutritionalValues(),
+                        icon: Icons.pie_chart_outline,
+                      );
+                    case 3:
+                      return const CustomElevatedButton(
+                        label: 'צפייה בהזמנות מוצרים',
+                        targetPage: ProductOrdersScreen(),
+                        icon: Icons.receipt_long_outlined,
+                      );
+                    case 4:
+                      return const CustomElevatedButton(
+                        label: 'עריכת מוצר',
+                        targetPage: EditProductStockScreen(),
+                        icon: Icons.edit_note_outlined,
+                      );
+                    case 5:
+                      return const CustomElevatedButton(
+                        label: 'מחיקת קטגוריה',
+                        targetPage: DeleteCategory(),
+                        icon: Icons.delete_outline,
+                      );
+                    case 6:
+                      return CustomElevatedButton(
+                        label: 'Create sale',
+                        targetPage: ProductSelectionPage(),
+                        icon: Icons.local_mall_outlined,
+                      );
+                    default:
+                      return CustomElevatedButton(
+                        label: 'Delete sale',
+                        targetPage: SalesButtonsScreen(),
+                        icon: Icons.remove_shopping_cart_outlined,
+                      );
+                  }
+                },
+              );
+            },
           ),
         ),
       ),

@@ -24,6 +24,9 @@ class AdminMainPageScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final onPrimary = theme.colorScheme.onPrimary;
+
     return Scaffold(
       appBar: const CustomAppBar(
         title: 'לוח בקרה למנהל',
@@ -32,39 +35,66 @@ class AdminMainPageScreen extends StatelessWidget {
         textDirection: TextDirection.rtl,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: GridView.count(
-            crossAxisCount: 2, // Two columns
-            mainAxisSpacing: 16.0.w, // Adjusted spacing for a cleaner look
-            crossAxisSpacing: 16.0.h, // Adjusted spacing
-            childAspectRatio: isFoldableDevice(context)
-                ? 1.15.w
-                : 1.4.w, // Slightly adjusted aspect ratio
-            children: const [
-              CustomElevatedButton(
-                label: 'מוצרים',
-                targetPage: ProductFuncScreen(),
-              ),
-              CustomElevatedButton(
-                label: 'לחם',
-                targetPage: BreadFuncScreen(),
-              ),
-              CustomElevatedButton(
-                label: 'לקוחות',
-                targetPage: TabsScreen(),
-              ),
-              CustomElevatedButton(
-                label: 'הערות',
-                targetPage: NotesScreen(),
-              ),
-              CustomElevatedButton(
-                label: 'קופונים',
-                targetPage: CouponsScreen(),
-              ),
-              CustomElevatedButton(
-                label: 'מנהלים',
-                targetPage: AddAdminScreen(),
-              ),
-            ],
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final double width = constraints.maxWidth;
+              int crossAxisCount = 2;
+              if (width >= 1200) {
+                crossAxisCount = 4;
+              } else if (width >= 800) {
+                crossAxisCount = 3;
+              }
+
+              return GridView.builder(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: crossAxisCount,
+                  mainAxisSpacing: 16.0.h,
+                  crossAxisSpacing: 16.0.w,
+                  childAspectRatio: isFoldableDevice(context) ? 1.05.w : 1.25.w,
+                ),
+                itemCount: 6,
+                itemBuilder: (context, index) {
+                  switch (index) {
+                    case 0:
+                      return CustomElevatedButton(
+                        label: 'מוצרים',
+                        targetPage: const ProductFuncScreen(),
+                        icon: Icons.widgets_outlined,
+                      );
+                    case 1:
+                      return CustomElevatedButton(
+                        label: 'לחם',
+                        targetPage: const BreadFuncScreen(),
+                        icon: Icons.bakery_dining_outlined,
+                      );
+                    case 2:
+                      return CustomElevatedButton(
+                        label: 'לקוחות',
+                        targetPage: const TabsScreen(),
+                        icon: Icons.group_outlined,
+                      );
+                    case 3:
+                      return CustomElevatedButton(
+                        label: 'הערות',
+                        targetPage: const NotesScreen(),
+                        icon: Icons.sticky_note_2_outlined,
+                      );
+                    case 4:
+                      return CustomElevatedButton(
+                        label: 'קופונים',
+                        targetPage: const CouponsScreen(),
+                        icon: Icons.local_offer_outlined,
+                      );
+                    default:
+                      return CustomElevatedButton(
+                        label: 'מנהלים',
+                        targetPage: const AddAdminScreen(),
+                        icon: Icons.admin_panel_settings_outlined,
+                      );
+                  }
+                },
+              );
+            },
           ),
         ),
       ),

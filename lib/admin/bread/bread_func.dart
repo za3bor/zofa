@@ -32,35 +32,60 @@ class BreadFuncScreen extends StatelessWidget {
         textDirection: TextDirection.rtl,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: GridView.count(
-            crossAxisCount: 2, // Two columns
-            mainAxisSpacing: 16.0.w, // Adjusted spacing for a cleaner look
-            crossAxisSpacing: 16.0.h, // Adjusted spacing
-            childAspectRatio: isFoldableDevice(context)
-                ? 1.15.w
-                : 1.4.w, // Slightly adjusted aspect ratio
-            children: const [
-              CustomElevatedButton(
-                label: 'הוספת סוג לחם חדש',
-                targetPage: AddNewBread(),
-              ),
-              CustomElevatedButton(
-                label: 'צפייה בהזמנות לחם יום שלישי',
-                targetPage: AdminBreadOrdersScreen(day: "שלישי"),
-              ),
-              CustomElevatedButton(
-                label: 'צפייה בהזמנות לחם יום שישי',
-                targetPage: AdminBreadOrdersScreen(day: "שישי"),
-              ),
-              CustomElevatedButton(
-                label: 'עדכון מחירי לחם',
-                targetPage: BreadPriceUpdateScreen(),
-              ),
-              CustomElevatedButton(
-                label: 'מחיקת סוגי לחם',
-                targetPage: BreadDeleteScreen(),
-              ),
-            ],
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final double width = constraints.maxWidth;
+              int crossAxisCount = 2;
+              if (width >= 1200) {
+                crossAxisCount = 4;
+              } else if (width >= 800) {
+                crossAxisCount = 3;
+              }
+
+              return GridView.builder(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: crossAxisCount,
+                  mainAxisSpacing: 16.0.h,
+                  crossAxisSpacing: 16.0.w,
+                  childAspectRatio: isFoldableDevice(context) ? 1.05.w : 1.25.w,
+                ),
+                itemCount: 5,
+                itemBuilder: (context, index) {
+                  switch (index) {
+                    case 0:
+                      return const CustomElevatedButton(
+                        label: 'הוספת סוג לחם חדש',
+                        targetPage: AddNewBread(),
+                        icon: Icons.add_circle_outline,
+                      );
+                    case 1:
+                      return const CustomElevatedButton(
+                        label: 'צפייה בהזמנות לחם יום שלישי',
+                        targetPage: AdminBreadOrdersScreen(day: "שלישי"),
+                        icon: Icons.event_note_outlined,
+                      );
+                    case 2:
+                      return const CustomElevatedButton(
+                        label: 'צפייה בהזמנות לחם יום שישי',
+                        targetPage: AdminBreadOrdersScreen(day: "שישי"),
+                        icon: Icons.event_note_outlined,
+                      );
+                    case 3:
+                      return const CustomElevatedButton(
+                        label: 'עדכון מחירי לחם',
+                        targetPage: BreadPriceUpdateScreen(),
+                        icon: Icons.price_change_outlined,
+                      );
+                    default:
+                      return const CustomElevatedButton(
+                        label: 'מחיקת סוגי לחם',
+                        targetPage: BreadDeleteScreen(),
+                        icon: Icons.delete_sweep_outlined,
+                      );
+                  }
+                },
+              );
+            },
           ),
         ),
       ),
