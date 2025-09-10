@@ -613,7 +613,6 @@ class TabsScreenState extends State<TabsScreen>
                     _navigateToDrawerPage(const AboutAppScreen());
                   },
                 ),
-
                 if (!isGuest) ...[
                   ListTile(
                     leading: const Icon(Icons.delete),

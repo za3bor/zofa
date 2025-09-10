@@ -80,7 +80,7 @@ class ProductFuncScreen extends StatelessWidget {
                       );
                     case 4:
                       return const CustomElevatedButton(
-                        label: 'עריכת מוצר',
+                        label: 'עריכת/מחיקת מוצר',
                         targetPage: EditProductStockScreen(),
                         icon: Icons.edit_note_outlined,
                       );
@@ -92,13 +92,13 @@ class ProductFuncScreen extends StatelessWidget {
                       );
                     case 6:
                       return CustomElevatedButton(
-                        label: 'Create sale',
+                        label: 'הוספת מבצע',
                         targetPage: ProductSelectionPage(),
                         icon: Icons.local_mall_outlined,
                       );
                     default:
                       return CustomElevatedButton(
-                        label: 'Delete sale',
+                        label: 'עריכת/מחיקת מבצע',
                         targetPage: SalesButtonsScreen(),
                         icon: Icons.remove_shopping_cart_outlined,
                       );

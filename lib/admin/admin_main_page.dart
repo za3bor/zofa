@@ -24,9 +24,6 @@ class AdminMainPageScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final onPrimary = theme.colorScheme.onPrimary;
-
     return Scaffold(
       appBar: const CustomAppBar(
         title: 'לוח בקרה למנהל',

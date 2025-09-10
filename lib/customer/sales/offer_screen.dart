@@ -166,7 +166,7 @@ class _OfferScreenState extends State<OfferScreen> {
         all.add(
           SaleDisplayItem(
             id: g.saleId.toString(),
-            name: "${g.saleName} - Group ${group.groupId}",
+            name: g.saleName,
             oldPrice: group.oldPrice,
             newPrice: group.groupPrice,
             productNames: group.items.map((e) => e.product.name).toList(),

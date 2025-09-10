@@ -657,7 +657,6 @@ class _CheckoutPageScreenState extends State<CheckoutPageScreen> {
                 children:
                     products.map<Widget>((p) {
                       int qty = p['quantity'] ?? 1;
-                      double price = (p['price'] ?? 0).toDouble();
                       String? id = p['id']?.toString();
                       String imageUrl =
                           'https://d1qq705dywrog2.cloudfront.net/images/$id.jpeg';
@@ -666,7 +665,6 @@ class _CheckoutPageScreenState extends State<CheckoutPageScreen> {
                               ? screenWidth * 0.24.w
                               : screenWidth * 0.30.w;
 
-                      double totalPrice = qty * price;
 
                       return Card(
                         shape: RoundedRectangleBorder(
